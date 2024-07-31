@@ -1,0 +1,19 @@
+{
+  "name": "doctor-appointment-system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./src/assets/css/tailwind.css -o ./public/css/tailwind.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "tailwindcss": "^3.4.7"
+  }
+}
