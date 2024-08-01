@@ -243,4 +243,49 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     });
+
+    // Logout functionality
+    const logoutButton = document.getElementById('logout');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            fetch('/api/logout.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        // Clear client-side session data
+                        sessionStorage.removeItem('user_id');
+                        sessionStorage.removeItem('role');
+                        // Redirect to index.php or login.html
+                        window.location.href = '/index.php';
+                    } else {
+                        alert('Failed to log out. Please try again.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // Logic for dashboard interactions
+    // const patient_id = sessionStorage.getItem('user_id'); // Get patient ID from session storage
+
+    // Fetch appointments and update the dashboard
+    if (patient_id) {
+        fetch(`http://doctor-appointment.local/api/get_appointments.php?patient_id=${patient_id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    document.getElementById('rescheduleMessage').textContent = 'You have scheduled appointments.';
+                    document.getElementById('cancelMessage').textContent = 'You have scheduled appointments.';
+                } else {
+                    document.getElementById('rescheduleMessage').textContent = 'No appointments scheduled.';
+                    document.getElementById('cancelMessage').textContent = 'No appointments scheduled.';
+                }
+            })
+            .catch(error => console.error('Error fetching appointments:', error));
+    }
 });
