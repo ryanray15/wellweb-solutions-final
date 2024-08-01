@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reschedule Appointment</title>
+    <link href="assets/css/tailwind.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mx-auto mt-10">
+        <h1 class="text-3xl font-bold mb-5">Reschedule Appointment</h1>
+        <form id="rescheduleForm" class="w-full max-w-lg">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="appointment_id">Appointment</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" id="appointment_id"></select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="date">New Date</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" id="date" type="date">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="time">New Time</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" id="time" type="time">
+            </div>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Reschedule</button>
+        </form>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
