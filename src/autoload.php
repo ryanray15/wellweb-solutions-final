@@ -1,6 +1,13 @@
 <?php
 spl_autoload_register(function ($class_name) {
-    $path = str_replace('\\', DIRECTORY_SEPARATOR, $class_name);
-    require_once __DIR__ . '/' . $path . '.php';
+    $file = __DIR__ . "/controllers/" . $class_name . ".php";
+    if (file_exists($file)) {
+        require_once $file;
+    } else {
+        $file = __DIR__ . "/models/" . $class_name . ".php";
+        if (file_exists($file)) {
+            require_once $file;
+        }
+    }
 });
 ?>
