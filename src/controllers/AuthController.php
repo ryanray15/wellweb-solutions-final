@@ -10,13 +10,13 @@ class AuthController {
 
     public function __construct($db) {
         $this->db = $db;
-        $this->user = new User($this->db);
+        $this->user = new User($db);
     }
 
     public function register($name, $email, $password, $role) {
         $this->user->name = $name;
         $this->user->email = $email;
-        $this->user->password = password_hash($password, PASSWORD_BCRYPT);
+        $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;
 
         if ($this->user->find_by_email()) {
@@ -33,7 +33,7 @@ class AuthController {
     public function login($email, $password) {
         $this->user->email = $email;
 
-        if ($this->user->login() && password_verify($password, $this->user->password)) {
+        if ($this->user->login() && password_verify($password, $this->user->password)) { // Verify the password
             return ['status' => true, 'message' => 'Login successful', 'role' => $this->user->role];
         }
 
@@ -42,7 +42,7 @@ class AuthController {
 
     public function reset_password($email, $new_password) {
         $this->user->email = $email;
-        $this->user->password = password_hash($new_password, PASSWORD_BCRYPT);
+        $this->user->password = password_hash($new_password, PASSWORD_BCRYPT); // Hash the new password
 
         if ($this->user->update_password()) {
             return ['status' => true, 'message' => 'Password updated successfully'];

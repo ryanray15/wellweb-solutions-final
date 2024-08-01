@@ -19,10 +19,7 @@ class User {
         $query = "INSERT INTO " . $this->table . " (name, email, password, role) VALUES (?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("ssss", $this->name, $this->email, $this->password, $this->role);
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 
     public function login() {
@@ -32,7 +29,7 @@ class User {
         $stmt->execute();
         $stmt->bind_result($this->user_id, $this->password, $this->role);
         $stmt->fetch();
-        return $stmt->num_rows > 0;
+        return !empty($this->user_id);
     }
 
     public function find_by_email() {
@@ -42,7 +39,31 @@ class User {
         $stmt->execute();
         $stmt->bind_result($this->user_id);
         $stmt->fetch();
-        return $stmt->num_rows > 0;
+        return !empty($this->user_id);
+    }
+
+    public function find_by_id() {
+        $query = "SELECT user_id, name, email, role FROM " . $this->table . " WHERE user_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $this->user_id);
+        $stmt->execute();
+        $stmt->bind_result($this->user_id, $this->name, $this->email, $this->role);
+        $stmt->fetch();
+        return !empty($this->user_id);
+    }
+
+    public function update() {
+        $query = "UPDATE " . $this->table . " SET name = ?, email = ?, password = ?, role = ? WHERE user_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ssssi", $this->name, $this->email, $this->password, $this->role, $this->user_id);
+        return $stmt->execute();
+    }
+
+    public function delete() {
+        $query = "DELETE FROM " . $this->table . " WHERE user_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $this->user_id);
+        return $stmt->execute();
     }
 
     public function update_password() {
