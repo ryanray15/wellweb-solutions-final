@@ -24,8 +24,8 @@ $user_role = $_SESSION['role'];
 <body class="bg-gray-100">
 
     <!-- Navigation Bar -->
-    <nav class="bg-green-600">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <nav class="bg-green-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
