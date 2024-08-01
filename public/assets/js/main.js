@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 if (!data.user_id) {
                     // Redirect to login if not logged in
-                    window.location.href = "/login.html";
+                    // window.location.href = "/login.html"; // TODO: Problematic line of code
                 }
                 return data;
             })
