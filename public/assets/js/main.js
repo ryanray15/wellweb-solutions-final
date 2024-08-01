@@ -54,18 +54,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert(result.message); // Ensure the alert is shown
                 if (result.status) {
                     // Store user data in session
-                    fetch('/api/get_session.php')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.user_id) {
-                                sessionStorage.setItem('user_id', data.user_id);
-                                sessionStorage.setItem('role', data.role);
-                                // Redirect to dashboard or home page after successful login
-                                window.location.href = "/dashboard.html"; // Assuming a dashboard page
-                            } else {
-                                alert('Failed to retrieve user session data.');
-                            }
-                        });
+                    sessionStorage.setItem('user_id', result.user_id);
+                    sessionStorage.setItem('role', result.role);
+
+                    // Redirect to dashboard or home page after successful login
+                    window.location.href = "/dashboard.php"; // Assuming a dashboard page
                 }
             })
             .catch(error => {
@@ -271,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Logic for dashboard interactions
-    // const patient_id = sessionStorage.getItem('user_id'); // Get patient ID from session storage
+    const patient_id = sessionStorage.getItem('user_id'); // Get patient ID from session storage
 
     // Fetch appointments and update the dashboard
     if (patient_id) {

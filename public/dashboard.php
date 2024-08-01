@@ -28,7 +28,7 @@ $user_role = $_SESSION['role'];
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <span class="text-white text-2xl font-bold">Wellweb</span>
+                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">
