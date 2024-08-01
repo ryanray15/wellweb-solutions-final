@@ -43,10 +43,42 @@ $loggedIn = isset($_SESSION['user_id']);
         </div>
     </nav>
 
-    <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold mb-5">Welcome to the Doctor Appointment System</h1>
-        <p>Your convenient way to schedule medical appointments with ease.</p>
-        <!-- Additional homepage content -->
+    <!-- Main Content -->
+    <div class="container mx-auto mt-10 px-6 py-8">
+        <h1 class="text-4xl font-bold text-green-600 mb-5">Welcome to Wellweb</h1>
+        <p class="text-lg text-gray-700 mb-8">Your convenient way to schedule medical appointments with ease.</p>
+        
+        <!-- Call to Action -->
+        <div class="flex space-x-4">
+            <a href="schedule.html" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
+            <a href="learn-more.html" class="bg-white text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-red-600 hover:text-white transition duration-300 border-2 border-green-600">Learn More</a>
+        </div>
+    </div>
+
+    <!-- Additional homepage content -->
+    <div class="container mx-auto mt-10 px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <i class="fas fa-calendar-check fa-3x text-green-600 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Easy Scheduling</h3>
+                <p class="text-gray-700">Schedule appointments effortlessly with our user-friendly interface.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <i class="fas fa-stethoscope fa-3x text-green-600 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Qualified Doctors</h3>
+                <p class="text-gray-700">Access a network of highly qualified healthcare professionals.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <i class="fas fa-mobile-alt fa-3x text-green-600 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Mobile Access</h3>
+                <p class="text-gray-700">Manage your appointments on the go with our mobile-friendly platform.</p>
+            </div>
+        </div>
     </div>
 
     <script src="assets/js/main.js"></script>
