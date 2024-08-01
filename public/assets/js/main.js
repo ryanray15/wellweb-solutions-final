@@ -22,14 +22,15 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => response.json())
             .then(result => {
+                alert(result.message); // Ensure the alert is shown
                 if (result.status) {
-                    alert(result.message);
                     window.location.href = "/login.html";
-                } else {
-                    alert(result.message);
                 }
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again."); // Alert in case of an error
+            });
         });
     }
 
@@ -52,14 +53,16 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => response.json())
             .then(result => {
+                alert(result.message); // Ensure the alert is shown
                 if (result.status) {
-                    alert(result.message);
                     // Redirect to dashboard or home page after successful login
-                } else {
-                    alert(result.message);
+                    window.location.href = "/dashboard.html"; // Assuming a dashboard page
                 }
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again."); // Alert in case of an error
+            });
         });
     }
 });
