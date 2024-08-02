@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Check if user is logged in right after DOMContentLoaded
+  checkUserSession();
+
   // Register Form Handling
   const registerForm = document.getElementById("registerForm");
   if (registerForm) {
@@ -70,24 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Check for user session
-  function checkUserSession() {
-    return fetch("/api/get_session.php")
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.user_id) {
-          // Redirect to login if not logged in
-          window.location.href = "/login.html"; // Ensure this line is active
-        }
-        return data;
-      })
-      .catch((error) => {
-        console.error("Error fetching session data:", error);
-        return { user_id: null }; // Handle errors by returning a null session
-      });
-  }
-
-  // Initialize page and setup forms if user is logged in
+  // Appointment Scheduling Scripts
   checkUserSession().then((sessionData) => {
     if (sessionData.user_id) {
       const patient_id = sessionData.user_id;
@@ -98,14 +84,12 @@ document.addEventListener("DOMContentLoaded", function () {
           .then((response) => response.json())
           .then((data) => {
             const doctorSelect = document.getElementById("doctor_id");
-            if (doctorSelect) {
-              data.forEach((doctor) => {
-                const option = document.createElement("option");
-                option.value = doctor.user_id;
-                option.text = doctor.name;
-                doctorSelect.appendChild(option);
-              });
-            }
+            data.forEach((doctor) => {
+              const option = document.createElement("option");
+              option.value = doctor.user_id;
+              option.text = doctor.name;
+              doctorSelect.appendChild(option);
+            });
           })
           .catch((error) => console.error("Error fetching doctors:", error));
       }
@@ -116,14 +100,12 @@ document.addEventListener("DOMContentLoaded", function () {
           .then((response) => response.json())
           .then((data) => {
             const serviceSelect = document.getElementById("service_id");
-            if (serviceSelect) {
-              data.forEach((service) => {
-                const option = document.createElement("option");
-                option.value = service.service_id;
-                option.text = service.name;
-                serviceSelect.appendChild(option);
-              });
-            }
+            data.forEach((service) => {
+              const option = document.createElement("option");
+              option.value = service.service_id;
+              option.text = service.name;
+              serviceSelect.appendChild(option);
+            });
           })
           .catch((error) => console.error("Error fetching services:", error));
       }
@@ -136,14 +118,12 @@ document.addEventListener("DOMContentLoaded", function () {
           .then((response) => response.json())
           .then((data) => {
             const appointmentSelect = document.getElementById("appointment_id");
-            if (appointmentSelect) {
-              data.forEach((appointment) => {
-                const option = document.createElement("option");
-                option.value = appointment.appointment_id;
-                option.text = `Appointment on ${appointment.date} at ${appointment.time}`;
-                appointmentSelect.appendChild(option);
-              });
-            }
+            data.forEach((appointment) => {
+              const option = document.createElement("option");
+              option.value = appointment.appointment_id;
+              option.text = `Appointment on ${appointment.date} at ${appointment.time}`;
+              appointmentSelect.appendChild(option);
+            });
           })
           .catch((error) =>
             console.error("Error fetching appointments:", error)
@@ -319,3 +299,21 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching appointments:", error));
   }
 });
+
+// Check for user session
+function checkUserSession() {
+  return fetch("/api/get_session.php")
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.status || !data.user_id) {
+        // Redirect to login if not logged in
+        // window.location.href = "/login.html"; // Ensure this line is active
+      }
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error fetching session data:", error);
+      // Redirect to login page if there's an error in fetching session data
+      window.location.href = "/login.html";
+    });
+}
