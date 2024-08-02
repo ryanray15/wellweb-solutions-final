@@ -54,7 +54,7 @@ $loggedIn = isset($_SESSION['user_id']);
 
         <!-- Call to Action -->
         <div class="flex space-x-4">
-            <a href="schedule.html" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
+            <a href="schedule.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
             <a href="learn-more.html" class="bg-white text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-red-600 hover:text-white transition duration-300 border-2 border-green-600">Learn More</a>
         </div>
     </div>

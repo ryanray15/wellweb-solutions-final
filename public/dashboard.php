@@ -51,21 +51,21 @@ $user_role = $_SESSION['role'];
         <!-- Schedule Appointment Section -->
         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
             <h2 class="text-2xl font-bold mb-4 text-green-700">Schedule Appointment</h2>
-            <a href="schedule.html" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Schedule an Appointment</a>
+            <a href="schedule.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Schedule an Appointment</a>
         </div>
 
         <!-- Reschedule Appointment Section -->
         <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="rescheduleSection">
             <h2 class="text-2xl font-bold mb-4 text-green-700">Reschedule Appointment</h2>
             <p id="rescheduleMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
-            <a href="reschedule.html" id="rescheduleButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
+            <a href="reschedule.php" id="rescheduleButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
         </div>
 
         <!-- Cancel Appointment Section -->
         <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="cancelSection">
             <h2 class="text-2xl font-bold mb-4 text-green-700">Cancel Appointment</h2>
             <p id="cancelMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
-            <a href="cancel.html" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Cancel Appointment</a>
+            <a href="cancel.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Cancel Appointment</a>
         </div>
     </div>
 

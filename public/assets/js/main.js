@@ -1,81 +1,26 @@
+// Function to check if the user is logged in
+function checkUserSession() {
+  return fetch("/api/get_session.php")
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.status || !data.user_id) {
+        // Redirect to login page if user is not logged in
+        // window.location.href = "/login.html"; // Ensure this line is uncommented
+      }
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error fetching session data:", error);
+      // Optionally handle error, possibly redirect
+      return { status: false };
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // Check if user is logged in right after DOMContentLoaded
-  checkUserSession();
-
-  // Register Form Handling
-  const registerForm = document.getElementById("registerForm");
-  if (registerForm) {
-    registerForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const formData = new FormData(registerForm);
-      const data = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        password: formData.get("password"),
-        role: formData.get("role"),
-      };
-
-      fetch("/api/register.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          alert(result.message); // Ensure the alert is shown
-          if (result.status) {
-            window.location.href = "/login.html";
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("An error occurred. Please try again."); // Alert in case of an error
-        });
-    });
-  }
-
-  // Login Form Handling
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const formData = new FormData(loginForm);
-      const data = {
-        email: formData.get("email"),
-        password: formData.get("password"),
-      };
-
-      fetch("/api/login.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          alert(result.message); // Ensure the alert is shown
-          if (result.status) {
-            // Store user data in session
-            sessionStorage.setItem("user_id", result.user_id);
-            sessionStorage.setItem("role", result.role);
-
-            // Redirect to dashboard or home page after successful login
-            window.location.href = "/dashboard.php"; // Assuming a dashboard page
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("An error occurred. Please try again."); // Alert in case of an error
-        });
-    });
-  }
-
-  // Appointment Scheduling Scripts
   checkUserSession().then((sessionData) => {
-    if (sessionData.user_id) {
+    if (sessionData.status && sessionData.user_id) {
+      // User is logged in, proceed with fetching data
       const patient_id = sessionData.user_id;
 
       // Function to fetch and populate doctors dropdown
@@ -243,29 +188,74 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Logout functionality
-  const logoutButton = document.getElementById("logout");
-  if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-      fetch("/api/logout.php", {
+  // Register Form Handling
+  const registerForm = document.getElementById("registerForm");
+  if (registerForm) {
+    registerForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const formData = new FormData(registerForm);
+      const data = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        role: formData.get("role"),
+      };
+
+      fetch("/api/register.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(data),
       })
         .then((response) => response.json())
-        .then((data) => {
-          if (data.status) {
-            // Clear client-side session data
-            sessionStorage.removeItem("user_id");
-            sessionStorage.removeItem("role");
-            // Redirect to index.php or login.html
-            window.location.href = "/index.php";
-          } else {
-            alert("Failed to log out. Please try again.");
+        .then((result) => {
+          alert(result.message); // Ensure the alert is shown
+          if (result.status) {
+            window.location.href = "/login.html";
           }
         })
-        .catch((error) => console.error("Error:", error));
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again."); // Alert in case of an error
+        });
+    });
+  }
+
+  // Login Form Handling
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const formData = new FormData(loginForm);
+      const data = {
+        email: formData.get("email"),
+        password: formData.get("password"),
+      };
+
+      fetch("/api/login.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          alert(result.message); // Ensure the alert is shown
+          if (result.status) {
+            // Store user data in session
+            sessionStorage.setItem("user_id", result.user_id);
+            sessionStorage.setItem("role", result.role);
+
+            // Redirect to dashboard or home page after successful login
+            window.location.href = "/dashboard.php"; // Assuming a dashboard page
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again."); // Alert in case of an error
+        });
     });
   }
 
@@ -298,22 +288,30 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => console.error("Error fetching appointments:", error));
   }
-});
 
-// Check for user session
-function checkUserSession() {
-  return fetch("/api/get_session.php")
-    .then((response) => response.json())
-    .then((data) => {
-      if (!data.status || !data.user_id) {
-        // Redirect to login if not logged in
-        // window.location.href = "/login.html"; // Ensure this line is active
-      }
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error fetching session data:", error);
-      // Redirect to login page if there's an error in fetching session data
-      window.location.href = "/login.html";
+  // Logout functionality
+  const logoutButton = document.getElementById("logout");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      fetch("/api/logout.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status) {
+            // Clear client-side session data
+            sessionStorage.removeItem("user_id");
+            sessionStorage.removeItem("role");
+            // Redirect to index.php or login.html
+            window.location.href = "/index.php";
+          } else {
+            alert("Failed to log out. Please try again.");
+          }
+        })
+        .catch((error) => console.error("Error:", error));
     });
-}
+  }
+});
