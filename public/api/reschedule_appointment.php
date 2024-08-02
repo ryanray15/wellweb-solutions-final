@@ -14,4 +14,3 @@ $time = $data->time ?? '';
 $response = $appointmentController->reschedule($appointment_id, $date, $time);
 
 echo json_encode($response);
-?>

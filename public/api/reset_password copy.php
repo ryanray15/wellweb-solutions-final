@@ -11,4 +11,3 @@ $new_password = $data->new_password;
 $response = $auth->reset_password($email, $new_password);
 
 echo json_encode($response);
-?>

@@ -26,25 +26,22 @@ $loggedIn = isset($_SESSION['user_id']);
                 <span class="text-white text-2xl font-bold">Wellweb</span>
             </div>
             <div>
-                <?php if ($loggedIn): ?>
-                <!-- Show profile dropdown for logged-in users -->
-                <div class="relative">
-                    <button id="profileDropdown" class="text-white focus:outline-none">
-                        <i class="fas fa-user-circle fa-2x"></i>
-                    </button>
-                    <div id="dropdownMenu"
-                        class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
-                        <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
-                        <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
-                        <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+                <?php if ($loggedIn) : ?>
+                    <!-- Show profile dropdown for logged-in users -->
+                    <div class="relative">
+                        <button id="profileDropdown" class="text-white focus:outline-none">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </button>
+                        <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+                            <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
+                            <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+                            <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+                        </div>
                     </div>
-                </div>
-                <?php else: ?>
-                <!-- Show login/register buttons for guests -->
-                <button onclick="window.location.href='login.html'"
-                    class="bg-white text-green-600 py-2 px-4 rounded hover:bg-red-600 hover:text-white transition duration-300">Login</button>
-                <button onclick="window.location.href='register.html'"
-                    class="bg-white text-green-600 py-2 px-4 rounded hover:bg-red-600 hover:text-white transition duration-300">Register</button>
+                <?php else : ?>
+                    <!-- Show login/register buttons for guests -->
+                    <button onclick="window.location.href='login.html'" class="bg-white text-green-600 py-2 px-4 rounded hover:bg-red-600 hover:text-white transition duration-300">Login</button>
+                    <button onclick="window.location.href='register.html'" class="bg-white text-green-600 py-2 px-4 rounded hover:bg-red-600 hover:text-white transition duration-300">Register</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -54,7 +51,7 @@ $loggedIn = isset($_SESSION['user_id']);
     <div class="container mx-auto mt-10 px-6 py-8">
         <h1 class="text-4xl font-bold text-green-600 mb-5">Welcome to Wellweb</h1>
         <p class="text-lg text-gray-700 mb-8">Your convenient way to schedule medical appointments with ease.</p>
-        
+
         <!-- Call to Action -->
         <div class="flex space-x-4">
             <a href="schedule.html" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
@@ -71,14 +68,14 @@ $loggedIn = isset($_SESSION['user_id']);
                 <h3 class="text-xl font-bold mb-2">Easy Scheduling</h3>
                 <p class="text-gray-700">Schedule appointments effortlessly with our user-friendly interface.</p>
             </div>
-            
+
             <!-- Feature 2 -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <i class="fas fa-stethoscope fa-3x text-green-600 mb-4"></i>
                 <h3 class="text-xl font-bold mb-2">Qualified Doctors</h3>
                 <p class="text-gray-700">Access a network of highly qualified healthcare professionals.</p>
             </div>
-            
+
             <!-- Feature 3 -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <i class="fas fa-mobile-alt fa-3x text-green-600 mb-4"></i>

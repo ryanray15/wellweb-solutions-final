@@ -16,4 +16,3 @@ $role = $data->role ?? '';
 $response = $userController->create($name, $email, $password, $role);
 
 echo json_encode($response);
-?>

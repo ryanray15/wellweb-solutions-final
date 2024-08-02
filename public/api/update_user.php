@@ -17,4 +17,3 @@ $role = $data->role ?? '';
 $response = $userController->update($user_id, $name, $email, $password, $role);
 
 echo json_encode($response);
-?>

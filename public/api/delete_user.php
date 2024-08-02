@@ -13,4 +13,3 @@ $user_id = $data->user_id ?? '';
 $response = $userController->delete($user_id);
 
 echo json_encode($response);
-?>

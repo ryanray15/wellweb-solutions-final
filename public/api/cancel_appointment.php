@@ -12,4 +12,3 @@ $appointment_id = $data->appointment_id ?? '';
 $response = $appointmentController->cancel($appointment_id);
 
 echo json_encode($response);
-?>

@@ -7,4 +7,3 @@ if (isset($_SESSION['user_id'])) {
 } else {
     echo json_encode(['user_id' => null, 'role' => null]);
 }
-?>

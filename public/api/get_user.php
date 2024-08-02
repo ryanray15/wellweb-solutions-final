@@ -11,4 +11,3 @@ $user_id = $_GET['user_id'] ?? '';
 $response = $userController->get($user_id);
 
 echo json_encode($response);
-?>

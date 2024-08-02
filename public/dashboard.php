@@ -14,6 +14,7 @@ $user_role = $_SESSION['role'];
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +22,7 @@ $user_role = $_SESSION['role'];
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100">
 
     <!-- Navigation Bar -->
@@ -34,8 +36,7 @@ $user_role = $_SESSION['role'];
                 <button id="profileDropdown" class="text-white focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
-                <div id="dropdownMenu"
-                    class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+                <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                     <a href="settings.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
@@ -70,7 +71,7 @@ $user_role = $_SESSION['role'];
 
     <script src="assets/js/main.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Profile Dropdown
             const profileDropdown = document.getElementById('profileDropdown');
             const dropdownMenu = document.getElementById('dropdownMenu');
@@ -84,11 +85,11 @@ $user_role = $_SESSION['role'];
             if (logoutButton) {
                 logoutButton.addEventListener('click', () => {
                     fetch('/api/logout.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.status) {
@@ -101,10 +102,10 @@ $user_role = $_SESSION['role'];
                                 alert('Failed to log out. Please try again.');
                             }
                         })
-                    .catch(error => console.error('Error:', error));
+                        .catch(error => console.error('Error:', error));
                 });
             }
-            
+
             // Fetch appointments and update the dashboard
             const patient_id = <?php echo json_encode($user_id); ?>; // Get patient ID from PHP session
 
@@ -124,8 +125,9 @@ $user_role = $_SESSION['role'];
                         document.getElementById('cancelMessage').textContent = 'No appointments scheduled.';
                     }
                 })
-            .catch(error => console.error('Error fetching appointments:', error));
+                .catch(error => console.error('Error fetching appointments:', error));
         });
     </script>
 </body>
+
 </html>

@@ -1,5 +1,4 @@
 <?php
-require_once '../../src/autoload.php';
 require_once '../../src/controllers/AuthController.php';
 
 $auth = new AuthController();
@@ -14,4 +13,3 @@ $role = $data->role;
 $response = $auth->register($name, $email, $password, $role);
 
 echo json_encode($response);
-?>

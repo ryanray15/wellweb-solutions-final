@@ -33,4 +33,3 @@ if (!$patientExists || !$doctorExists || !$serviceExists) {
 $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time);
 
 echo json_encode($response);
-?>

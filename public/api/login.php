@@ -23,4 +23,3 @@ if ($user && password_verify($password, $user['password'])) {
 } else {
     echo json_encode(['status' => false, 'message' => 'Invalid email or password']);
 }
-?>
