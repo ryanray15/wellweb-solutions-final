@@ -22,7 +22,11 @@ $userInfo = $query->get_result()->fetch_assoc();
 // Function to fetch appointments for doctors
 function fetchDoctorAppointments($db, $user_id)
 {
-    $query = $db->prepare("SELECT * FROM appointments WHERE doctor_id = ?");
+    $query = $db->prepare(
+        "SELECT a.*, p.name as patient_name FROM appointments a
+         JOIN users p ON a.patient_id = p.user_id
+         WHERE a.doctor_id = ?"
+    );
     $query->bind_param("i", $user_id);
     $query->execute();
     return $query->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -43,6 +47,7 @@ if ($user_role === 'doctor') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" /> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
@@ -91,14 +96,22 @@ if ($user_role === 'doctor') {
                         <tbody>
                             <?php foreach ($appointments as $appointment) : ?>
                                 <tr>
-                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['patient_name']); ?></td>
-                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['date']); ?></td>
-                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['time']); ?></td>
-                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['status']); ?></td>
                                     <td class="border-b border-gray-200 px-4 py-2">
-                                        <a href="accept_appointment.php?id=<?php echo $appointment['id']; ?>" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</a>
-                                        <a href="reschedule_appointment.php?id=<?php echo $appointment['id']; ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</a>
-                                        <a href="cancel_appointment.php?id=<?php echo $appointment['id']; ?>" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</a>
+                                        <?php echo htmlspecialchars($appointment['patient_name'] ?? 'N/A'); ?>
+                                    </td>
+                                    <td class="border-b border-gray-200 px-4 py-2">
+                                        <?php echo htmlspecialchars($appointment['date']); ?>
+                                    </td>
+                                    <td class="border-b border-gray-200 px-4 py-2">
+                                        <?php echo htmlspecialchars($appointment['time']); ?>
+                                    </td>
+                                    <td class="border-b border-gray-200 px-4 py-2">
+                                        <?php echo htmlspecialchars($appointment['status']); ?>
+                                    </td>
+                                    <td class="border-b border-gray-200 px-4 py-2">
+                                        <a href="accept_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</a>
+                                        <a href="reschedule_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</a>
+                                        <a href="cancel_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
