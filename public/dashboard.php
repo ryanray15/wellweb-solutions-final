@@ -14,10 +14,25 @@ $user_role = $_SESSION['role'];
 // Fetch user information from the database
 require_once '../config/database.php';
 $db = include '../config/database.php';
-$query = $db->prepare("SELECT name, email FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
+
+// Function to fetch appointments for doctors
+function fetchDoctorAppointments($db, $user_id)
+{
+    $query = $db->prepare("SELECT * FROM appointments WHERE doctor_id = ?");
+    $query->bind_param("i", $user_id);
+    $query->execute();
+    return $query->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+// Fetch doctor appointments if the user is a doctor
+$appointments = [];
+if ($user_role === 'doctor') {
+    $appointments = fetchDoctorAppointments($db, $user_id);
+}
 ?>
 
 <!DOCTYPE html>
@@ -40,8 +55,8 @@ $userInfo = $query->get_result()->fetch_assoc();
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
             <div class="relative">
+                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span>
                 <button id="profileDropdown" class="text-white focus:outline-none">
-                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span> <!-- Display user's name -->
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -51,28 +66,92 @@ $userInfo = $query->get_result()->fetch_assoc();
             </div>
         </div>
     </nav>
+
     <!-- Main Content -->
     <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold text-green-600 mb-8">Dashboard</h1>
-        <!-- Schedule Appointment Section -->
-        <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-green-700">Schedule Appointment</h2>
-            <a href="schedule.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Schedule an Appointment</a>
-        </div>
 
-        <!-- Reschedule Appointment Section -->
-        <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="rescheduleSection">
-            <h2 class="text-2xl font-bold mb-4 text-green-700">Reschedule Appointment</h2>
-            <p id="rescheduleMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
-            <a href="reschedule.php" id="rescheduleButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
-        </div>
+        <!-- Doctor Dashboard -->
+        <?php if ($user_role === 'doctor') : ?>
+            <h1 class="text-3xl font-bold text-green-600 mb-8">Doctor Dashboard</h1>
 
-        <!-- Cancel Appointment Section -->
-        <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="cancelSection">
-            <h2 class="text-2xl font-bold mb-4 text-green-700">Cancel Appointment</h2>
-            <p id="cancelMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
-            <a href="cancel.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Cancel Appointment</a>
-        </div>
+            <!-- Display Appointments -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
+                <?php if (count($appointments) > 0) : ?>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr>
+                                <th class="border-b border-gray-200 px-4 py-2">Patient Name</th>
+                                <th class="border-b border-gray-200 px-4 py-2">Date</th>
+                                <th class="border-b border-gray-200 px-4 py-2">Time</th>
+                                <th class="border-b border-gray-200 px-4 py-2">Status</th>
+                                <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($appointments as $appointment) : ?>
+                                <tr>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['patient_name']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['date']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['time']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($appointment['status']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2">
+                                        <a href="accept_appointment.php?id=<?php echo $appointment['id']; ?>" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</a>
+                                        <a href="reschedule_appointment.php?id=<?php echo $appointment['id']; ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</a>
+                                        <a href="cancel_appointment.php?id=<?php echo $appointment['id']; ?>" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else : ?>
+                    <p class="text-gray-700">No appointments available.</p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Doctor Availability -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Set Your Availability</h2>
+                <form action="set_availability.php" method="post">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <?php
+                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                        foreach ($days as $day) : ?>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="<?php echo strtolower($day); ?>" name="availability[]" value="<?php echo strtolower($day); ?>" class="mr-2">
+                                <label for="<?php echo strtolower($day); ?>" class="text-gray-700"><?php echo $day; ?></label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="submit" class="mt-4 bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Update Availability</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <!-- Patient Dashboard -->
+        <?php if ($user_role === 'patient') : ?>
+            <h1 class="text-3xl font-bold text-green-600 mb-8">Patient Dashboard</h1>
+
+            <!-- Schedule Appointment Section -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Schedule Appointment</h2>
+                <a href="schedule.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Schedule an Appointment</a>
+            </div>
+
+            <!-- Reschedule Appointment Section -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="rescheduleSection">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Reschedule Appointment</h2>
+                <p id="rescheduleMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
+                <a href="reschedule.php" id="rescheduleButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
+            </div>
+
+            <!-- Cancel Appointment Section -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="cancelSection">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Cancel Appointment</h2>
+                <p id="cancelMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
+                <a href="cancel.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Cancel Appointment</a>
+            </div>
+        <?php endif; ?>
     </div>
 
     <script src="assets/js/main.js"></script>
@@ -115,23 +194,25 @@ $userInfo = $query->get_result()->fetch_assoc();
             // Fetch appointments and update the dashboard
             const patient_id = <?php echo json_encode($user_id); ?>; // Get patient ID from PHP session
 
-            // Fetch appointments
-            fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        document.getElementById('rescheduleMessage').textContent = 'You have scheduled appointments.';
-                        document.getElementById('cancelMessage').textContent = 'You have scheduled appointments.';
+            // Fetch appointments for patients
+            if ('<?php echo $user_role; ?>' === 'patient') {
+                fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            document.getElementById('rescheduleMessage').textContent = 'You have scheduled appointments.';
+                            document.getElementById('cancelMessage').textContent = 'You have scheduled appointments.';
 
-                        document.getElementById('rescheduleButton').classList.remove('hidden');
-                        document.getElementById('cancelButton').classList.remove('hidden');
-                    } else {
-                        // If no appointments, display schedule button
-                        document.getElementById('rescheduleMessage').textContent = 'No appointments scheduled.';
-                        document.getElementById('cancelMessage').textContent = 'No appointments scheduled.';
-                    }
-                })
-                .catch(error => console.error('Error fetching appointments:', error));
+                            document.getElementById('rescheduleButton').classList.remove('hidden');
+                            document.getElementById('cancelButton').classList.remove('hidden');
+                        } else {
+                            // If no appointments, display schedule button
+                            document.getElementById('rescheduleMessage').textContent = 'No appointments scheduled.';
+                            document.getElementById('cancelMessage').textContent = 'No appointments scheduled.';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching appointments:', error));
+            }
         });
     </script>
 </body>
