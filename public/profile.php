@@ -60,6 +60,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             <p class="text-gray-700 mb-3"><strong>Name:</strong> <?php echo htmlspecialchars($userInfo['name']); ?></p>
             <p class="text-gray-700 mb-3"><strong>Email:</strong> <?php echo htmlspecialchars($userInfo['email']); ?></p>
             <a href="edit_profile.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
+            <a href="reset_password.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
         </div>
     </div>
 
