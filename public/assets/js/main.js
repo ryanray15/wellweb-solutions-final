@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Function to fetch and populate doctors dropdown
       function fetchDoctors() {
-        fetch("http://doctor-appointment.local/api/get_doctors.php")
+        fetch("/api/get_doctors.php")
           .then((response) => response.json())
           .then((data) => {
             const doctorSelect = document.getElementById("doctor_id");
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Function to fetch and populate services dropdown
       function fetchServices() {
-        fetch("http://doctor-appointment.local/api/get_services.php")
+        fetch("/api/get_services.php")
           .then((response) => response.json())
           .then((data) => {
             const serviceSelect = document.getElementById("service_id");
@@ -57,9 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Function to fetch and populate appointments dropdown
       function fetchAppointments() {
-        fetch(
-          `http://doctor-appointment.local/api/get_appointments.php?patient_id=${patient_id}`
-        )
+        fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
           .then((response) => response.json())
           .then((data) => {
             const appointmentSelect = document.getElementById("appointment_id");
@@ -91,22 +89,19 @@ document.addEventListener("DOMContentLoaded", function () {
           const date = document.getElementById("date").value;
           const time = document.getElementById("time").value;
 
-          const response = await fetch(
-            "http://doctor-appointment.local/api/schedule_appointment.php",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                patient_id,
-                doctor_id,
-                service_id,
-                date,
-                time,
-              }),
-            }
-          );
+          const response = await fetch("/api/schedule_appointment.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              patient_id,
+              doctor_id,
+              service_id,
+              date,
+              time,
+            }),
+          });
 
           const result = await response.json();
 
@@ -129,20 +124,17 @@ document.addEventListener("DOMContentLoaded", function () {
           const date = document.getElementById("date").value;
           const time = document.getElementById("time").value;
 
-          const response = await fetch(
-            "http://doctor-appointment.local/api/reschedule_appointment.php",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                appointment_id,
-                date,
-                time,
-              }),
-            }
-          );
+          const response = await fetch("/api/reschedule_appointment.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              appointment_id,
+              date,
+              time,
+            }),
+          });
 
           const result = await response.json();
 
@@ -163,18 +155,15 @@ document.addEventListener("DOMContentLoaded", function () {
           const appointment_id =
             document.getElementById("appointment_id").value;
 
-          const response = await fetch(
-            "http://doctor-appointment.local/api/cancel_appointment.php",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                appointment_id,
-              }),
-            }
-          );
+          const response = await fetch("/api/cancel_appointment.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              appointment_id,
+            }),
+          });
 
           const result = await response.json();
 
@@ -264,9 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Fetch appointments and update the dashboard
   if (patient_id) {
-    fetch(
-      `http://doctor-appointment.local/api/get_appointments.php?patient_id=${patient_id}`
-    )
+    fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.length > 0) {

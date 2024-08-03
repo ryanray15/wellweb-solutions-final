@@ -110,7 +110,7 @@ $user_role = $_SESSION['role'];
             const patient_id = <?php echo json_encode($user_id); ?>; // Get patient ID from PHP session
 
             // Fetch appointments
-            fetch(`http://doctor-appointment.local/api/get_appointments.php?patient_id=${patient_id}`)
+            fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
