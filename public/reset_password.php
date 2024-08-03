@@ -114,7 +114,6 @@ $user_id = $_SESSION['user_id'];
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            user_id: <?php echo json_encode($user_id); ?>,
                             new_password: newPassword
                         })
                     })

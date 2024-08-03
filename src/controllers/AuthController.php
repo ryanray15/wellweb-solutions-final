@@ -4,16 +4,19 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../models/User.php';
 
-class AuthController {
+class AuthController
+{
     private $db;
     private $user;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->db = $db;
         $this->user = new User($db);
     }
 
-    public function register($name, $email, $password, $role) {
+    public function register($name, $email, $password, $role)
+    {
         $this->user->name = $name;
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
@@ -30,7 +33,8 @@ class AuthController {
         return ['status' => false, 'message' => 'Registration failed'];
     }
 
-    public function login($email, $password) {
+    public function login($email, $password)
+    {
         $this->user->email = $email;
 
         if ($this->user->login() && password_verify($password, $this->user->password)) { // Verify the password
@@ -40,8 +44,9 @@ class AuthController {
         return ['status' => false, 'message' => 'Invalid email or password'];
     }
 
-    public function reset_password($email, $new_password) {
-        $this->user->email = $email;
+    public function reset_password($user_id, $new_password)
+    {
+        $this->user->user_id = $user_id;  // Use user_id instead of email
         $this->user->password = password_hash($new_password, PASSWORD_BCRYPT); // Hash the new password
 
         if ($this->user->update_password()) {
@@ -51,4 +56,3 @@ class AuthController {
         return ['status' => false, 'message' => 'Password update failed'];
     }
 }
-?>
