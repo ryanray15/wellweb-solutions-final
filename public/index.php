@@ -42,6 +42,7 @@ if ($loggedIn) {
                     <!-- Show profile dropdown for logged-in users -->
                     <div class="relative">
                         <button id="profileDropdown" class="text-white focus:outline-none">
+                            <span class="mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span>
                             <i class="fas fa-user-circle fa-2x"></i>
                         </button>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">

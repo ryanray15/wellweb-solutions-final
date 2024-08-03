@@ -11,13 +11,13 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $user_role = $_SESSION['role'];
 
-// // Fetch user information from the database
-// require_once '../config/database.php';
-// $db = include '../config/database.php';
-// $query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
-// $query->bind_param("i", $user_id);
-// $query->execute();
-// $userInfo = $query->get_result()->fetch_assoc();
+// Fetch user information from the database
+require_once '../config/database.php';
+$db = include '../config/database.php';
+$query = $db->prepare("SELECT name, email FROM users WHERE user_id = ?");
+$query->bind_param("i", $user_id);
+$query->execute();
+$userInfo = $query->get_result()->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +41,7 @@ $user_role = $_SESSION['role'];
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">
+                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span> <!-- Display user's name -->
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
