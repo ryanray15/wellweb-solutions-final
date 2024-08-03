@@ -3,6 +3,18 @@ session_start(); // Start the session
 
 // Check if the user is logged in
 $loggedIn = isset($_SESSION['user_id']);
+
+// Fetch user information if logged in
+$userInfo = [];
+if ($loggedIn) {
+    $user_id = $_SESSION['user_id'];
+    require_once '../config/database.php';
+    $db = include '../config/database.php';
+    $query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+    $query->bind_param("i", $user_id);
+    $query->execute();
+    $userInfo = $query->get_result()->fetch_assoc();
+}
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +46,7 @@ $loggedIn = isset($_SESSION['user_id']);
                         </button>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                             <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
-                            <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+                            <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
                             <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                         </div>
                     </div>

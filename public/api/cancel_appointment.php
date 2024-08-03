@@ -3,8 +3,8 @@ session_start(); // Start the session
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
-    exit();
+  echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
+  exit();
 }
 
 require_once '../../src/autoload.php';
