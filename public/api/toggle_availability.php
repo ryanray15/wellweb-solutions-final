@@ -20,12 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $availability = $query->get_result()->fetch_assoc();
 
     if ($availability) {
-        // Toggle availability status
-        $newStatus = $availability['availability_status'] === 'available' ? 'unavailable' : 'available';
-        $updateQuery = $db->prepare("UPDATE doctor_availability SET availability_status = ? WHERE doctor_id = ? AND date = ?");
-        $updateQuery->bind_param("sis", $newStatus, $doctor_id, $date);
-        $updateQuery->execute();
-        echo json_encode(['status' => true, 'message' => "Date $date toggled to $newStatus."]);
+        $deleteQuery = $db->prepare("DELETE FROM doctor_availability WHERE doctor_id = ? AND date = ?");
+        $deleteQuery->bind_param("is", $doctor_id, $date);
+        $deleteQuery->execute();
+        echo json_encode(['status' => true, 'message' => "Availability for $date deleted."]);
     } else {
         $insertQuery = $db->prepare("INSERT INTO doctor_availability (doctor_id, date, availability_status) VALUES (?, ?, 'available')");
         $insertQuery->bind_param("is", $doctor_id, $date);

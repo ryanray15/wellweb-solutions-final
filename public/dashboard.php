@@ -198,9 +198,9 @@ if ($user_role === 'doctor') {
             // Initialize FullCalendar
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                editable: true,
+                initialView: 'timeGridWeek', // Show the week view initially
                 selectable: true,
+                editable: true,
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
@@ -213,53 +213,118 @@ if ($user_role === 'doctor') {
                         alert('There was an error while fetching availability!');
                     }
                 },
-                dateClick: function(info) {
-                    // Toggle availability on click
-                    fetch('/api/toggle_availability.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                date: info.dateStr
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                alert(data.message);
-                                calendar.refetchEvents(); // Reload calendar events
-                            } else {
-                                alert('Failed to toggle availability: ' + data.message);
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                },
                 select: function(info) {
-                    // Toggle availability for a range
-                    fetch('/api/toggle_availability_range.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                start_date: info.startStr,
-                                end_date: info.endStr
+                    // Prompt to confirm availability setting
+                    if (confirm('Set available time from ' + info.startStr + ' to ' + info.endStr + '?')) {
+                        fetch('/api/set_doctor_availability.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    start: info.startStr,
+                                    end: info.endStr
+                                })
                             })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
+                            .then(response => response.json())
+                            .then(data => {
                                 alert(data.message);
-                                calendar.refetchEvents(); // Reload calendar events
-                            } else {
-                                alert('Failed to toggle availability: ' + data.message);
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
+                                if (data.status) {
+                                    calendar.refetchEvents(); // Refresh to reflect changes
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                },
+                eventClick: function(info) {
+                    // Allow deletion of availability
+                    if (confirm('Remove this availability?')) {
+                        fetch('/api/delete_doctor_availability.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    event_id: info.event.id
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.status) {
+                                    calendar.refetchEvents();
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
                 }
             });
+
             calendar.render();
+
+            // Function to toggle availability
+            function toggleAvailability(date) {
+                fetch('/api/toggle_availability.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            date
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.status) {
+                            calendar.refetchEvents();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            // Function to set availability for a specific time range
+            function setAvailability(start, end) {
+                fetch('/api/toggle_availability_range.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            start,
+                            end
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.status) {
+                            calendar.refetchEvents();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            // Function to delete availability
+            function deleteAvailability(availabilityId) {
+                fetch('/api/delete_availability.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            availability_id: availabilityId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.status) {
+                            calendar.refetchEvents();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
 
             // Fetch appointments and update the dashboard
             const patient_id = <?php echo json_encode($user_id); ?>; // Get patient ID from PHP session
