@@ -47,7 +47,8 @@ if ($user_role === 'doctor') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" /> -->
+    <!-- Correct FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
@@ -125,19 +126,7 @@ if ($user_role === 'doctor') {
             <!-- Doctor Availability -->
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-green-700">Set Your Availability</h2>
-                <form action="set_availability.php" method="post">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <?php
-                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                        foreach ($days as $day) : ?>
-                            <div class="flex items-center">
-                                <input type="checkbox" id="<?php echo strtolower($day); ?>" name="availability[]" value="<?php echo strtolower($day); ?>" class="mr-2">
-                                <label for="<?php echo strtolower($day); ?>" class="text-gray-700"><?php echo $day; ?></label>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <button type="submit" class="mt-4 bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Update Availability</button>
-                </form>
+                <div id="calendar"></div>
             </div>
         <?php endif; ?>
 
@@ -167,6 +156,8 @@ if ($user_role === 'doctor') {
         <?php endif; ?>
     </div>
 
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -226,6 +217,43 @@ if ($user_role === 'doctor') {
                     })
                     .catch(error => console.error('Error fetching appointments:', error));
             }
+
+            // Initialize FullCalendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                events: [{
+                    // Events can be dynamically loaded here
+                    url: '/api/get_doctor_availability.php',
+                    method: 'GET',
+                    failure: function() {
+                        alert('There was an error while fetching availability!');
+                    }
+                }],
+                select: function(info) {
+                    var selectedDate = info.startStr;
+
+                    if (confirm('Toggle availability for ' + selectedDate + '?')) {
+                        fetch('/api/set_doctor_availability.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: `availability[]=${selectedDate}`
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.status) {
+                                    calendar.refetchEvents(); // Reload calendar events
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                }
+            });
+            calendar.render();
         });
     </script>
 </body>

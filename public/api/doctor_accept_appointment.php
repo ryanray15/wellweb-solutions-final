@@ -1,0 +1,23 @@
+<?php
+session_start();
+require_once '../../config/database.php';
+
+$db = include '../../config/database.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $appointment_id = $_POST['appointment_id'] ?? null;
+    $doctor_id = $_SESSION['user_id'];
+
+    if ($appointment_id) {
+        $query = $db->prepare("UPDATE appointments SET status = 'accepted' WHERE appointment_id = ? AND doctor_id = ?");
+        $query->bind_param("ii", $appointment_id, $doctor_id);
+
+        if ($query->execute()) {
+            echo json_encode(['status' => true, 'message' => 'Appointment accepted']);
+        } else {
+            echo json_encode(['status' => false, 'message' => 'Failed to accept appointment']);
+        }
+    } else {
+        echo json_encode(['status' => false, 'message' => 'Invalid appointment ID']);
+    }
+}
