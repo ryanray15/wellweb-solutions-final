@@ -1,33 +1,68 @@
 <?php
 session_start();
-
 require_once '../../config/database.php';
 
 $db = include '../../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $doctor_id = $_SESSION['user_id'];
-    $daysOfWeek = $_POST['days_of_week'] ?? [];
-    $unavailableDates = $_POST['unavailable_dates'] ?? [];
+    $date = $_POST['date'] ?? null;
+    $start_date = $_POST['start_date'] ?? null;
+    $end_date = $_POST['end_date'] ?? null;
 
-    // Delete old availability entries
-    $deleteQuery = $db->prepare("DELETE FROM doctor_availability WHERE doctor_id = ?");
-    $deleteQuery->bind_param("i", $doctor_id);
-    $deleteQuery->execute();
+    $availability_status = 'available'; // or 'unavailable'
 
-    // Insert new availability days
-    foreach ($daysOfWeek as $day) {
-        $insertDayQuery = $db->prepare("INSERT INTO doctor_availability (doctor_id, day_of_week) VALUES (?, ?)");
-        $insertDayQuery->bind_param("is", $doctor_id, $day);
-        $insertDayQuery->execute();
+    // Set default response
+    $response = ['status' => false, 'message' => 'Invalid request'];
+
+    if ($date) {
+        $query = $db->prepare("SELECT * FROM doctor_availability WHERE doctor_id = ? AND date = ?");
+        $query->bind_param("is", $doctor_id, $date);
+        $query->execute();
+        $existingAvailability = $query->get_result()->fetch_assoc();
+
+        if ($existingAvailability) {
+            // Toggle availability status
+            $availability_status = $existingAvailability['availability_status'] === 'available' ? 'unavailable' : 'available';
+
+            $updateQuery = $db->prepare("UPDATE doctor_availability SET availability_status = ? WHERE doctor_id = ? AND date = ?");
+            $updateQuery->bind_param("sis", $availability_status, $doctor_id, $date);
+            $updateQuery->execute();
+            $response = ['status' => true, 'message' => 'Date toggled successfully.'];
+        } else {
+            $insertQuery = $db->prepare("INSERT INTO doctor_availability (doctor_id, date, availability_status) VALUES (?, ?, ?)");
+            $insertQuery->bind_param("iss", $doctor_id, $date, $availability_status);
+            $insertQuery->execute();
+            $response = ['status' => true, 'message' => 'Date set successfully.'];
+        }
+    } elseif ($start_date && $end_date) {
+        $period = new DatePeriod(
+            new DateTime($start_date),
+            new DateInterval('P1D'),
+            (new DateTime($end_date))->modify('+1 day')
+        );
+
+        foreach ($period as $date) {
+            $currentDate = $date->format('Y-m-d');
+            $query = $db->prepare("SELECT * FROM doctor_availability WHERE doctor_id = ? AND date = ?");
+            $query->bind_param("is", $doctor_id, $currentDate);
+            $query->execute();
+            $existingAvailability = $query->get_result()->fetch_assoc();
+
+            if ($existingAvailability) {
+                $availability_status = $existingAvailability['availability_status'] === 'available' ? 'unavailable' : 'available';
+                $updateQuery = $db->prepare("UPDATE doctor_availability SET availability_status = ? WHERE doctor_id = ? AND date = ?");
+                $updateQuery->bind_param("sis", $availability_status, $doctor_id, $currentDate);
+                $updateQuery->execute();
+            } else {
+                $insertQuery = $db->prepare("INSERT INTO doctor_availability (doctor_id, date, availability_status) VALUES (?, ?, ?)");
+                $insertQuery->bind_param("iss", $doctor_id, $currentDate, $availability_status);
+                $insertQuery->execute();
+            }
+        }
+
+        $response = ['status' => true, 'message' => 'Availability updated successfully.'];
     }
 
-    // Insert unavailable specific dates
-    foreach ($unavailableDates as $date) {
-        $insertDateQuery = $db->prepare("INSERT INTO doctor_availability (doctor_id, unavailable_dates) VALUES (?, ?)");
-        $insertDateQuery->bind_param("is", $doctor_id, $date);
-        $insertDateQuery->execute();
-    }
-
-    echo json_encode(['status' => true, 'message' => 'Availability updated successfully.']);
+    echo json_encode($response);
 }
