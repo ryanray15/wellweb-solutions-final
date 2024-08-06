@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bind_param("issss", $doctor_id, $date, $start_time, $end_time, $status);
 
             if ($query->execute()) {
-                echo json_encode(['status' => true, 'message' => 'Time range availability updated successfully.']);
+                echo json_encode(['status' => true, 'message' => 'Schedule updated successfully.']);
             } else {
-                throw new Exception('Failed to update availability.');
+                throw new Exception('Failed to update schedule.');
             }
         } else {
             throw new Exception('Date, start time, and end time are required.');

@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $query->bind_param("i", $availability_id);
 
     if ($query->execute()) {
-        echo json_encode(['status' => true, 'message' => 'Availability deleted successfully.']);
+        echo json_encode(['status' => true, 'message' => 'Schedule updated successfully.']);
     } else {
-        echo json_encode(['status' => false, 'message' => 'Failed to delete availability.']);
+        echo json_encode(['status' => false, 'message' => 'Failed to update schedule.']);
     }
 }

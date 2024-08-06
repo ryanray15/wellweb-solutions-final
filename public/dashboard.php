@@ -216,9 +216,6 @@ if ($user_role === 'doctor') {
                 select: function(info) {
                     handleSelectEvent(info);
                 },
-                dateClick: function(info) {
-                    handleDateClickEvent(info);
-                },
                 eventClick: function(info) {
                     handleEventClick(info);
                 }
@@ -228,20 +225,17 @@ if ($user_role === 'doctor') {
 
             // Handle the selection of time/date range
             function handleSelectEvent(info) {
-                // Avoid triggering on single day clicks
-                if (info.startStr === info.endStr) return;
-
                 let status = prompt("Enter 'Available' or 'Not Available'");
                 if (status) {
                     // Determine if the selection is a day range or time range
-                    if (info.allDay) {
-                        // Send to day range endpoint
+                    if (info.allDay || info.view.type === 'dayGridMonth') {
+                        // Handle full day range
                         fetch('/api/set_doctor_availability_day_range.php', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded'
                                 },
-                                body: `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}`
+                                body: `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}&allDay=1`
                             })
                             .then(response => response.json())
                             .then(data => {
@@ -252,7 +246,7 @@ if ($user_role === 'doctor') {
                             })
                             .catch(error => console.error('Error:', error));
                     } else {
-                        // Send to time range endpoint
+                        // Handle specific time range
                         fetch('/api/set_doctor_availability_time_range.php', {
                                 method: 'POST',
                                 headers: {
@@ -272,34 +266,9 @@ if ($user_role === 'doctor') {
                 }
             }
 
-            // Handle click on a specific date
-            function handleDateClickEvent(info) {
-                // Do not trigger on date ranges
-                if (info.jsEvent.shiftKey) return;
-
-                let status = prompt("Enter 'Available' or 'Not Available'");
-                if (status) {
-                    fetch('/api/set_doctor_availability_all_day.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `date=${info.dateStr}&status=${status}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            alert(data.message);
-                            if (data.status) {
-                                calendar.refetchEvents();
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-            }
-
             // Handle click on an existing event
             function handleEventClick(info) {
-                if (confirm('Do you want to delete this availability?')) {
+                if (confirm('Do you want to delete this schedule?')) {
                     fetch('/api/delete_doctor_availability.php', {
                             method: 'POST',
                             headers: {

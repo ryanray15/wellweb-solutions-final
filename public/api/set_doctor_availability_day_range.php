@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $start->modify('+1 day');
             }
 
-            echo json_encode(['status' => true, 'message' => 'Date range availability updated successfully.']);
+            echo json_encode(['status' => true, 'message' => 'Schedule updated successfully.']);
         } else {
             throw new Exception('Start date and end date are required.');
         }
