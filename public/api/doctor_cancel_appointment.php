@@ -5,7 +5,8 @@ require_once '../../config/database.php';
 $db = include '../../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $appointment_id = $_POST['appointment_id'] ?? null;
+    $input = json_decode(file_get_contents('php://input'), true);
+    $appointment_id = $input['appointment_id'] ?? null;
     $doctor_id = $_SESSION['user_id'];
 
     if ($appointment_id) {

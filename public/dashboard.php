@@ -111,9 +111,9 @@ if ($user_role === 'doctor') {
                                         <?php echo htmlspecialchars($appointment['status']); ?>
                                     </td>
                                     <td class="border-b border-gray-200 px-4 py-2">
-                                        <a href="/api/doctor_accept_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</a>
-                                        <a href="/api/doctor_reschedule_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</a>
-                                        <a href="/api/doctor_cancel_appointment.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</a>
+                                        <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'accept')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</button>
+                                        <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'reschedule')" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</button>
+                                        <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'cancel')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -160,6 +160,7 @@ if ($user_role === 'doctor') {
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/main.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Profile Dropdown
@@ -195,6 +196,43 @@ if ($user_role === 'doctor') {
                         .catch(error => console.error('Error:', error));
                 });
             }
+
+            // Handle Appointment Actions using AJAX
+            window.handleAppointmentAction = function(appointmentId, action) {
+                let endpoint;
+                let requestData = {
+                    appointment_id: appointmentId
+                };
+
+                if (action === 'accept') {
+                    endpoint = '/api/doctor_accept_appointment.php';
+                } else if (action === 'reschedule') {
+                    let newDate = prompt('Enter the new date (YYYY-MM-DD):');
+                    let newTime = prompt('Enter the new time (HH:MM:SS):');
+                    requestData.new_date = newDate;
+                    requestData.new_time = newTime;
+                    endpoint = '/api/doctor_reschedule_appointment.php';
+                } else if (action === 'cancel') {
+                    endpoint = '/api/doctor_cancel_appointment.php';
+                }
+
+                fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.status) {
+                            // Optionally refresh the page or refetch appointments
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            };
 
             // Initialize FullCalendar
             var calendarEl = document.getElementById('calendar');
