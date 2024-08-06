@@ -220,6 +220,8 @@ if ($user_role === 'doctor') {
                     endpoint = '/api/doctor_cancel_appointment.php';
                 }
 
+                console.log("Sending request to:", endpoint, "with data:", requestData); // Debugging log
+
                 fetch(endpoint, {
                         method: 'POST',
                         headers: {
@@ -229,6 +231,7 @@ if ($user_role === 'doctor') {
                     })
                     .then(response => response.json())
                     .then(data => {
+                        console.log("Response received:", data); // Debugging log
                         alert(data.message);
                         if (data.status) {
                             // Optionally refresh the page or refetch appointments
