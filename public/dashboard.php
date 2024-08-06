@@ -228,45 +228,46 @@ if ($user_role === 'doctor') {
 
             // Handle the selection of time/date range
             function handleSelectEvent(info) {
-                // Prevent dateClick from firing when a range is selected
-                if (info.start !== info.end) {
-                    let status = prompt("Enter 'Available' or 'Not Available'");
-                    if (status) {
-                        // Determine if the selection is for a day range or time range
-                        if (info.allDay) {
-                            fetch('/api/set_doctor_availability_day_range.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded'
-                                    },
-                                    body: `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}`
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    alert(data.message);
-                                    if (data.status) {
-                                        calendar.refetchEvents();
-                                    }
-                                })
-                                .catch(error => console.error('Error:', error));
-                        } else {
-                            // Time range selection
-                            fetch('/api/set_doctor_availability_time_range.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded'
-                                    },
-                                    body: `date=${info.startStr.split('T')[0]}&start_time=${info.startStr.split('T')[1]}&end_time=${info.endStr.split('T')[1]}&status=${status}`
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    alert(data.message);
-                                    if (data.status) {
-                                        calendar.refetchEvents();
-                                    }
-                                })
-                                .catch(error => console.error('Error:', error));
-                        }
+                // Avoid triggering on single day clicks
+                if (info.startStr === info.endStr) return;
+
+                let status = prompt("Enter 'Available' or 'Not Available'");
+                if (status) {
+                    // Determine if the selection is a day range or time range
+                    if (info.allDay) {
+                        // Send to day range endpoint
+                        fetch('/api/set_doctor_availability_day_range.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}`
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.status) {
+                                    calendar.refetchEvents();
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    } else {
+                        // Send to time range endpoint
+                        fetch('/api/set_doctor_availability_time_range.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: `date=${info.startStr.split('T')[0]}&start_time=${info.startStr.split('T')[1]}&end_time=${info.endStr.split('T')[1]}&status=${status}`
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.status) {
+                                    calendar.refetchEvents();
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
                     }
                 }
             }
@@ -274,7 +275,7 @@ if ($user_role === 'doctor') {
             // Handle click on a specific date
             function handleDateClickEvent(info) {
                 // Do not trigger on date ranges
-                if (info.start !== info.end) return;
+                if (info.jsEvent.shiftKey) return;
 
                 let status = prompt("Enter 'Available' or 'Not Available'");
                 if (status) {
@@ -317,70 +318,6 @@ if ($user_role === 'doctor') {
                         })
                         .catch(error => console.error('Error:', error));
                 }
-            }
-
-            // Function to toggle availability
-            function toggleAvailability(date) {
-                fetch('/api/toggle_availability.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            date
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if (data.status) {
-                            calendar.refetchEvents();
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-
-            // Function to set availability for a specific time range
-            function setAvailability(start, end) {
-                fetch('/api/toggle_availability_range.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            start,
-                            end
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if (data.status) {
-                            calendar.refetchEvents();
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-
-            // Function to delete availability
-            function deleteAvailability(availabilityId) {
-                fetch('/api/delete_availability.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            availability_id: availabilityId
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if (data.status) {
-                            calendar.refetchEvents();
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
             }
 
             // Fetch appointments and update the dashboard

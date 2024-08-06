@@ -15,8 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $start = new DateTime($start_date);
             $end = new DateTime($end_date);
 
+            // Modify end date for accurate range (exclusive of end)
+            $end->modify('-1 day');
+
             // Correct loop logic to prevent off-by-one error
-            while ($start < $end) {
+            while ($start <= $end) {
                 $date = $start->format('Y-m-d');
                 $query = $db->prepare("
                     INSERT INTO doctor_availability (doctor_id, date, status)
