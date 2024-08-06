@@ -200,7 +200,6 @@ if ($user_role === 'doctor') {
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'timeGridWeek',
                 selectable: true,
-                editable: true,
                 timeZone: 'Asia/Manila', // Use local time zone
                 headerToolbar: {
                     left: 'prev,next today',
@@ -229,63 +228,71 @@ if ($user_role === 'doctor') {
 
             // Handle the selection of time/date range
             function handleSelectEvent(info) {
-                var isAllDay = info.allDay;
-                var start = info.startStr;
-                var end = info.endStr;
-
-                if (confirm(`Set this ${isAllDay ? 'day' : 'time range'} as Available or Not Available?`)) {
-                    var status = prompt('Enter "Available" or "Not Available":', 'Available');
+                // Prevent dateClick from firing when a range is selected
+                if (info.start !== info.end) {
+                    let status = prompt("Enter 'Available' or 'Not Available'");
                     if (status) {
-                        fetch('/api/set_doctor_availability.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    start: start,
-                                    end: end,
-                                    allDay: isAllDay,
-                                    status: status
+                        // Determine if the selection is for a day range or time range
+                        if (info.allDay) {
+                            fetch('/api/set_doctor_availability_day_range.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}`
                                 })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.message);
-                                if (data.status) {
-                                    calendar.refetchEvents(); // Refresh calendar events
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
+                                .then(response => response.json())
+                                .then(data => {
+                                    alert(data.message);
+                                    if (data.status) {
+                                        calendar.refetchEvents();
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        } else {
+                            // Time range selection
+                            fetch('/api/set_doctor_availability_time_range.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `date=${info.startStr.split('T')[0]}&start_time=${info.startStr.split('T')[1]}&end_time=${info.endStr.split('T')[1]}&status=${status}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    alert(data.message);
+                                    if (data.status) {
+                                        calendar.refetchEvents();
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        }
                     }
                 }
             }
 
             // Handle click on a specific date
             function handleDateClickEvent(info) {
-                var date = info.dateStr;
+                // Do not trigger on date ranges
+                if (info.start !== info.end) return;
 
-                if (confirm('Set this entire day as Available or Not Available?')) {
-                    var status = prompt('Enter "Available" or "Not Available":', 'Available');
-                    if (status) {
-                        fetch('/api/set_doctor_availability_day.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    date: date,
-                                    status: status
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.message);
-                                if (data.status) {
-                                    calendar.refetchEvents(); // Refresh calendar events
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    }
+                let status = prompt("Enter 'Available' or 'Not Available'");
+                if (status) {
+                    fetch('/api/set_doctor_availability_all_day.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `date=${info.dateStr}&status=${status}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.status) {
+                                calendar.refetchEvents();
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
                 }
             }
 
