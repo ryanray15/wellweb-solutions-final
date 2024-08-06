@@ -198,69 +198,119 @@ if ($user_role === 'doctor') {
             // Initialize FullCalendar
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek', // Show the week view initially
+                initialView: 'timeGridWeek',
                 selectable: true,
                 editable: true,
+                timeZone: 'Asia/Manila', // Use local time zone
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: {
-                    url: '/api/get_doctor_availability.php',
+                    url: '/api/get_doctor_availability.php', // Endpoint to fetch availability
                     method: 'GET',
                     failure: function() {
                         alert('There was an error while fetching availability!');
                     }
                 },
                 select: function(info) {
-                    // Prompt to confirm availability setting
-                    if (confirm('Set available time from ' + info.startStr + ' to ' + info.endStr + '?')) {
+                    handleSelectEvent(info);
+                },
+                dateClick: function(info) {
+                    handleDateClickEvent(info);
+                },
+                eventClick: function(info) {
+                    handleEventClick(info);
+                }
+            });
+
+            calendar.render();
+
+            // Handle the selection of time/date range
+            function handleSelectEvent(info) {
+                var isAllDay = info.allDay;
+                var start = info.startStr;
+                var end = info.endStr;
+
+                if (confirm(`Set this ${isAllDay ? 'day' : 'time range'} as Available or Not Available?`)) {
+                    var status = prompt('Enter "Available" or "Not Available":', 'Available');
+                    if (status) {
                         fetch('/api/set_doctor_availability.php', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
                                 body: JSON.stringify({
-                                    start: info.startStr,
-                                    end: info.endStr
+                                    start: start,
+                                    end: end,
+                                    allDay: isAllDay,
+                                    status: status
                                 })
                             })
                             .then(response => response.json())
                             .then(data => {
                                 alert(data.message);
                                 if (data.status) {
-                                    calendar.refetchEvents(); // Refresh to reflect changes
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    }
-                },
-                eventClick: function(info) {
-                    // Allow deletion of availability
-                    if (confirm('Remove this availability?')) {
-                        fetch('/api/delete_doctor_availability.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    event_id: info.event.id
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.message);
-                                if (data.status) {
-                                    calendar.refetchEvents();
+                                    calendar.refetchEvents(); // Refresh calendar events
                                 }
                             })
                             .catch(error => console.error('Error:', error));
                     }
                 }
-            });
+            }
 
-            calendar.render();
+            // Handle click on a specific date
+            function handleDateClickEvent(info) {
+                var date = info.dateStr;
+
+                if (confirm('Set this entire day as Available or Not Available?')) {
+                    var status = prompt('Enter "Available" or "Not Available":', 'Available');
+                    if (status) {
+                        fetch('/api/set_doctor_availability_day.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    date: date,
+                                    status: status
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.status) {
+                                    calendar.refetchEvents(); // Refresh calendar events
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                }
+            }
+
+            // Handle click on an existing event
+            function handleEventClick(info) {
+                if (confirm('Do you want to delete this availability?')) {
+                    fetch('/api/delete_doctor_availability.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id: info.event.id
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.status) {
+                                info.event.remove(); // Remove event from calendar view
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            }
 
             // Function to toggle availability
             function toggleAvailability(date) {

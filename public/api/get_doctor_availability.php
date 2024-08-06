@@ -4,29 +4,33 @@ require_once '../../config/database.php';
 
 $db = include '../../config/database.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['status' => false, 'message' => 'Unauthorized']);
-    exit();
-}
+header('Content-Type: application/json');
 
 $doctor_id = $_SESSION['user_id'];
 
-$query = $db->prepare("SELECT * FROM doctor_availability WHERE doctor_id = ?");
+// Fetch availability for the doctor
+$query = $db->prepare(
+    "SELECT availability_id AS id, date, start_time, end_time, status 
+     FROM doctor_availability 
+     WHERE doctor_id = ?"
+);
+
 $query->bind_param("i", $doctor_id);
 $query->execute();
 $result = $query->get_result();
 
-$availabilities = [];
+$events = [];
 
 while ($row = $result->fetch_assoc()) {
-    $availabilities[] = [
-        'id' => $row['availability_id'],
-        'title' => 'Available',
-        'start' => $row['date'] . 'T' . $row['start_time'],
-        'end' => $row['date'] . 'T' . $row['end_time'],
-        'backgroundColor' => '#28a745', // Green color for available slots
-        'borderColor' => '#28a745'
+    $event = [
+        'id' => $row['id'],
+        'start' => $row['start_time'] ? $row['date'] . 'T' . $row['start_time'] : $row['date'],
+        'end' => $row['end_time'] ? $row['date'] . 'T' . $row['end_time'] : $row['date'],
+        'allDay' => !$row['start_time'],
+        'title' => $row['status'],
+        'color' => $row['status'] === 'Available' ? 'green' : 'red'
     ];
+    $events[] = $event;
 }
 
-echo json_encode($availabilities);
+echo json_encode($events);
