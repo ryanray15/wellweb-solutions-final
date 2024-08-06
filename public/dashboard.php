@@ -209,6 +209,10 @@ if ($user_role === 'doctor') {
                 } else if (action === 'reschedule') {
                     let newDate = prompt('Enter the new date (YYYY-MM-DD):');
                     let newTime = prompt('Enter the new time (HH:MM:SS):');
+                    if (!newDate || !newTime) {
+                        alert('Invalid input. Please enter both date and time.');
+                        return;
+                    }
                     requestData.new_date = newDate;
                     requestData.new_time = newTime;
                     endpoint = '/api/doctor_reschedule_appointment.php';
