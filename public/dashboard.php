@@ -23,9 +23,10 @@ $userInfo = $query->get_result()->fetch_assoc();
 function fetchDoctorAppointments($db, $user_id)
 {
     $query = $db->prepare(
-        "SELECT a.*, p.name as patient_name FROM appointments a
+        "SELECT a.*, p.name as patient_name 
+         FROM appointments a
          JOIN users p ON a.patient_id = p.user_id
-         WHERE a.doctor_id = ?"
+         WHERE a.doctor_id = ? AND a.status != 'canceled'"
     );
     $query->bind_param("i", $user_id);
     $query->execute();
@@ -110,9 +111,9 @@ if ($user_role === 'doctor') {
                                         <?php echo htmlspecialchars($appointment['status']); ?>
                                     </td>
                                     <td class="border-b border-gray-200 px-4 py-2">
-                                        <a href="accept_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</a>
-                                        <a href="reschedule_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</a>
-                                        <a href="cancel_appointment.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</a>
+                                        <a href="/api/doctor_accept_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</a>
+                                        <a href="/api/doctor_reschedule_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</a>
+                                        <a href="/api/doctor_cancel_appointment.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
