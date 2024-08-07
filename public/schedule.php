@@ -165,29 +165,31 @@ $userInfo = $query->get_result()->fetch_assoc();
             }
 
             function disableUnavailableSlots(events) {
-                const unavailableDates = events.filter(event => event.title === 'Not Available').map(event => event.start.split('T')[0]);
-                const unavailableTimes = events.filter(event => event.title === 'Not Available' && event.start.includes('T')).map(event => ({
+                const unavailableDays = events.filter(event => event.allDay && event.title === 'Not Available').map(event => event.start.split('T')[0]);
+                const unavailableTimes = events.filter(event => !event.allDay && event.title === 'Not Available').map(event => ({
                     date: event.start.split('T')[0],
-                    time: event.start.split('T')[1]
+                    start: event.start.split('T')[1],
+                    end: event.end.split('T')[1]
                 }));
 
-                //Problematic block. Messes with scheduling appointment.
+                // Check for full-day unavailability
                 dateInput.addEventListener('change', function() {
                     const selectedDate = this.value;
-                    if (unavailableDates.includes(selectedDate)) {
-                        alert('This date is unavailable. Please choose another date.');
+                    if (unavailableDays.includes(selectedDate)) {
+                        alert('This date is unavailable for any appointments. Please choose another date.');
                         this.value = '';
                     }
                 });
 
+                // Check for specific time unavailability
                 timeInput.addEventListener('change', function() {
                     const selectedDate = dateInput.value;
                     const selectedTime = this.value;
 
                     const isUnavailable = unavailableTimes.some(unavailable =>
                         unavailable.date === selectedDate &&
-                        unavailable.time <= selectedTime &&
-                        unavailable.time > selectedTime
+                        unavailable.start <= selectedTime &&
+                        unavailable.end > selectedTime
                     );
 
                     if (isUnavailable) {
