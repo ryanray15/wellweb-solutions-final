@@ -151,27 +151,19 @@ $userInfo = $query->get_result()->fetch_assoc();
                     .catch(error => console.error('Error fetching services:', error));
             }
 
-            doctorSelect.addEventListener('change', loadDoctorAvailability);
-
+            // Load Doctor Availability
             function loadDoctorAvailability() {
                 const doctorId = doctorSelect.value;
-
-                if (!doctorId) return;
-
                 fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
                     .then(response => response.json())
                     .then(events => {
-                        if (events.status === false) {
-                            console.error(events.message);
-                            return;
-                        }
-
+                        // Render Calendar with Availability
                         renderCalendar(events);
-                        disableUnavailableSlots(events);
                     })
                     .catch(error => console.error('Error fetching doctor availability:', error));
             }
 
+            // Initialize and Render Calendar
             function renderCalendar(events) {
                 const calendarEl = document.getElementById('calendar');
                 const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -186,12 +178,13 @@ $userInfo = $query->get_result()->fetch_assoc();
                 calendar.render();
             }
 
+            // Disable Unavailable Slots
             function disableUnavailableSlots(events) {
-                const unavailableDates = events.filter(event => event.title === 'Not Available').map(event => event.start.split('T')[0]);
-                const unavailableTimes = events.filter(event => event.title === 'Not Available' && event.start.includes('T')).map(event => event.start.split('T')[1]);
-
                 const dateInput = document.getElementById('date');
                 const timeInput = document.getElementById('time');
+
+                const unavailableDates = events.filter(event => event.title === 'Not Available').map(event => event.start.split('T')[0]);
+                const unavailableTimes = events.filter(event => event.title === 'Not Available' && event.start.includes('T')).map(event => event.start.split('T')[1]);
 
                 dateInput.addEventListener('change', function() {
                     const selectedDate = this.value;
