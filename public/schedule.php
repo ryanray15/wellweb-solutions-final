@@ -247,7 +247,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                     .then(data => {
                         alert(data.message);
                         if (data.status) {
-                            window.location.href = '/dashboard.php';
+                            window.location.href = '/dashboard.php'; // Redirect on success
                         }
                     })
                     .catch(error => console.error('Error:', error));
