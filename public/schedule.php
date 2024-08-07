@@ -85,7 +85,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                 Schedule Appointment
             </button>
         </form>
-        <div id="calendar"></div> <!-- Add Calendar to Show Availability -->
+        <div id="calendar" class="mt-8"></div> <!-- Add Calendar to Show Availability -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/main.js"></script>
@@ -121,14 +121,6 @@ $userInfo = $query->get_result()->fetch_assoc();
                 });
             }
 
-            // Populate doctors and services dropdown
-            // fetchDoctors();
-            // fetchServices();
-
-            // Event Listener for Doctor Selection
-            const doctorSelect = document.getElementById('doctor_id');
-            doctorSelect.addEventListener('change', loadDoctorAvailability);
-
             // Fetch Doctors
             function fetchDoctors() {
                 fetch('/api/get_doctors.php')
@@ -151,47 +143,33 @@ $userInfo = $query->get_result()->fetch_assoc();
                     .catch(error => console.error('Error fetching services:', error));
             }
 
-            doctorSelect.addEventListener('change', loadDoctorAvailability);
+            // Fetch availability and disable unavailable slots visually
+            const doctorIdSelect = document.getElementById('doctor_id');
+            const dateInput = document.getElementById('date');
+            const timeInput = document.getElementById('time');
+            const scheduleButton = document.querySelector('button[type="submit"]');
 
-            function loadDoctorAvailability() {
-                const doctorId = doctorSelect.value;
+            doctorIdSelect.addEventListener('change', fetchDoctorAvailability);
 
+            function fetchDoctorAvailability() {
+                const doctorId = doctorIdSelect.value;
                 if (!doctorId) return;
 
                 fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
                     .then(response => response.json())
                     .then(events => {
-                        if (events.status === false) {
-                            console.error(events.message);
-                            return;
-                        }
-
-                        renderCalendar(events);
+                        displayAvailability(events);
                         disableUnavailableSlots(events);
                     })
-                    .catch(error => console.error('Error fetching doctor availability:', error));
-            }
-
-            function renderCalendar(events) {
-                const calendarEl = document.getElementById('calendar');
-                const calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek',
-                    events: events,
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    }
-                });
-                calendar.render();
+                    .catch(error => console.error('Error fetching availability:', error));
             }
 
             function disableUnavailableSlots(events) {
                 const unavailableDates = events.filter(event => event.title === 'Not Available').map(event => event.start.split('T')[0]);
-                const unavailableTimes = events.filter(event => event.title === 'Not Available' && event.start.includes('T')).map(event => event.start.split('T')[1]);
-
-                const dateInput = document.getElementById('date');
-                const timeInput = document.getElementById('time');
+                const unavailableTimes = events.filter(event => event.title === 'Not Available' && event.start.includes('T')).map(event => ({
+                    date: event.start.split('T')[0],
+                    time: event.start.split('T')[1]
+                }));
 
                 dateInput.addEventListener('change', function() {
                     const selectedDate = this.value;
@@ -202,13 +180,78 @@ $userInfo = $query->get_result()->fetch_assoc();
                 });
 
                 timeInput.addEventListener('change', function() {
+                    const selectedDate = dateInput.value;
                     const selectedTime = this.value;
-                    if (unavailableTimes.includes(selectedTime)) {
+
+                    const isUnavailable = unavailableTimes.some(unavailable =>
+                        unavailable.date === selectedDate &&
+                        unavailable.time <= selectedTime &&
+                        unavailable.time > selectedTime
+                    );
+
+                    if (isUnavailable) {
                         alert('This time slot is unavailable. Please choose another time.');
                         this.value = '';
                     }
                 });
             }
+
+            // Function to display availability on FullCalendar
+            function displayAvailability(events) {
+                const calendarEl = document.getElementById('calendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek',
+                    events: events, // Load events to display
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    eventColor: 'green',
+                    eventTextColor: 'white'
+                });
+
+                calendar.render();
+            }
+
+            // Form submission
+            scheduleButton.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const selectedDate = dateInput.value;
+                const selectedTime = timeInput.value;
+                const doctorId = doctorIdSelect.value;
+                const serviceId = document.getElementById('service_id').value;
+
+                if (!selectedDate || !selectedTime || !doctorId || !serviceId) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                const requestData = {
+                    patient_id: <?php echo json_encode($user_id); ?>,
+                    doctor_id: doctorId,
+                    service_id: serviceId,
+                    date: selectedDate,
+                    time: selectedTime,
+                };
+
+                fetch('/api/schedule_appointment.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.status) {
+                            window.location.href = '/dashboard.php';
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
         });
     </script>
 </body>

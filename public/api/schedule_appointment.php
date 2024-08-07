@@ -38,6 +38,28 @@ if (!$patientExists || !$doctorExists || !$serviceExists) {
     exit;
 }
 
+// Check doctor availability
+$availabilityQuery = $db->prepare("
+    SELECT * FROM doctor_availability 
+    WHERE doctor_id = ? 
+    AND date = ? 
+    AND (
+        (start_time <= ? AND end_time > ? AND status = '') 
+        OR 
+        (status = '' AND start_time IS NULL AND end_time IS NULL)
+    )
+");
+
+// Adjusted the parameter type definition and variables to match
+$availabilityQuery->bind_param("isss", $doctor_id, $date, $time, $time);
+$availabilityQuery->execute();
+$unavailableSlot = $availabilityQuery->get_result()->fetch_assoc();
+
+if ($unavailableSlot) {
+    echo json_encode(['status' => false, 'message' => 'The selected time slot is not available.']);
+    exit();
+}
+
 $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time);
 
 echo json_encode($response);

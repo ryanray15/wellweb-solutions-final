@@ -253,7 +253,7 @@ if ($user_role === 'doctor') {
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: {
-                    url: '/api/get_doctor_availability.php', // Endpoint to fetch availability
+                    url: '/api/get_doctor_availability.php?doctor_id=<?php echo $user_id; ?>', // Endpoint to fetch availability
                     method: 'GET',
                     failure: function() {
                         alert('There was an error while fetching availability!');
