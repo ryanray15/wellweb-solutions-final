@@ -171,6 +171,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                     time: event.start.split('T')[1]
                 }));
 
+                //Problematic block. Messes with scheduling appointment.
                 dateInput.addEventListener('change', function() {
                     const selectedDate = this.value;
                     if (unavailableDates.includes(selectedDate)) {

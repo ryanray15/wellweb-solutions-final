@@ -9,18 +9,16 @@ $doctor_id = $_GET['doctor_id'] ?? null;
 
 if ($doctor_id) {
     // Fetch availability for the selected doctor
-    $query = $db->prepare(
-        "SELECT availability_id AS id, date, start_time, end_time, status 
-         FROM doctor_availability 
-         WHERE doctor_id = ?"
-    );
-
+    $query = $db->prepare("
+        SELECT availability_id AS id, date, start_time, end_time, status 
+        FROM doctor_availability 
+        WHERE doctor_id = ?
+    ");
     $query->bind_param("i", $doctor_id);
     $query->execute();
     $result = $query->get_result();
 
     $events = [];
-
     while ($row = $result->fetch_assoc()) {
         $event = [
             'id' => $row['id'],
@@ -28,7 +26,8 @@ if ($doctor_id) {
             'end' => $row['end_time'] ? $row['date'] . 'T' . $row['end_time'] : $row['date'],
             'allDay' => !$row['start_time'],
             'title' => $row['status'],
-            'color' => $row['status'] === 'Available' ? 'green' : 'red'
+            'color' => $row['status'] === 'Available' ? 'green' : ($row['status'] === 'Booked' ? 'red' : 'red'),
+            'textColor' => 'white'
         ];
         $events[] = $event;
     }
