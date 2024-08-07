@@ -29,6 +29,7 @@ $userInfo = $query->get_result()->fetch_assoc();
     <title>Reschedule Appointment</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100">
@@ -60,9 +61,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="appointment_id">Select Appointment</label>
                 <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="appointment_id">
-                    <!-- Example Options -->
-                    <!-- <option value="1">Appointment with Dr. John Doe on 2024-08-10 at 10:00 AM</option>
-                    <option value="2">Appointment with Dr. Jane Smith on 2024-08-11 at 11:00 AM</option> -->
+                    <!-- Populate this with options using JavaScript -->
                 </select>
             </div>
             <div class="flex justify-between mb-6">
@@ -80,6 +79,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             </button>
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -104,10 +104,8 @@ $userInfo = $query->get_result()->fetch_assoc();
                         .then(response => response.json())
                         .then(data => {
                             if (data.status) {
-                                // Clear client-side session data
                                 sessionStorage.removeItem('user_id');
                                 sessionStorage.removeItem('role');
-                                // Redirect to index.php or login.html
                                 window.location.href = '/index.php';
                             } else {
                                 alert('Failed to log out. Please try again.');
