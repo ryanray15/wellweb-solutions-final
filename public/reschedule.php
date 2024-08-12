@@ -53,11 +53,12 @@ $userInfo = $query->get_result()->fetch_assoc();
             </div>
         </div>
     </nav>
+
     <div class="container mx-auto mt-10 max-w-2xl p-8 bg-white rounded-lg shadow-lg">
         <h1 class="text-3xl font-bold text-green-600 mb-8 text-center">
             Reschedule Appointment
         </h1>
-        <form id="rescheduleForm" class="w-full">
+        <form id="rescheduleForm" class="w-full mb-8">
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="appointment_id">Select Appointment</label>
                 <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="appointment_id">
@@ -78,12 +79,15 @@ $userInfo = $query->get_result()->fetch_assoc();
                 Reschedule
             </button>
         </form>
+
+        <!-- Calendar to Show Availability -->
+        <div id="calendar" class="mt-8"></div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Profile Dropdown
             const profileDropdown = document.getElementById('profileDropdown');
             const dropdownMenu = document.getElementById('dropdownMenu');
 
@@ -91,7 +95,6 @@ $userInfo = $query->get_result()->fetch_assoc();
                 dropdownMenu.classList.toggle('hidden');
             });
 
-            // Logout functionality
             const logoutButton = document.getElementById('logout');
             if (logoutButton) {
                 logoutButton.addEventListener('click', () => {
@@ -114,6 +117,28 @@ $userInfo = $query->get_result()->fetch_assoc();
                         .catch(error => console.error('Error:', error));
                 });
             }
+
+            // Initialize FullCalendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                selectable: true,
+                timeZone: 'Asia/Manila', // Use local time zone
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: {
+                    url: '/api/get_doctor_availability.php', // Endpoint to fetch availability
+                    method: 'GET',
+                    failure: function() {
+                        alert('There was an error while fetching availability!');
+                    }
+                }
+            });
+
+            calendar.render();
         });
     </script>
 </body>
