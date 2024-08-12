@@ -10,6 +10,7 @@ $query = "
         a.appointment_id, 
         a.date, 
         a.time, 
+        u.user_id as doctor_id,   /* Include doctor_id in the selection */
         u.name as doctor_name 
     FROM appointments a
     JOIN users u ON a.doctor_id = u.user_id

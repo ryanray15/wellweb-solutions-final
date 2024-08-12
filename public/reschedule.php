@@ -95,35 +95,12 @@ $userInfo = $query->get_result()->fetch_assoc();
                 dropdownMenu.classList.toggle('hidden');
             });
 
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    fetch('/api/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                sessionStorage.removeItem('user_id');
-                                sessionStorage.removeItem('role');
-                                window.location.href = '/index.php';
-                            } else {
-                                alert('Failed to log out. Please try again.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-            }
-
             const appointmentSelect = document.getElementById('appointment_id');
             let selectedDoctorId = null;
 
             // Fetch appointments and populate the dropdown
             function fetchAppointments() {
-                fetch('/api/get_appointments.php?patient_id=<?php echo $user_id; ?>') // Ensure this endpoint returns appointments with doctor names
+                fetch('/api/get_appointments.php?patient_id=<?php echo $user_id; ?>')
                     .then(response => response.json())
                     .then(data => {
                         appointmentSelect.innerHTML = data.map(appointment =>
@@ -141,14 +118,23 @@ $userInfo = $query->get_result()->fetch_assoc();
             // Handle appointment selection change
             appointmentSelect.addEventListener('change', function() {
                 const selectedOption = appointmentSelect.options[appointmentSelect.selectedIndex];
-                selectedDoctorId = selectedOption.dataset.doctorId;
+                selectedDoctorId = selectedOption.getAttribute('data-doctor-id');
 
-                // Fetch and display the calendar with doctor's availability
-                fetchDoctorAvailability(selectedDoctorId);
+                if (selectedDoctorId) {
+                    // Fetch and display the calendar with doctor's availability
+                    fetchDoctorAvailability(selectedDoctorId);
+                } else {
+                    console.error('Doctor ID not found.');
+                }
             });
 
             // Fetch and display doctor's availability
             function fetchDoctorAvailability(doctorId) {
+                if (!doctorId) {
+                    console.error('Doctor ID is null or undefined.');
+                    return;
+                }
+
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek',
@@ -160,8 +146,11 @@ $userInfo = $query->get_result()->fetch_assoc();
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
                     events: {
-                        url: `/api/get_doctor_availability.php?doctor_id=${doctorId}`, // Endpoint to fetch availability
+                        url: `/api/get_doctor_availability.php`,
                         method: 'GET',
+                        extraParams: {
+                            doctor_id: doctorId // Pass the correct doctor_id here
+                        },
                         failure: function() {
                             alert('There was an error while fetching availability!');
                         }
