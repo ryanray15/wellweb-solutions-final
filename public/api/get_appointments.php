@@ -5,7 +5,22 @@ require_once '../../config/database.php';
 $db = include '../../config/database.php';
 $patient_id = $_GET['patient_id'];
 
-$result = $db->query("SELECT appointment_id, date, time FROM appointments WHERE patient_id = $patient_id AND status != 'cancelled'");
+$query = "
+    SELECT 
+        a.appointment_id, 
+        a.date, 
+        a.time, 
+        u.name as doctor_name 
+    FROM appointments a
+    JOIN users u ON a.doctor_id = u.user_id
+    WHERE a.patient_id = ? AND a.status != 'cancelled'
+";
+
+$stmt = $db->prepare($query);
+$stmt->bind_param("i", $patient_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
 $appointments = [];
 while ($row = $result->fetch_assoc()) {
     $appointments[] = $row;

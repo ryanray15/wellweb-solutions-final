@@ -61,12 +61,17 @@ document.addEventListener("DOMContentLoaded", function () {
           .then((response) => response.json())
           .then((data) => {
             const appointmentSelect = document.getElementById("appointment_id");
+            appointmentSelect.innerHTML = ""; // Clear previous options
+
             data.forEach((appointment) => {
               const option = document.createElement("option");
               option.value = appointment.appointment_id;
-              option.text = `Appointment on ${appointment.date} at ${appointment.time}`;
+              option.text = `Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}`;
               appointmentSelect.appendChild(option);
             });
+
+            // Trigger change event to load the calendar for the selected appointment
+            appointmentSelect.dispatchEvent(new Event("change"));
           })
           .catch((error) =>
             console.error("Error fetching appointments:", error)

@@ -118,27 +118,61 @@ $userInfo = $query->get_result()->fetch_assoc();
                 });
             }
 
-            // Initialize FullCalendar
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
-                selectable: true,
-                timeZone: 'Asia/Manila', // Use local time zone
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: {
-                    url: '/api/get_doctor_availability.php', // Endpoint to fetch availability
-                    method: 'GET',
-                    failure: function() {
-                        alert('There was an error while fetching availability!');
-                    }
-                }
+            const appointmentSelect = document.getElementById('appointment_id');
+            let selectedDoctorId = null;
+
+            // Fetch appointments and populate the dropdown
+            function fetchAppointments() {
+                fetch('/api/get_appointments.php?patient_id=<?php echo $user_id; ?>') // Ensure this endpoint returns appointments with doctor names
+                    .then(response => response.json())
+                    .then(data => {
+                        appointmentSelect.innerHTML = data.map(appointment =>
+                            `<option value="${appointment.appointment_id}" data-doctor-id="${appointment.doctor_id}">
+                                Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}
+                            </option>`
+                        ).join('');
+
+                        // Trigger change event to load the calendar for the selected appointment
+                        appointmentSelect.dispatchEvent(new Event('change'));
+                    })
+                    .catch(error => console.error('Error fetching appointments:', error));
+            }
+
+            // Handle appointment selection change
+            appointmentSelect.addEventListener('change', function() {
+                const selectedOption = appointmentSelect.options[appointmentSelect.selectedIndex];
+                selectedDoctorId = selectedOption.dataset.doctorId;
+
+                // Fetch and display the calendar with doctor's availability
+                fetchDoctorAvailability(selectedDoctorId);
             });
 
-            calendar.render();
+            // Fetch and display doctor's availability
+            function fetchDoctorAvailability(doctorId) {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek',
+                    selectable: true,
+                    timeZone: 'Asia/Manila', // Use local time zone
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: {
+                        url: `/api/get_doctor_availability.php?doctor_id=${doctorId}`, // Endpoint to fetch availability
+                        method: 'GET',
+                        failure: function() {
+                            alert('There was an error while fetching availability!');
+                        }
+                    }
+                });
+
+                calendar.render();
+            }
+
+            // Fetch initial data
+            fetchAppointments();
         });
     </script>
 </body>
