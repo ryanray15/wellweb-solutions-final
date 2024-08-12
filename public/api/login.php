@@ -29,7 +29,7 @@ if ($user && password_verify($password, $user['password'])) {
     if ($user['role'] === 'doctor') {
         $redirectUrl = '/dashboard.php'; // Redirect to doctor dashboard
     } elseif ($user['role'] === 'admin') {
-        $redirectUrl = '/admin-dashboard.php'; // Redirect to admin dashboard
+        $redirectUrl = '/dashboard.php'; // Redirect to admin dashboard
     }
 
     // Return a successful login response with redirect URL

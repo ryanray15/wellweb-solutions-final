@@ -76,6 +76,69 @@ if ($user_role === 'doctor') {
 
     <!-- Main Content -->
     <div class="container mx-auto mt-10">
+        <!-- Admin Dashboard -->
+        <?php if ($user_role === 'admin') : ?>
+            <h1 class="text-3xl font-bold text-green-600 mb-8">Admin Dashboard</h1>
+
+            <!-- Quick Stats Section -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card bg-white p-6 mb-8 rounded-lg shadow-md">
+                        <h5 class="card-title text-xl font-bold text-green-700 mb-2">Total Patients</h5>
+                        <p class="card-text text-gray-700" id="totalPatients">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card bg-white p-6 mb-8 rounded-lg shadow-md">
+                        <h5 class="card-title text-xl font-bold text-green-700 mb-2">Total Doctors</h5>
+                        <p class="card-text text-gray-700" id="totalDoctors">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card bg-white p-6 mb-8 rounded-lg shadow-md">
+                        <h5 class="card-title text-xl font-bold text-green-700 mb-2">Pending Verifications</h5>
+                        <p class="card-text text-gray-700" id="pendingVerifications">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Users Section -->
+            <div id="manageUsersSection" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Manage Users</h2>
+                <table class="w-full text-left">
+                    <thead>
+                        <tr>
+                            <th class="border-b border-gray-200 px-4 py-2">ID</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Name</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Email</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Role</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- User rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Doctor Verification Section -->
+            <div id="doctorVerificationSection" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Doctor Verification</h2>
+                <table class="w-full text-left">
+                    <thead>
+                        <tr>
+                            <th class="border-b border-gray-200 px-4 py-2">ID</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Doctor Name</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Status</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verificationTableBody">
+                        <!-- Verification rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
 
         <!-- Doctor Dashboard -->
         <?php if ($user_role === 'doctor') : ?>
