@@ -16,6 +16,59 @@ function checkUserSession() {
     });
 }
 
+// Function to verify or reject doctor
+function verifyDoctor(verificationId, action) {
+  if (confirm(`Are you sure you want to ${action} this doctor?`)) {
+    fetch("/api/verify_doctors.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: action,
+        doctor_id: verificationId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        if (data.status) {
+          loadVerificationTable(); // Reload table after verification or rejection
+        }
+      })
+      .catch((error) => console.error(`Error ${action} doctor:`, error));
+  }
+}
+
+// Function to load verification table
+function loadVerificationTable() {
+  fetch("/api/get_pending_verifications.php")
+    .then((response) => response.json())
+    .then((data) => {
+      const verificationTableBody = document.getElementById(
+        "verificationTableBody"
+      );
+      verificationTableBody.innerHTML = data
+        .map(
+          (verification) =>
+            `<tr>
+              <td class="border-b border-gray-200 px-4 py-2">${verification.verification_id}</td>
+              <td class="border-b border-gray-200 px-4 py-2">${verification.doctor_name}</td>
+              <td class="border-b border-gray-200 px-4 py-2">${verification.status}</td>
+              <td class="border-b border-gray-200 px-4 py-2">
+                <a href="${verification.document_path}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">View Document</a>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.verification_id}, 'approve')">Verify</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.verification_id}, 'reject')">Reject</button>
+              </td>
+          </tr>`
+        )
+        .join("");
+    })
+    .catch((error) =>
+      console.error("Error fetching pending verifications:", error)
+    );
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // Check if user is logged in right after DOMContentLoaded
   checkUserSession().then((sessionData) => {
@@ -229,33 +282,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching users:", error));
   }
 
-  // Function to load verification table
-  function loadVerificationTable() {
-    fetch("/api/get_pending_verifications.php")
-      .then((response) => response.json())
-      .then((data) => {
-        const verificationTableBody = document.getElementById(
-          "verificationTableBody"
-        );
-        verificationTableBody.innerHTML = data
-          .map(
-            (verification) =>
-              `<tr>
-                  <td class="border-b border-gray-200 px-4 py-2">${verification.user_id}</td>
-                  <td class="border-b border-gray-200 px-4 py-2">${verification.doctor_name}</td>
-                  <td class="border-b border-gray-200 px-4 py-2">${verification.status}</td>
-                  <td class="border-b border-gray-200 px-4 py-2">
-                    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.user_id})">Verify</button>
-                  </td>
-              </tr>`
-          )
-          .join("");
-      })
-      .catch((error) =>
-        console.error("Error fetching pending verifications:", error)
-      );
-  }
-
   // Function to delete user
   function deleteUser(userId) {
     if (confirm("Are you sure you want to delete this user?")) {
@@ -270,23 +296,6 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         })
         .catch((error) => console.error("Error deleting user:", error));
-    }
-  }
-
-  // Function to verify doctor
-  function verifyDoctor(userId) {
-    if (confirm("Are you sure you want to verify this doctor?")) {
-      fetch(`/api/verify_doctors.php?user_id=${userId}`, {
-        method: "POST",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          alert(data.message);
-          if (data.status) {
-            loadVerificationTable(); // Reload table after verification
-          }
-        })
-        .catch((error) => console.error("Error verifying doctor:", error));
     }
   }
 
