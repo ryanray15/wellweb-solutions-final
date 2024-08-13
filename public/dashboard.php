@@ -251,7 +251,8 @@ if ($user_role === 'admin') {
                                         <?php else : ?>
                                             <span class="text-gray-500">No document uploaded</span>
                                         <?php endif; ?>
-                                        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['id']; ?>)">Verify</button>
+                                        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['doctor_id']; ?>, 'approve')">Verify</button>
+                                        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['doctor_id']; ?>, 'reject')">Reject</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

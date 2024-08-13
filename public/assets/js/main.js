@@ -17,7 +17,7 @@ function checkUserSession() {
 }
 
 // Function to verify or reject doctor
-function verifyDoctor(verificationId, action) {
+function verifyDoctor(doctorId, action) {
   if (confirm(`Are you sure you want to ${action} this doctor?`)) {
     fetch("/api/verify_doctors.php", {
       method: "POST",
@@ -26,7 +26,7 @@ function verifyDoctor(verificationId, action) {
       },
       body: JSON.stringify({
         action: action,
-        doctor_id: verificationId,
+        doctor_id: doctorId, // Correctly using doctorId here
       }),
     })
       .then((response) => response.json())
@@ -69,15 +69,15 @@ function loadVerificationTable() {
         .map(
           (verification) =>
             `<tr>
-              <td class="border-b border-gray-200 px-4 py-2">${verification.verification_id}</td>
-              <td class="border-b border-gray-200 px-4 py-2">${verification.doctor_name}</td>
-              <td class="border-b border-gray-200 px-4 py-2">${verification.status}</td>
-              <td class="border-b border-gray-200 px-4 py-2">
-                <a href="${verification.document_path}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">View Document</a>
-                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.verification_id}, 'approve')">Verify</button>
-                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.verification_id}, 'reject')">Reject</button>
-              </td>
-          </tr>`
+                        <td class="border-b border-gray-200 px-4 py-2">${verification.verification_id}</td>
+                        <td class="border-b border-gray-200 px-4 py-2">${verification.doctor_name}</td>
+                        <td class="border-b border-gray-200 px-4 py-2">${verification.status}</td>
+                        <td class="border-b border-gray-200 px-4 py-2">
+                            <a href="${verification.document_path}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">View Document</a>
+                            <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.doctor_id}, 'approve')">Verify</button>
+                            <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(${verification.doctor_id}, 'reject')">Reject</button>
+                        </td>
+                    </tr>`
         )
         .join("");
     })
