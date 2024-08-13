@@ -40,6 +40,23 @@ function verifyDoctor(verificationId, action) {
   }
 }
 
+// Function to delete user
+function deleteUser(userId) {
+  if (confirm("Are you sure you want to delete this user?")) {
+    fetch(`/api/admin_delete_user.php?user_id=${userId}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        if (data.status) {
+          loadUsersTable(); // Reload table after deletion
+        }
+      })
+      .catch((error) => console.error("Error deleting user:", error));
+  }
+}
+
 // Function to load verification table
 function loadVerificationTable() {
   fetch("/api/get_pending_verifications.php")
@@ -280,23 +297,6 @@ document.addEventListener("DOMContentLoaded", function () {
           .join("");
       })
       .catch((error) => console.error("Error fetching users:", error));
-  }
-
-  // Function to delete user
-  function deleteUser(userId) {
-    if (confirm("Are you sure you want to delete this user?")) {
-      fetch(`/api/admin_delete_user.php?user_id=${userId}`, {
-        method: "DELETE",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          alert(data.message);
-          if (data.status) {
-            loadUsersTable(); // Reload table after deletion
-          }
-        })
-        .catch((error) => console.error("Error deleting user:", error));
-    }
   }
 
   // Register Form Handling
