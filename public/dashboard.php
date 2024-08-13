@@ -19,6 +19,21 @@ $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
 
+// Check if user is a doctor and fetch verification status from doctor_verifications table
+$documents_submitted = false;
+$is_verified = false;
+if ($user_role === 'doctor') {
+    $query = $db->prepare("SELECT status FROM doctor_verifications WHERE doctor_id = ?");
+    $query->bind_param("i", $user_id);
+    $query->execute();
+    $verification = $query->get_result()->fetch_assoc();
+
+    if ($verification) {
+        $documents_submitted = true;
+        $is_verified = ($verification['status'] === 'verified');
+    }
+}
+
 // Function to fetch appointments for doctors
 function fetchDoctorAppointments($db, $user_id)
 {
@@ -35,8 +50,25 @@ function fetchDoctorAppointments($db, $user_id)
 
 // Fetch doctor appointments if the user is a doctor
 $appointments = [];
-if ($user_role === 'doctor') {
+if ($user_role === 'doctor' && $is_verified) {
     $appointments = fetchDoctorAppointments($db, $user_id);
+}
+
+// Initialize the $verifications variable
+$verifications = [];
+
+if ($user_role === 'admin') {
+    // Fetch pending verifications from the database
+    $query = $db->query("
+        SELECT dv.id, u.name as doctor_name, dv.status, dv.document_path
+        FROM doctor_verifications dv
+        JOIN users u ON dv.doctor_id = u.user_id
+        WHERE dv.status = 'pending'
+    ");
+
+    while ($row = $query->fetch_assoc()) {
+        $verifications[] = $row;
+    }
 }
 ?>
 
@@ -76,6 +108,75 @@ if ($user_role === 'doctor') {
 
     <!-- Main Content -->
     <div class="container mx-auto mt-10">
+        <?php if ($user_role === 'doctor') : ?>
+            <?php if (!$documents_submitted) : ?>
+                <!-- Case 1: Documents not submitted -->
+                <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
+                    <p class="mt-4 text-gray-700">Please <a href="upload_documents.php" class="text-green-600 hover:underline">submit your documents</a> for verification.</p>
+                </div>
+            <?php elseif ($documents_submitted && !$is_verified) : ?>
+                <!-- Case 2: Documents submitted, but not yet verified -->
+                <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
+                    <p class="mt-4 text-gray-700">Your account is currently pending verification. You will be notified once your account has been verified.</p>
+                </div>
+            <?php elseif ($is_verified) : ?>
+                <!-- Case 3: Verified doctor -->
+                <h1 class="text-3xl font-bold text-green-600 mb-8">Doctor Dashboard</h1>
+                <!-- Include full dashboard functionalities for doctors here -->
+
+                <!-- Display Appointments -->
+                <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
+                    <?php if (count($appointments) > 0) : ?>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="border-b border-gray-200 px-4 py-2">Patient Name</th>
+                                    <th class="border-b border-gray-200 px-4 py-2">Date</th>
+                                    <th class="border-b border-gray-200 px-4 py-2">Time</th>
+                                    <th class="border-b border-gray-200 px-4 py-2">Status</th>
+                                    <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($appointments as $appointment) : ?>
+                                    <tr>
+                                        <td class="border-b border-gray-200 px-4 py-2">
+                                            <?php echo htmlspecialchars($appointment['patient_name'] ?? 'N/A'); ?>
+                                        </td>
+                                        <td class="border-b border-gray-200 px-4 py-2">
+                                            <?php echo htmlspecialchars($appointment['date']); ?>
+                                        </td>
+                                        <td class="border-b border-gray-200 px-4 py-2">
+                                            <?php echo htmlspecialchars($appointment['time']); ?>
+                                        </td>
+                                        <td class="border-b border-gray-200 px-4 py-2">
+                                            <?php echo htmlspecialchars($appointment['status']); ?>
+                                        </td>
+                                        <td class="border-b border-gray-200 px-4 py-2">
+                                            <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'accept')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</button>
+                                            <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'reschedule')" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</button>
+                                            <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'cancel')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php else : ?>
+                        <p class="text-gray-700">No appointments available.</p>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Doctor Availability -->
+                <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4 text-green-700">Set Your Availability</h2>
+                    <div id="calendar"></div>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+
         <!-- Admin Dashboard -->
         <?php if ($user_role === 'admin') : ?>
             <h1 class="text-3xl font-bold text-green-600 mb-8">Admin Dashboard</h1>
@@ -134,63 +235,33 @@ if ($user_role === 'doctor') {
                         </tr>
                     </thead>
                     <tbody id="verificationTableBody">
-                        <!-- Verification rows will be dynamically loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-
-        <!-- Doctor Dashboard -->
-        <?php if ($user_role === 'doctor') : ?>
-            <h1 class="text-3xl font-bold text-green-600 mb-8">Doctor Dashboard</h1>
-
-            <!-- Display Appointments -->
-            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
-                <?php if (count($appointments) > 0) : ?>
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr>
-                                <th class="border-b border-gray-200 px-4 py-2">Patient Name</th>
-                                <th class="border-b border-gray-200 px-4 py-2">Date</th>
-                                <th class="border-b border-gray-200 px-4 py-2">Time</th>
-                                <th class="border-b border-gray-200 px-4 py-2">Status</th>
-                                <th class="border-b border-gray-200 px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($appointments as $appointment) : ?>
+                        <?php if (!empty($verifications)) : ?>
+                            <?php foreach ($verifications as $verification) : ?>
                                 <tr>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['id']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['doctor_name']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['status']); ?></td>
                                     <td class="border-b border-gray-200 px-4 py-2">
-                                        <?php echo htmlspecialchars($appointment['patient_name'] ?? 'N/A'); ?>
-                                    </td>
-                                    <td class="border-b border-gray-200 px-4 py-2">
-                                        <?php echo htmlspecialchars($appointment['date']); ?>
-                                    </td>
-                                    <td class="border-b border-gray-200 px-4 py-2">
-                                        <?php echo htmlspecialchars($appointment['time']); ?>
-                                    </td>
-                                    <td class="border-b border-gray-200 px-4 py-2">
-                                        <?php echo htmlspecialchars($appointment['status']); ?>
-                                    </td>
-                                    <td class="border-b border-gray-200 px-4 py-2">
-                                        <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'accept')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</button>
-                                        <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'reschedule')" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</button>
-                                        <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'cancel')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</button>
+                                        <?php if (!empty($verification['document_path'])) : ?>
+                                            <a href="<?php echo htmlspecialchars($verification['document_path']); ?>"
+                                                target="_blank"
+                                                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">
+                                                View Document
+                                            </a>
+                                        <?php else : ?>
+                                            <span class="text-gray-500">No document uploaded</span>
+                                        <?php endif; ?>
+                                        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['id']; ?>)">Verify</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else : ?>
-                    <p class="text-gray-700">No appointments available.</p>
-                <?php endif; ?>
-            </div>
-
-            <!-- Doctor Availability -->
-            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold mb-4 text-green-700">Set Your Availability</h2>
-                <div id="calendar"></div>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="4" class="text-center text-gray-600">No pending verifications found.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         <?php endif; ?>
 

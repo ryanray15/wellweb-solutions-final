@@ -414,4 +414,81 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch((error) => console.error("Error:", error));
     });
   }
+
+  // Check if user is logged in right after DOMContentLoaded
+  checkUserSession().then((sessionData) => {
+    if (sessionData.status && sessionData.user_id) {
+      // User is logged in, proceed with fetching data
+      const user_id = sessionData.user_id;
+      const user_role = sessionData.role;
+
+      // Handle restricted access for doctors
+      if (user_role === "doctor") {
+        fetch(`/api/check_verification_status.php?user_id=${user_id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.is_verified) {
+              if (!data.documents_submitted) {
+                document.querySelector(".dashboard-content").innerHTML = `
+                                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                                        <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
+                                        <p class="mt-4 text-gray-700">Please <a href="upload_documents.php" class="text-green-600 hover:underline">submit your documents</a> for verification.</p>
+                                    </div>
+                                `;
+              } else {
+                document.querySelector(".dashboard-content").innerHTML = `
+                                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                                        <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
+                                        <p class="mt-4 text-gray-700">Your account is currently pending verification. You will be notified once your account has been verified.</p>
+                                    </div>
+                                `;
+              }
+            } else {
+              // Load doctor functionalities if verified
+              loadDoctorDashboard(user_id);
+            }
+          })
+          .catch((error) =>
+            console.error("Error checking verification status:", error)
+          );
+      }
+
+      // Load admin dashboard if user is admin
+      if (user_role === "admin") {
+        loadAdminDashboard();
+      }
+
+      // Load patient dashboard if user is patient
+      if (user_role === "patient") {
+        loadPatientDashboard(user_id);
+      }
+    }
+  });
+
+  // Define function to load doctor dashboard
+  function loadDoctorDashboard(user_id) {
+    // Load doctor dashboard functionalities here
+  }
+
+  // Define function to load patient dashboard
+  function loadPatientDashboard(user_id) {
+    // Load patient dashboard functionalities here
+  }
+
+  // Define function to load admin dashboard
+  function loadAdminDashboard() {
+    fetch("/api/get_dashboard_stats.php")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("totalPatients").textContent =
+          data.totalPatients || "0";
+        document.getElementById("totalDoctors").textContent =
+          data.totalDoctors || "0";
+        document.getElementById("pendingVerifications").textContent =
+          data.pendingVerifications || "0";
+        loadUsersTable();
+        loadVerificationTable();
+      })
+      .catch((error) => console.error("Error loading dashboard stats:", error));
+  }
 });
