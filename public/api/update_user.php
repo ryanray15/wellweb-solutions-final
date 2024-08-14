@@ -9,11 +9,15 @@ $userController = new UserController($db);
 $data = json_decode(file_get_contents("php://input"));
 
 $user_id = $data->user_id ?? '';
-$name = $data->name ?? '';
+$first_name = $data->first_name ?? '';
+$middle_initial = $data->middle_initial ?? '';
+$last_name = $data->last_name ?? '';
+$contact_number = $data->contact_number ?? '';
+$address = $data->address ?? '';
 $email = $data->email ?? '';
 $password = $data->password ?? '';
 $role = $data->role ?? '';
 
-$response = $userController->update($user_id, $name, $email, $password, $role);
+$response = $userController->update($user_id, $first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role);
 
 echo json_encode($response);

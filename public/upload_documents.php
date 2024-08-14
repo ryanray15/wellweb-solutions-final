@@ -16,7 +16,7 @@ $user_role = $_SESSION['role'];
 // Fetch user information from the database
 require_once '../config/database.php';
 $db = include '../config/database.php';
-$query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
@@ -43,13 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if upload is successful
     if ($uploadOk && move_uploaded_file($_FILES["document"]["tmp_name"], $target_file)) {
         // Update the database to mark documents as submitted
-        require_once '../config/database.php';
-        $db = include '../config/database.php';
-
-        if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
-        }
-
         $query = $db->prepare("INSERT INTO doctor_verifications (doctor_id, document_path, status, submitted_at) VALUES (?, ?, 'pending', NOW())");
         $query->bind_param("is", $user_id, $target_file);
 
@@ -73,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Documents</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
-    <!-- Correct FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
@@ -87,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
             <div class="relative">
-                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span>
+                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
                 <button id="profileDropdown" class="text-white focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>

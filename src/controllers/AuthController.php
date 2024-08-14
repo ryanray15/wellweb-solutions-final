@@ -15,9 +15,13 @@ class AuthController
         $this->user = new User($db);
     }
 
-    public function register($name, $email, $password, $role)
+    public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role)
     {
-        $this->user->name = $name;
+        $this->user->first_name = $first_name;
+        $this->user->middle_initial = $middle_initial;
+        $this->user->last_name = $last_name;
+        $this->user->contact_number = $contact_number;
+        $this->user->address = $address;
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;

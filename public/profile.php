@@ -14,7 +14,7 @@ $user_role = $_SESSION['role'];
 // Fetch user information from the database
 require_once '../config/database.php';
 $db = include '../config/database.php';
-$query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email, contact_number, address FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
@@ -57,8 +57,12 @@ $userInfo = $query->get_result()->fetch_assoc();
         <!-- User Profile Section -->
         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
             <h2 class="text-2xl font-bold mb-4 text-green-700">User Information</h2>
-            <p class="text-gray-700 mb-3"><strong>Name:</strong> <?php echo htmlspecialchars($userInfo['name']); ?></p>
+            <p class="text-gray-700 mb-3"><strong>First Name:</strong> <?php echo htmlspecialchars($userInfo['first_name']); ?></p>
+            <p class="text-gray-700 mb-3"><strong>Middle Initial:</strong> <?php echo htmlspecialchars($userInfo['middle_initial']); ?></p>
+            <p class="text-gray-700 mb-3"><strong>Last Name:</strong> <?php echo htmlspecialchars($userInfo['last_name']); ?></p>
             <p class="text-gray-700 mb-3"><strong>Email:</strong> <?php echo htmlspecialchars($userInfo['email']); ?></p>
+            <p class="text-gray-700 mb-3"><strong>Contact Number:</strong> <?php echo htmlspecialchars($userInfo['contact_number']); ?></p>
+            <p class="text-gray-700 mb-3"><strong>Address:</strong> <?php echo htmlspecialchars($userInfo['address']); ?></p>
             <a href="edit_profile.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
             <a href="reset_password.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
         </div>

@@ -13,19 +13,23 @@ $db = include '../config/database.php';
 
 // Fetch user information
 $user_id = $_SESSION['user_id'];
-$query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email, contact_number, address FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
 
 // Handle form submission for profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'] ?? '';
+    $first_name = $_POST['first_name'] ?? '';
+    $middle_initial = $_POST['middle_initial'] ?? '';
+    $last_name = $_POST['last_name'] ?? '';
     $email = $_POST['email'] ?? '';
+    $contact_number = $_POST['contact_number'] ?? '';
+    $address = $_POST['address'] ?? '';
 
     // Prepare and bind update statement
-    $updateQuery = $db->prepare("UPDATE users SET name = ?, email = ? WHERE user_id = ?");
-    $updateQuery->bind_param("ssi", $name, $email, $user_id);
+    $updateQuery = $db->prepare("UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, contact_number = ?, address = ? WHERE user_id = ?");
+    $updateQuery->bind_param("ssssssi", $first_name, $middle_initial, $last_name, $email, $contact_number, $address, $user_id);
 
     if ($updateQuery->execute()) {
         $message = "Profile updated successfully!";
@@ -83,12 +87,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Profile Edit Form -->
         <form method="POST" action="">
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Name</label>
-                <input type="text" id="name" name="name" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['name']); ?>" required />
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['first_name']); ?>" required />
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="middle_initial">Middle Initial</label>
+                <input type="text" id="middle_initial" name="middle_initial" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['middle_initial']); ?>" required />
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['last_name']); ?>" required />
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
                 <input type="email" id="email" name="email" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['email']); ?>" required />
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="contact_number">Contact Number</label>
+                <input type="text" id="contact_number" name="contact_number" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['contact_number']); ?>" required />
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address</label>
+                <input type="text" id="address" name="address" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
             </div>
             <button type="submit" class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
                 Update Profile

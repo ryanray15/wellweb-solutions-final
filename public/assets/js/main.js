@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.forEach((doctor) => {
               const option = document.createElement("option");
               option.value = doctor.user_id;
-              option.text = doctor.name;
+              option.text = `${doctor.first_name} ${doctor.last_name}`; // Updated to use first_name and last_name
               doctorSelect.appendChild(option);
             });
           })
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.forEach((appointment) => {
               const option = document.createElement("option");
               option.value = appointment.appointment_id;
-              option.text = `Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}`;
+              option.text = `Appointment with Dr. ${appointment.first_name} ${appointment.last_name} on ${appointment.date} at ${appointment.time}`; // Updated to use first_name and last_name
               appointmentSelect.appendChild(option);
             });
 
@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
             (user) =>
               `<tr>
                   <td class="border-b border-gray-200 px-4 py-2">${user.user_id}</td>
-                  <td class="border-b border-gray-200 px-4 py-2">${user.name}</td>
+                  <td class="border-b border-gray-200 px-4 py-2">${user.name}</td> <!-- Updated to use first_name, middle_initial, and last_name -->
                   <td class="border-b border-gray-200 px-4 py-2">${user.email}</td>
                   <td class="border-b border-gray-200 px-4 py-2">${user.role}</td>
                   <td class="border-b border-gray-200 px-4 py-2">
@@ -306,10 +306,14 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
       const formData = new FormData(registerForm);
       const data = {
-        name: formData.get("name"),
+        first_name: formData.get("first_name"),
+        middle_initial: formData.get("middle_initial"),
+        last_name: formData.get("last_name"),
         email: formData.get("email"),
         password: formData.get("password"),
         role: formData.get("role"),
+        contact_number: formData.get("contact_number"),
+        address: formData.get("address"),
       };
 
       fetch("/api/register.php", {

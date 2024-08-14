@@ -10,7 +10,7 @@ if ($loggedIn) {
     $user_id = $_SESSION['user_id'];
     require_once '../config/database.php';
     $db = include '../config/database.php';
-    $query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+    $query = $db->prepare("SELECT first_name, middle_initial, last_name FROM users WHERE user_id = ?");
     $query->bind_param("i", $user_id);
     $query->execute();
     $userInfo = $query->get_result()->fetch_assoc();
@@ -42,7 +42,7 @@ if ($loggedIn) {
                     <!-- Show profile dropdown for logged-in users -->
                     <div class="relative">
                         <button id="profileDropdown" class="text-white focus:outline-none">
-                            <span class="mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span>
+                            <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
                             <i class="fas fa-user-circle fa-2x"></i>
                         </button>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">

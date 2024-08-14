@@ -14,7 +14,7 @@ $user_role = $_SESSION['role'];
 // Fetch user information from the database
 require_once '../config/database.php';
 $db = include '../config/database.php';
-$query = $db->prepare("SELECT name, email FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
@@ -42,7 +42,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">
-                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span> <!-- Display user's name -->
+                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -127,7 +127,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                     .then(response => response.json())
                     .then(data => {
                         const doctorSelect = document.getElementById('doctor_id');
-                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.id}">${doctor.name}</option>`).join('');
+                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.user_id}">${doctor.name}</option>`).join('');
                     })
                     .catch(error => console.error('Error fetching doctors:', error));
             }
@@ -255,6 +255,10 @@ $userInfo = $query->get_result()->fetch_assoc();
                     })
                     .catch(error => console.error('Error:', error));
             });
+
+            // Fetch initial data
+            // fetchDoctors();
+            // fetchServices();
         });
     </script>
 </body>

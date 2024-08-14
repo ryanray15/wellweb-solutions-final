@@ -11,18 +11,40 @@ $user_id = $_POST['user_id'] ?? null;
 if ($action && $user_id) {
     if ($action == 'view') {
         // Fetch user details
-        $query = $db->prepare("SELECT user_id, name, email, role FROM users WHERE user_id = ?");
+        $query = $db->prepare("SELECT user_id, 
+                                      first_name, middle_initial, last_name, 
+                                      email, role, contact_number, address 
+                               FROM users WHERE user_id = ?");
         $query->bind_param("i", $user_id);
         $query->execute();
         $user = $query->get_result()->fetch_assoc();
         echo json_encode(['status' => true, 'user' => $user]);
     } elseif ($action == 'edit') {
-        $name = $_POST['name'];
+        $first_name = $_POST['first_name'];
+        $middle_initial = $_POST['middle_initial'];
+        $last_name = $_POST['last_name'];
         $email = $_POST['email'];
         $role = $_POST['role'];
+        $contact_number = $_POST['contact_number'];
+        $address = $_POST['address'];
+
         // Update user details
-        $query = $db->prepare("UPDATE users SET name = ?, email = ?, role = ? WHERE user_id = ?");
-        $query->bind_param("sssi", $name, $email, $role, $user_id);
+        $query = $db->prepare("UPDATE users SET 
+                                      first_name = ?, middle_initial = ?, last_name = ?, 
+                                      email = ?, role = ?, 
+                                      contact_number = ?, address = ? 
+                               WHERE user_id = ?");
+        $query->bind_param(
+            "sssssssi",
+            $first_name,
+            $middle_initial,
+            $last_name,
+            $email,
+            $role,
+            $contact_number,
+            $address,
+            $user_id
+        );
         $query->execute();
         echo json_encode(['status' => true, 'message' => 'User updated successfully']);
     } elseif ($action == 'delete') {
@@ -34,7 +56,10 @@ if ($action && $user_id) {
     }
 } else {
     // Fetch all users
-    $result = $db->query("SELECT user_id, name, email, role FROM users");
+    $result = $db->query("SELECT user_id, 
+                                 CONCAT(first_name, ' ', middle_initial, ' ', last_name) as name, 
+                                 email, role 
+                          FROM users");
     $users = [];
     while ($row = $result->fetch_assoc()) {
         $users[] = $row;

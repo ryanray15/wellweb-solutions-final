@@ -3,16 +3,19 @@
 
 require_once __DIR__ . '/../models/Appointment.php';
 
-class AppointmentController {
+class AppointmentController
+{
     private $db;
     private $appointment;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->db = $db;
         $this->appointment = new Appointment($db);
     }
 
-    public function schedule($patient_id, $doctor_id, $service_id, $date, $time) {
+    public function schedule($patient_id, $doctor_id, $service_id, $date, $time)
+    {
         $this->appointment->patient_id = $patient_id;
         $this->appointment->doctor_id = $doctor_id;
         $this->appointment->service_id = $service_id;
@@ -26,7 +29,8 @@ class AppointmentController {
         return ['status' => false, 'message' => 'Appointment scheduling failed'];
     }
 
-    public function reschedule($appointment_id, $date, $time) {
+    public function reschedule($appointment_id, $date, $time)
+    {
         $this->appointment->appointment_id = $appointment_id;
         $this->appointment->date = $date;
         $this->appointment->time = $time;
@@ -38,7 +42,8 @@ class AppointmentController {
         return ['status' => false, 'message' => 'Appointment rescheduling failed'];
     }
 
-    public function cancel($appointment_id) {
+    public function cancel($appointment_id)
+    {
         $this->appointment->appointment_id = $appointment_id;
 
         if ($this->appointment->cancel()) {
@@ -50,4 +55,3 @@ class AppointmentController {
 
     // Existing methods (create, get, update, delete) ...
 }
-?>

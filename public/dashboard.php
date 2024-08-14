@@ -38,7 +38,7 @@ if ($user_role === 'doctor') {
 function fetchDoctorAppointments($db, $user_id)
 {
     $query = $db->prepare(
-        "SELECT a.*, p.name as patient_name 
+        "SELECT a.*, p.first_name, p.middle_initial, p.last_name 
          FROM appointments a
          JOIN users p ON a.patient_id = p.user_id
          WHERE a.doctor_id = ? AND a.status != 'canceled'"
@@ -60,7 +60,7 @@ $verifications = [];
 if ($user_role === 'admin') {
     // Fetch pending verifications from the database
     $query = $db->query("
-        SELECT dv.id, u.name as doctor_name, dv.status, dv.document_path
+        SELECT dv.id, u.first_name, u.middle_initial, u.last_name, dv.status, dv.document_path
         FROM doctor_verifications dv
         JOIN users u ON dv.doctor_id = u.user_id
         WHERE dv.status = 'pending'
@@ -94,7 +94,7 @@ if ($user_role === 'admin') {
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
             <div class="relative">
-                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['name']); ?></span>
+                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
                 <button id="profileDropdown" class="text-white focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
@@ -144,7 +144,7 @@ if ($user_role === 'admin') {
                                 <?php foreach ($appointments as $appointment) : ?>
                                     <tr>
                                         <td class="border-b border-gray-200 px-4 py-2">
-                                            <?php echo htmlspecialchars($appointment['patient_name'] ?? 'N/A'); ?>
+                                            <?php echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['middle_initial'] . ' ' . $appointment['last_name']); ?>
                                         </td>
                                         <td class="border-b border-gray-200 px-4 py-2">
                                             <?php echo htmlspecialchars($appointment['date']); ?>
@@ -239,13 +239,11 @@ if ($user_role === 'admin') {
                             <?php foreach ($verifications as $verification) : ?>
                                 <tr>
                                     <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['id']); ?></td>
-                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['doctor_name']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['first_name'] . ' ' . $verification['middle_initial'] . ' ' . $verification['last_name']); ?></td>
                                     <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['status']); ?></td>
                                     <td class="border-b border-gray-200 px-4 py-2">
                                         <?php if (!empty($verification['document_path'])) : ?>
-                                            <a href="<?php echo htmlspecialchars($verification['document_path']); ?>"
-                                                target="_blank"
-                                                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">
+                                            <a href="<?php echo htmlspecialchars($verification['document_path']); ?>" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">
                                                 View Document
                                             </a>
                                         <?php else : ?>
