@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.forEach((doctor) => {
               const option = document.createElement("option");
               option.value = doctor.user_id;
-              option.text = `${doctor.first_name} ${doctor.last_name}`; // Updated to use first_name and last_name
+              option.text = `Dr. ${doctor.name}`; // Updated to use first_name and last_name
               doctorSelect.appendChild(option);
             });
           })
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.forEach((appointment) => {
               const option = document.createElement("option");
               option.value = appointment.appointment_id;
-              option.text = `Appointment with Dr. ${appointment.first_name} ${appointment.last_name} on ${appointment.date} at ${appointment.time}`; // Updated to use first_name and last_name
+              option.text = `Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}`; // Updated to use first_name and last_name
               appointmentSelect.appendChild(option);
             });
 

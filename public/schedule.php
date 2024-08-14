@@ -85,7 +85,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                 Schedule Appointment
             </button>
         </form>
-        <div id="calendar" class="mt-8"></div> <!-- Add Calendar to Show Availability -->
+        <div id="calendar"></div> <!-- Add Calendar to Show Availability -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/main.js"></script>
@@ -127,7 +127,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                     .then(response => response.json())
                     .then(data => {
                         const doctorSelect = document.getElementById('doctor_id');
-                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.user_id}">${doctor.name}</option>`).join('');
+                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.user_id}">${doctor.first_name} ${doctor.last_name}</option>`).join('');
                     })
                     .catch(error => console.error('Error fetching doctors:', error));
             }
