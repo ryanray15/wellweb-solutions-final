@@ -288,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
                   <td class="border-b border-gray-200 px-4 py-2">${user.user_id}</td>
                   <td class="border-b border-gray-200 px-4 py-2">${user.name}</td> <!-- Updated to use first_name, middle_initial, and last_name -->
                   <td class="border-b border-gray-200 px-4 py-2">${user.email}</td>
-                  <td class="border-b border-gray-200 px-4 py-2">${user.gender}</td>
                   <td class="border-b border-gray-200 px-4 py-2">${user.role}</td>
                   <td class="border-b border-gray-200 px-4 py-2">
                     <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="deleteUser(${user.user_id})">Delete</button>
@@ -302,10 +301,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Register Form Handling
   const registerForm = document.getElementById("registerForm");
+
   if (registerForm) {
     registerForm.addEventListener("submit", function (event) {
       event.preventDefault();
+
       const formData = new FormData(registerForm);
+
+      // Convert the selected options into an array of values
+      const selectedSpecializations = Array.from(
+        document.getElementById("specialization").selectedOptions
+      ).map((option) => option.value);
+
       const data = {
         first_name: formData.get("first_name"),
         middle_initial: formData.get("middle_initial"),
@@ -316,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function () {
         contact_number: formData.get("contact_number"),
         address: formData.get("address"),
         gender: formData.get("gender"),
-        specializations: formData.getAll("specialization_id[]"),
+        specializations: selectedSpecializations, // Ensure this is passed correctly
       };
 
       fetch("/api/register.php", {
@@ -506,5 +513,99 @@ document.addEventListener("DOMContentLoaded", function () {
         loadVerificationTable();
       })
       .catch((error) => console.error("Error loading dashboard stats:", error));
+  }
+
+  // Load specializations on page load
+  fetchSpecializations();
+
+  // Handle form submission to add a new specialization
+  const addSpecializationForm = document.getElementById(
+    "addSpecializationForm"
+  );
+  addSpecializationForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const specializationName =
+      document.getElementById("specializationName").value;
+
+    fetch("/api/admin_manage_specializations.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `name=${encodeURIComponent(specializationName)}`,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        if (data.status) {
+          fetchSpecializations();
+          document.getElementById("specializationName").value = ""; // Clear the input field
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  });
+
+  // Function to fetch and display specializations
+  function fetchSpecializations() {
+    fetch("/api/admin_manage_specializations.php")
+      .then((response) => response.json())
+      .then((data) => {
+        const specializationList =
+          document.getElementById("specializationList");
+        specializationList.innerHTML = ""; // Clear previous list
+
+        if (data.length > 0) {
+          data.forEach((spec) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = spec.name;
+            listItem.classList.add("mb-2", "flex", "justify-between");
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.classList.add(
+              "bg-red-500",
+              "hover:bg-red-600",
+              "text-white",
+              "font-bold",
+              "py-1",
+              "px-3",
+              "rounded"
+            );
+            deleteButton.addEventListener("click", function () {
+              deleteSpecialization(spec.id);
+            });
+
+            listItem.appendChild(deleteButton);
+            specializationList.appendChild(listItem);
+          });
+        } else {
+          specializationList.textContent = "No specializations found.";
+        }
+      })
+      .catch((error) =>
+        console.error("Error fetching specializations:", error)
+      );
+  }
+
+  // Function to delete a specialization
+  function deleteSpecialization(id) {
+    if (confirm("Are you sure you want to delete this specialization?")) {
+      fetch("/api/admin_manage_specializations.php", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `id=${encodeURIComponent(id)}`,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          alert(data.message);
+          if (data.status) {
+            fetchSpecializations();
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
   }
 });

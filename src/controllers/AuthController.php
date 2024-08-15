@@ -15,8 +15,10 @@ class AuthController
         $this->user = new User($db);
     }
 
-    public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations = [])
+    public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations)
     {
+        // Existing user registration logic
+        // ...
         $this->user->first_name = $first_name;
         $this->user->middle_initial = $middle_initial;
         $this->user->last_name = $last_name;
@@ -36,6 +38,19 @@ class AuthController
         }
 
         return ['status' => false, 'message' => 'Registration failed'];
+
+
+        // Insert the specializations for the doctor
+        if ($role === 'doctor' && !empty($specializations)) {
+            $user_id = $this->db->insert_id; // Assuming the user ID is auto-incremented
+            foreach ($specializations as $specialization_id) {
+                $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
+                $stmt->bind_param("ii", $user_id, $specialization_id);
+                $stmt->execute();
+            }
+        }
+
+        return ['status' => true, 'message' => 'User registered successfully'];
     }
 
     public function login($email, $password)

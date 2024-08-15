@@ -203,6 +203,29 @@ if ($user_role === 'admin') {
                 </div>
             </div>
 
+            <!-- Manage Specializations Section -->
+            <div id="manageSpecializationsSection" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Manage Specializations</h2>
+                <form id="addSpecializationForm">
+                    <input
+                        type="text"
+                        id="specializationName"
+                        name="specializationName"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                        placeholder="Enter specialization name"
+                        required />
+                    <button
+                        type="submit"
+                        class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-200">
+                        Add Specialization
+                    </button>
+                </form>
+                <h3 class="text-xl font-bold mt-8 mb-4 text-green-700">Existing Specializations</h3>
+                <ul id="specializationList">
+                    <!-- Specializations will be loaded here dynamically -->
+                </ul>
+            </div>
+
             <!-- Manage Users Section -->
             <div id="manageUsersSection" class="mb-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-green-700">Manage Users</h2>
