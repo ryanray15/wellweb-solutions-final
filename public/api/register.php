@@ -16,7 +16,9 @@ $address = $data->address;
 $email = $data->email;
 $password = $data->password;
 $role = $data->role;
+$gender = $data->gender ?? '';  // New line to handle gender
+$specializations = $data->specializations ?? []; // Existing line to handle specializations
 
-$response = $auth->register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role);
+$response = $auth->register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations); // Pass gender and specializations
 
 echo json_encode($response);

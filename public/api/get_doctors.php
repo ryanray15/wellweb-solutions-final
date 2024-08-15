@@ -4,7 +4,18 @@ require_once '../../config/database.php';
 
 $db = include '../../config/database.php';
 
-$result = $db->query("SELECT user_id, CONCAT(first_name, ' ', middle_initial, ' ', last_name) as name FROM users WHERE role = 'doctor'");
+$specialization_id = $_GET['specialization_id'] ?? null;
+
+$query = "SELECT u.user_id, CONCAT(u.first_name, ' ', u.middle_initial, ' ', u.last_name) as name
+          FROM users u
+          JOIN doctor_specializations ds ON u.user_id = ds.doctor_id
+          WHERE u.role = 'doctor'";
+
+if ($specialization_id) {
+    $query .= " AND ds.specialization_id = " . intval($specialization_id);
+}
+
+$result = $db->query($query);
 $doctors = [];
 while ($row = $result->fetch_assoc()) {
     $doctors[] = $row;

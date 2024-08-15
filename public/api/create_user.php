@@ -16,7 +16,9 @@ $password = $data->password ?? '';
 $role = $data->role ?? '';
 $contact_number = $data->contact_number ?? '';
 $address = $data->address ?? '';
+$gender = $data->gender ?? '';  // New line to handle gender
+$specializations = $data->specializations ?? []; // Existing line to handle specializations
 
-$response = $userController->create($first_name, $middle_initial, $last_name, $email, $password, $role, $contact_number, $address);
+$response = $userController->create($first_name, $middle_initial, $last_name, $email, $password, $role, $contact_number, $address, $gender, $specializations); // Pass gender and specializations
 
 echo json_encode($response);

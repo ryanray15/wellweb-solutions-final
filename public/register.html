@@ -5,158 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="assets/css/tailwind.css" rel="stylesheet" />
     <title>Register</title>
+    <style>
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .form-container {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .full-width {
+        grid-column: span 2;
+      }
+
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .full-width {
+          grid-column: span 1;
+        }
+      }
+    </style>
   </head>
   <body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
-      <h2 class="text-2xl font-bold mb-6 text-center text-green-600">
-        Register
-      </h2>
-      <form id="registerForm" method="POST">
-        <!-- Role Selection -->
-        <div class="mb-4">
-          <label for="role" class="block text-gray-700">Role</label>
-          <select
-            id="role"
-            name="role"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          >
-            <option value="patient">Patient</option>
-            <option value="doctor">Doctor</option>
-          </select>
-        </div>
-
-        <!-- First Name -->
-        <div class="mb-4">
-          <label for="first_name" class="block text-gray-700">First Name</label>
-          <input
-            type="text"
-            id="first_name"
-            name="first_name"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Middle Initial -->
-        <div class="mb-4">
-          <label for="middle_initial" class="block text-gray-700"
-            >Middle Initial</label
-          >
-          <input
-            type="text"
-            id="middle_initial"
-            name="middle_initial"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            maxlength="1"
-          />
-        </div>
-
-        <!-- Last Name -->
-        <div class="mb-4">
-          <label for="last_name" class="block text-gray-700">Last Name</label>
-          <input
-            type="text"
-            id="last_name"
-            name="last_name"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Contact Number -->
-        <div class="mb-4">
-          <label for="contact_number" class="block text-gray-700"
-            >Contact Number</label
-          >
-          <input
-            type="text"
-            id="contact_number"
-            name="contact_number"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Address / Clinic Address -->
-        <div class="mb-4">
-          <label for="address" id="addressLabel" class="block text-gray-700"
-            >Address</label
-          >
-          <input
-            type="text"
-            id="address"
-            name="address"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Email -->
-        <div class="mb-4">
-          <label for="email" class="block text-gray-700">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Password -->
-        <div class="mb-4">
-          <label for="password" class="block text-gray-700">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mb-4">
-          <label for="confirm_password" class="block text-gray-700"
-            >Confirm Password</label
-          >
-          <input
-            type="password"
-            id="confirm_password"
-            name="confirm_password"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
-            required
-          />
-        </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-red-600 transition duration-200"
-        >
+    <div class="container">
+      <div class="form-container">
+        <h2 class="text-2xl font-bold mb-6 text-center text-green-600">
           Register
-        </button>
-      </form>
-      <p class="mt-4 text-center">
-        Already have an account?
-        <a href="/login.html" class="text-green-600 hover:underline">Login</a>
-      </p>
+        </h2>
+        <form id="registerForm" method="POST">
+          <!-- Role Selection -->
+          <div class="form-grid">
+            <div class="mb-4">
+              <label for="role" class="block text-gray-700">Role</label>
+              <select
+                id="role"
+                name="role"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              >
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+              </select>
+            </div>
+            <!-- Specialization Selection (For Doctors) -->
+            <div id="specialization-container" class="mb-4 hidden">
+              <label for="specialization" class="block text-gray-700"
+                >Specialization</label
+              >
+              <select
+                id="specialization"
+                name="specialization[]"
+                multiple
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+              >
+                <option value="ENT">ENT</option>
+                <option value="Gynecology">Gynecology</option>
+                <option value="Obstetrics">Obstetrics</option>
+                <option value="Orthopedics">Orthopedics</option>
+              </select>
+            </div>
+            <!-- First Name -->
+            <div class="mb-4">
+              <label for="first_name" class="block text-gray-700"
+                >First Name</label
+              >
+              <input
+                type="text"
+                id="first_name"
+                name="first_name"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+            <!-- Middle Initial -->
+            <div class="mb-4">
+              <label for="middle_initial" class="block text-gray-700"
+                >Middle Initial</label
+              >
+              <input
+                type="text"
+                id="middle_initial"
+                name="middle_initial"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                maxlength="1"
+              />
+            </div>
+            <!-- Last Name -->
+            <div class="mb-4">
+              <label for="last_name" class="block text-gray-700"
+                >Last Name</label
+              >
+              <input
+                type="text"
+                id="last_name"
+                name="last_name"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+            <!-- Contact Number -->
+            <div class="mb-4">
+              <label for="contact_number" class="block text-gray-700"
+                >Contact Number</label
+              >
+              <input
+                type="text"
+                id="contact_number"
+                name="contact_number"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+            <!-- Address -->
+            <div class="mb-4 full-width">
+              <label for="address" id="addressLabel" class="block text-gray-700"
+                >Address</label
+              >
+              <input
+                type="text"
+                id="address"
+                name="address"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+            <!-- Email -->
+            <div class="mb-4">
+              <label for="email" class="block text-gray-700">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+            <!-- Gender -->
+            <div class="mb-4">
+              <label for="gender" class="block text-gray-700">Gender</label>
+              <select
+                id="gender"
+                name="gender"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <!-- Password -->
+            <div class="mb-4">
+              <label for="password" class="block text-gray-700">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+            <!-- Confirm Password -->
+            <div class="mb-4">
+              <label for="confirm_password" class="block text-gray-700"
+                >Confirm Password</label
+              >
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                required
+              />
+            </div>
+          </div>
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-red-600 transition duration-200"
+          >
+            Register
+          </button>
+        </form>
+        <p class="mt-4 text-center">
+          Already have an account?
+          <a href="/login.html" class="text-green-600 hover:underline">Login</a>
+        </p>
+      </div>
     </div>
 
     <script src="assets/js/main.js"></script>
     <script>
-      // Handle role-based label change for Address field
       document.getElementById("role").addEventListener("change", function () {
+        const specializationContainer = document.getElementById(
+          "specialization-container"
+        );
         const addressLabel = document.getElementById("addressLabel");
+
         if (this.value === "doctor") {
+          specializationContainer.classList.remove("hidden");
           addressLabel.textContent = "Clinic Address:";
         } else {
+          specializationContainer.classList.add("hidden");
           addressLabel.textContent = "Address:";
         }
       });
 
-      // Password confirmation check
       document
         .getElementById("registerForm")
         .addEventListener("submit", function (event) {

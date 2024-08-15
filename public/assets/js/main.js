@@ -26,7 +26,7 @@ function verifyDoctor(doctorId, action) {
       },
       body: JSON.stringify({
         action: action,
-        doctor_id: doctorId, // Correctly using doctorId here
+        doctor_id: doctorId,
       }),
     })
       .then((response) => response.json())
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.forEach((appointment) => {
               const option = document.createElement("option");
               option.value = appointment.appointment_id;
-              option.text = `Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}`; // Updated to use first_name and last_name
+              option.text = `Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}`;
               appointmentSelect.appendChild(option);
             });
 
@@ -288,6 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   <td class="border-b border-gray-200 px-4 py-2">${user.user_id}</td>
                   <td class="border-b border-gray-200 px-4 py-2">${user.name}</td> <!-- Updated to use first_name, middle_initial, and last_name -->
                   <td class="border-b border-gray-200 px-4 py-2">${user.email}</td>
+                  <td class="border-b border-gray-200 px-4 py-2">${user.gender}</td>
                   <td class="border-b border-gray-200 px-4 py-2">${user.role}</td>
                   <td class="border-b border-gray-200 px-4 py-2">
                     <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="deleteUser(${user.user_id})">Delete</button>
@@ -314,6 +315,8 @@ document.addEventListener("DOMContentLoaded", function () {
         role: formData.get("role"),
         contact_number: formData.get("contact_number"),
         address: formData.get("address"),
+        gender: formData.get("gender"),
+        specializations: formData.getAll("specialization_id[]"),
       };
 
       fetch("/api/register.php", {
@@ -443,18 +446,18 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!data.is_verified) {
               if (!data.documents_submitted) {
                 document.querySelector(".dashboard-content").innerHTML = `
-                                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
-                                        <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
-                                        <p class="mt-4 text-gray-700">Please <a href="upload_documents.php" class="text-green-600 hover:underline">submit your documents</a> for verification.</p>
-                                    </div>
-                                `;
+                  <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
+                    <p class="mt-4 text-gray-700">Please <a href="upload_documents.php" class="text-green-600 hover:underline">submit your documents</a> for verification.</p>
+                  </div>
+                `;
               } else {
                 document.querySelector(".dashboard-content").innerHTML = `
-                                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
-                                        <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
-                                        <p class="mt-4 text-gray-700">Your account is currently pending verification. You will be notified once your account has been verified.</p>
-                                    </div>
-                                `;
+                  <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
+                    <p class="mt-4 text-gray-700">Your account is currently pending verification. You will be notified once your account has been verified.</p>
+                  </div>
+                `;
               }
             } else {
               // Load doctor functionalities if verified

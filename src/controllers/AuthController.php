@@ -15,7 +15,7 @@ class AuthController
         $this->user = new User($db);
     }
 
-    public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role)
+    public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations = [])
     {
         $this->user->first_name = $first_name;
         $this->user->middle_initial = $middle_initial;
@@ -25,12 +25,13 @@ class AuthController
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;
+        $this->user->gender = $gender; // Handling the gender field
 
         if ($this->user->find_by_email()) {
             return ['status' => false, 'message' => 'User already exists'];
         }
 
-        if ($this->user->register()) {
+        if ($this->user->register($specializations)) {
             return ['status' => true, 'message' => 'User registered successfully'];
         }
 

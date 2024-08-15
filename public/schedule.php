@@ -60,14 +60,20 @@ $userInfo = $query->get_result()->fetch_assoc();
         </h1>
         <form id="scheduleForm" class="w-full">
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="doctor_id">Select Doctor</label>
-                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="doctor_id">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="service_id">Select Service</label>
+                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="service_id">
                     <!-- Populate this with options using JavaScript -->
                 </select>
             </div>
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="service_id">Select Service</label>
-                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="service_id">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization_id">Select Specialization</label>
+                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="specialization_id">
+                    <!-- Populate this with options using JavaScript -->
+                </select>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="doctor_id">Select Doctor</label>
+                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="doctor_id">
                     <!-- Populate this with options using JavaScript -->
                 </select>
             </div>
@@ -121,9 +127,20 @@ $userInfo = $query->get_result()->fetch_assoc();
                 });
             }
 
-            // Fetch Doctors
-            function fetchDoctors() {
-                fetch('/api/get_doctors.php')
+            // Fetch Specializations
+            function fetchSpecializations() {
+                fetch('/api/get_specializations.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const specializationSelect = document.getElementById('specialization_id');
+                        specializationSelect.innerHTML = data.map(spec => `<option value="${spec.id}">${spec.name}</option>`).join('');
+                    })
+                    .catch(error => console.error('Error fetching specializations:', error));
+            }
+
+            // Fetch Doctors based on specialization
+            function fetchDoctors(specializationId) {
+                fetch(`/api/get_doctors.php?specialization_id=${specializationId}`)
                     .then(response => response.json())
                     .then(data => {
                         const doctorSelect = document.getElementById('doctor_id');
@@ -144,10 +161,15 @@ $userInfo = $query->get_result()->fetch_assoc();
             }
 
             // Fetch availability and disable unavailable slots visually
+            const specializationSelect = document.getElementById('specialization_id');
             const doctorIdSelect = document.getElementById('doctor_id');
             const dateInput = document.getElementById('date');
             const timeInput = document.getElementById('time');
             const scheduleButton = document.querySelector('button[type="submit"]');
+
+            specializationSelect.addEventListener('change', function() {
+                fetchDoctors(this.value);
+            });
 
             doctorIdSelect.addEventListener('change', fetchDoctorAvailability);
 
@@ -257,8 +279,8 @@ $userInfo = $query->get_result()->fetch_assoc();
             });
 
             // Fetch initial data
-            // fetchDoctors();
-            // fetchServices();
+            fetchSpecializations();
+            fetchServices();
         });
     </script>
 </body>
