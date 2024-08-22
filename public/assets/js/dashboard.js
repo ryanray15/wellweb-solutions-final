@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       } else if (sessionData.role === "doctor") {
         loadDoctorDashboard(sessionData.user_id);
+      } else {
+        loadPatientDashboard();
       }
     }
   });
@@ -69,6 +71,37 @@ function loadDoctorDashboard(doctorId) {
 
   // Initialize and load the calendar for setting availability
   loadDoctorCalendar(doctorId);
+}
+
+// Function to load admin dashboard data
+function loadPatientDashboard() {
+  // Logic for dashboard interactions
+  const patient_id = sessionStorage.getItem("user_id"); // Get patient ID from session storage
+
+  // Fetch appointments and update the dashboard
+  if (patient_id) {
+    fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.length > 0) {
+          document.getElementById("rescheduleMessage").textContent =
+            "You have scheduled appointments.";
+          document.getElementById("cancelMessage").textContent =
+            "You have scheduled appointments.";
+
+          document
+            .getElementById("rescheduleButton")
+            .classList.remove("hidden");
+          document.getElementById("cancelButton").classList.remove("hidden");
+        } else {
+          document.getElementById("rescheduleMessage").textContent =
+            "No appointments scheduled.";
+          document.getElementById("cancelMessage").textContent =
+            "No appointments scheduled.";
+        }
+      })
+      .catch((error) => console.error("Error fetching appointments:", error));
+  }
 }
 
 // Function to initialize and load the FullCalendar component for doctors

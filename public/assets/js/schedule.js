@@ -1,18 +1,22 @@
+let selectedDoctorId = null; // This will store the selected doctor ID
+
 // Function to fetch and populate services
 function fetchServicesDropdown() {
   fetch("/api/get_services.php")
     .then((response) => response.json())
     .then((data) => {
       const serviceSelect = document.getElementById("service_id");
-      serviceSelect.innerHTML = '<optgroup label="Services"></optgroup>'; // Default option
+      serviceSelect.innerHTML = ""; // Clear any existing options
 
       if (data.length > 0) {
         data.forEach((service) => {
           const option = document.createElement("option");
-          option.value = service.id;
+          option.value = service.service_id; // Ensure the correct field is used here
           option.text = service.name;
           serviceSelect.appendChild(option);
         });
+
+        console.log("Service dropdown populated:", serviceSelect.innerHTML); // Debugging
       } else {
         serviceSelect.innerHTML =
           "<option value=''>No services available</option>";
@@ -90,8 +94,8 @@ function attachDoctorClickHandlers() {
   const doctorCards = document.querySelectorAll(".doctor-card");
   doctorCards.forEach((card) => {
     card.addEventListener("click", function () {
-      const doctorId = this.getAttribute("data-doctor-id");
-      showScheduler(doctorId);
+      selectedDoctorId = this.getAttribute("data-doctor-id");
+      showScheduler(selectedDoctorId);
     });
   });
 }
@@ -143,6 +147,7 @@ function disableUnavailableSlots(events) {
       end: event.end.split("T")[1],
     }));
 
+  // Check for full-day unavailability
   dateInput.addEventListener("change", function () {
     const selectedDate = this.value;
     if (unavailableDays.includes(selectedDate)) {
@@ -153,6 +158,7 @@ function disableUnavailableSlots(events) {
     }
   });
 
+  // Check for specific time unavailability
   timeInput.addEventListener("change", function () {
     const selectedDate = dateInput.value;
     const selectedTime = this.value;
@@ -171,14 +177,66 @@ function disableUnavailableSlots(events) {
   });
 }
 
+// Function to handle form submission and scheduling
+function handleScheduleAppointment(patientId) {
+  const scheduleButton = document.querySelector('button[type="submit"]');
+  scheduleButton.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const selectedDate = document.getElementById("date").value;
+    const selectedTime = document.getElementById("time").value;
+    const serviceId = document.getElementById("service_id").value;
+
+    console.log("Selected Service ID:", serviceId); // Debugging log for service_id
+
+    if (!selectedDate || !selectedTime || !selectedDoctorId || !serviceId) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    const requestData = {
+      patient_id: patientId, // Use the passed patient ID
+      doctor_id: selectedDoctorId, // Use the stored doctor ID
+      service_id: serviceId,
+      date: selectedDate,
+      time: selectedTime,
+    };
+
+    console.log("Request Data:", requestData); // Debugging line
+    fetch("/api/schedule_appointment.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        if (data.status) {
+          window.location.href = "/dashboard.php"; // Redirect on success
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  });
+}
+
 // Load the schedule page data when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
-  fetchServicesDropdown();
-  fetchSpecializationsDropdown();
+  checkUserSession().then((sessionData) => {
+    const patientId = sessionData.user_id;
 
-  const specializationSelect = document.getElementById("specialization_id");
-  specializationSelect.addEventListener("change", function () {
-    const specializationId = this.value;
-    fetchDoctors(specializationId);
+    // Proceed with page load after session check
+    fetchServicesDropdown();
+    fetchSpecializationsDropdown();
+
+    const specializationSelect = document.getElementById("specialization_id");
+    specializationSelect.addEventListener("change", function () {
+      const specializationId = this.value;
+      fetchDoctors(specializationId);
+    });
+
+    // Handle scheduling logic, passing the patientId
+    handleScheduleAppointment(patientId);
   });
 });
