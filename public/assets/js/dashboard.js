@@ -5,6 +5,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (sessionData.status && sessionData.user_id) {
       if (sessionData.role === "admin") {
         loadAdminDashboard();
+        loadSpecializations();
+
+        const addSpecializationForm = document.getElementById(
+          "addSpecializationForm"
+        );
+        if (addSpecializationForm) {
+          addSpecializationForm.addEventListener(
+            "submit",
+            handleAddSpecialization
+          );
+        }
       } else if (sessionData.role === "doctor") {
         loadDoctorDashboard(sessionData.user_id);
       }
@@ -150,6 +161,91 @@ function handleEventClick(info, doctorId, calendar) {
         }
       })
       .catch((error) => console.error("Error deleting event:", error));
+  }
+}
+
+// Function to load specializations and update the UI
+function loadSpecializations() {
+  fetch("/api/get_specializations.php")
+    .then((response) => response.json())
+    .then((data) => {
+      const specializationList = document.getElementById("specializationList");
+      specializationList.innerHTML = ""; // Clear the list
+
+      if (data.length > 0) {
+        data.forEach((spec) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = spec.name;
+          listItem.classList.add("mb-2", "flex", "justify-between");
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.classList.add(
+            "bg-red-500",
+            "hover:bg-red-600",
+            "text-white",
+            "font-bold",
+            "py-1",
+            "px-3",
+            "rounded"
+          );
+          deleteButton.addEventListener("click", function () {
+            deleteSpecialization(spec.id);
+          });
+
+          listItem.appendChild(deleteButton);
+          specializationList.appendChild(listItem);
+        });
+      } else {
+        specializationList.textContent = "No specializations found.";
+      }
+    })
+    .catch((error) => console.error("Error fetching specializations:", error));
+}
+
+// Function to handle adding a new specialization
+function handleAddSpecialization(event) {
+  event.preventDefault();
+
+  const specializationName =
+    document.getElementById("specializationName").value;
+
+  fetch("/api/admin_manage_specializations.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `name=${encodeURIComponent(specializationName)}`,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      alert(data.message);
+      if (data.status) {
+        loadSpecializations(); // Reload the list of specializations
+        document.getElementById("specializationName").value = ""; // Clear the input field
+      }
+    })
+    .catch((error) => console.error("Error adding specialization:", error));
+}
+
+// Function to delete a specialization
+function deleteSpecialization(id) {
+  if (confirm("Are you sure you want to delete this specialization?")) {
+    fetch("/api/admin_manage_specializations.php", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `id=${encodeURIComponent(id)}`,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        if (data.status) {
+          loadSpecializations();
+        }
+      })
+      .catch((error) => console.error("Error deleting specialization:", error));
   }
 }
 
