@@ -1,48 +1,86 @@
-// schedule.js
-
-// Function to fetch and populate doctors dropdown
-function fetchDoctorsDropdown() {
-  fetch("/api/get_doctors.php")
+// Function to fetch and populate services
+function fetchServicesDropdown() {
+  fetch("/api/get_services.php")
     .then((response) => response.json())
     .then((data) => {
-      const doctorSelect = document.getElementById("doctor_id");
-      data.forEach((doctor) => {
-        const option = document.createElement("option");
-        option.value = doctor.user_id;
-        option.text = `Dr. ${doctor.name}`;
-        doctorSelect.appendChild(option);
-      });
+      const serviceSelect = document.getElementById("service_id");
+      serviceSelect.innerHTML = '<optgroup label="Services"></optgroup>'; // Default option
+
+      if (data.length > 0) {
+        data.forEach((service) => {
+          const option = document.createElement("option");
+          option.value = service.id;
+          option.text = service.name;
+          serviceSelect.appendChild(option);
+        });
+      } else {
+        serviceSelect.innerHTML =
+          "<option value=''>No services available</option>";
+      }
     })
-    .catch((error) => console.error("Error fetching doctors:", error));
+    .catch((error) => console.error("Error fetching services:", error));
 }
 
-// Fetch Doctors based on specialization
+// Function to fetch and populate specializations
+function fetchSpecializationsDropdown() {
+  fetch("/api/get_specializations.php")
+    .then((response) => response.json())
+    .then((data) => {
+      const specializationSelect = document.getElementById("specialization_id");
+      specializationSelect.innerHTML =
+        '<optgroup label="Specializations"></optgroup>'; // Default option
+
+      if (data.length > 0) {
+        data.forEach((specialization) => {
+          const option = document.createElement("option");
+          option.value = specialization.id;
+          option.text = specialization.name;
+          specializationSelect.appendChild(option);
+        });
+      } else {
+        specializationSelect.innerHTML =
+          "<option value=''>No specializations available</option>";
+      }
+    })
+    .catch((error) => console.error("Error fetching specializations:", error));
+}
+
+// Function to fetch and populate doctors based on specialization
 function fetchDoctors(specializationId) {
   fetch(`/api/get_doctors.php?specialization_id=${specializationId}`)
     .then((response) => response.json())
     .then((data) => {
       const doctorsContainer = document.getElementById("doctorsContainer");
-      doctorsContainer.innerHTML = data
-        .map(
-          (doctor) => `
-                <div class="doctor-card p-4 border rounded-lg hover:bg-gray-100 cursor-pointer" data-doctor-id="${
-                  doctor.user_id
-                }">
-                    <img src="${
-                      doctor.image || "/path/to/default-icon.png"
-                    }" alt="Doctor Image" class="w-16 h-16 rounded-full mx-auto">
-                    <h3 class="text-center text-lg font-bold mt-2">${
-                      doctor.name
-                    }</h3>
-                    <p class="text-center text-gray-600">${
-                      doctor.specialization
-                    }</p>
-                    <p class="text-center text-gray-600">${doctor.address}</p>
-                </div>
-            `
-        )
-        .join("");
-      attachDoctorClickHandlers();
+      doctorsContainer.innerHTML = ""; // Clear the container first
+
+      if (data.length > 0) {
+        doctorsContainer.innerHTML = data
+          .map(
+            (doctor) => `
+                  <div class="doctor-card p-4 border rounded-lg hover:bg-gray-100 cursor-pointer" data-doctor-id="${
+                    doctor.user_id
+                  }">
+                      <img src="${
+                        doctor.image || "/path/to/default-icon.png"
+                      }" alt="Doctor Image" class="w-16 h-16 rounded-full mx-auto">
+                      <h3 class="text-center text-lg font-bold mt-2">${
+                        doctor.name
+                      }</h3>
+                      <p class="text-center text-gray-600">${
+                        doctor.specialization
+                      }</p>
+                      <p class="text-center text-gray-600">${doctor.address}</p>
+                  </div>
+              `
+          )
+          .join("");
+
+        doctorsContainer.classList.remove("hidden"); // Ensure the doctor grid is shown
+        attachDoctorClickHandlers(); // Re-attach click handlers to the new doctor cards
+      } else {
+        doctorsContainer.innerHTML =
+          "<p>No doctors available for this specialization.</p>";
+      }
     })
     .catch((error) => console.error("Error fetching doctors:", error));
 }
@@ -135,5 +173,12 @@ function disableUnavailableSlots(events) {
 
 // Load the schedule page data when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
-  if (document.getElementById("doctor_id")) fetchDoctorsDropdown();
+  fetchServicesDropdown();
+  fetchSpecializationsDropdown();
+
+  const specializationSelect = document.getElementById("specialization_id");
+  specializationSelect.addEventListener("change", function () {
+    const specializationId = this.value;
+    fetchDoctors(specializationId);
+  });
 });
