@@ -88,13 +88,6 @@ $userInfo = $query->get_result()->fetch_assoc();
     <script src="assets/js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
             const appointmentSelect = document.getElementById('appointment_id');
             let selectedDoctorId = null;
 
