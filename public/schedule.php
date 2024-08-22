@@ -144,7 +144,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                     .then(response => response.json())
                     .then(data => {
                         const doctorSelect = document.getElementById('doctor_id');
-                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.user_id}">${doctor.first_name} ${doctor.last_name}</option>`).join('');
+                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.user_id}">${doctor.name}</option>`).join('');
                     })
                     .catch(error => console.error('Error fetching doctors:', error));
             }
@@ -280,7 +280,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 
             // Fetch initial data
             fetchSpecializations();
-            fetchServices();
+            // fetchServices();
         });
     </script>
 </body>
