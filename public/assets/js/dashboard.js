@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else if (sessionData.role === "doctor") {
         loadDoctorDashboard(sessionData.user_id);
       } else {
-        loadPatientDashboard();
+        loadPatientDashboard(sessionData.user_id);
       }
     }
   });
@@ -74,9 +74,8 @@ function loadDoctorDashboard(doctorId) {
 }
 
 // Function to load admin dashboard data
-function loadPatientDashboard() {
+function loadPatientDashboard(patient_id) {
   // Logic for dashboard interactions
-  const patient_id = sessionStorage.getItem("user_id"); // Get patient ID from session storage
 
   // Fetch appointments and update the dashboard
   if (patient_id) {
