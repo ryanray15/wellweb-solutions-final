@@ -21,7 +21,7 @@ class Appointment
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, time, status) VALUES (?, ?, ?, ?, ?, 'scheduled')";
+        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, time, status) VALUES (?, ?, ?, ?, ?, 'pending')";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("iiiss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->time);
         error_log("Executing query: " . $stmt->get_result()); // Add this line to log the query
@@ -38,7 +38,7 @@ class Appointment
 
     public function cancel()
     {
-        $query = "UPDATE " . $this->table . " SET status = 'cancelled' WHERE appointment_id = ?";
+        $query = "UPDATE " . $this->table . " SET status = 'canceled' WHERE appointment_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $this->appointment_id);
         return $stmt->execute();

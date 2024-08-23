@@ -70,7 +70,9 @@ $userInfo = $query->get_result()->fetch_assoc();
             </button>
         </form>
     </div>
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/cancel.js"></script>
 </body>
 
 </html>

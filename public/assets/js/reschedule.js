@@ -12,6 +12,7 @@ const RescheduleModule = (() => {
           // Load appointments and set up event listeners
           loadAppointments(appointmentSelect, sessionData.user_id);
           setupAppointmentChangeListener(appointmentSelect);
+          handleRescheduleAppointment(sessionData.user_id);
         } else {
           console.error("User session is invalid.");
         }
@@ -28,8 +29,8 @@ const RescheduleModule = (() => {
           .map(
             (appointment) =>
               `<option value="${appointment.appointment_id}" data-doctor-id="${appointment.doctor_id}">
-                        Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}
-                    </option>`
+                                Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}
+                            </option>`
           )
           .join("");
 
@@ -52,6 +53,52 @@ const RescheduleModule = (() => {
       } else {
         console.error("Doctor ID not found.");
       }
+    });
+  };
+
+  // Handle form submission and rescheduling
+  const handleRescheduleAppointment = (patientId) => {
+    const rescheduleButton = document.querySelector('button[type="submit"]');
+    rescheduleButton.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const selectedAppointmentId =
+        document.getElementById("appointment_id").value;
+      const selectedDate = document.getElementById("date").value;
+      const selectedTime = document.getElementById("time").value;
+
+      if (
+        !selectedAppointmentId ||
+        !selectedDate ||
+        !selectedTime ||
+        !selectedDoctorId
+      ) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      const requestData = {
+        appointment_id: selectedAppointmentId, // Use the selected appointment ID
+        doctor_id: selectedDoctorId, // Use the stored doctor ID
+        date: selectedDate,
+        time: selectedTime,
+      };
+
+      fetch("/api/reschedule_appointment.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          alert(data.message);
+          if (data.status) {
+            window.location.href = "/dashboard.php"; // Redirect on success
+          }
+        })
+        .catch((error) => console.error("Error:", error));
     });
   };
 
