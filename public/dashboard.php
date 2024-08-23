@@ -203,6 +203,29 @@ if ($user_role === 'admin') {
                 </div>
             </div>
 
+            <!-- Manage Specializations Section -->
+            <div id="manageSpecializationsSection" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Manage Specializations</h2>
+                <form id="addSpecializationForm">
+                    <input
+                        type="text"
+                        id="specializationName"
+                        name="specializationName"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+                        placeholder="Enter specialization name"
+                        required />
+                    <button
+                        type="submit"
+                        class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-200">
+                        Add Specialization
+                    </button>
+                </form>
+                <h3 class="text-xl font-bold mt-8 mb-4 text-green-700">Existing Specializations</h3>
+                <ul id="specializationList">
+                    <!-- Specializations will be loaded here dynamically -->
+                </ul>
+            </div>
+
             <!-- Manage Users Section -->
             <div id="manageUsersSection" class="mb-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-green-700">Manage Users</h2>
@@ -292,206 +315,9 @@ if ($user_role === 'admin') {
 
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    <script src="assets/js/main.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Profile Dropdown
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            // Logout functionality
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    fetch('/api/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                // Clear client-side session data
-                                sessionStorage.removeItem('user_id');
-                                sessionStorage.removeItem('role');
-                                // Redirect to index.php or login.html
-                                window.location.href = '/index.php';
-                            } else {
-                                alert('Failed to log out. Please try again.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-            }
-
-            // Handle Appointment Actions using AJAX
-            window.handleAppointmentAction = function(appointmentId, action) {
-                let endpoint;
-                let requestData = {
-                    appointment_id: appointmentId
-                };
-
-                if (action === 'accept') {
-                    endpoint = '/api/doctor_accept_appointment.php';
-                } else if (action === 'reschedule') {
-                    let newDate = prompt('Enter the new date (YYYY-MM-DD):');
-                    let newTime = prompt('Enter the new time (HH:MM:SS):');
-                    if (!newDate || !newTime) {
-                        alert('Invalid input. Please enter both date and time.');
-                        return;
-                    }
-                    requestData.new_date = newDate;
-                    requestData.new_time = newTime;
-                    endpoint = '/api/doctor_reschedule_appointment.php';
-                } else if (action === 'cancel') {
-                    endpoint = '/api/doctor_cancel_appointment.php';
-                }
-
-                console.log("Sending request to:", endpoint, "with data:", requestData); // Debugging log
-
-                fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Response received:", data); // Debugging log
-                        alert(data.message);
-                        if (data.status) {
-                            // Optionally refresh the page or refetch appointments
-                            window.location.reload();
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            };
-
-            // Initialize FullCalendar
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
-                selectable: true,
-                timeZone: 'Asia/Manila', // Use local time zone
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: {
-                    url: '/api/get_doctor_availability.php?doctor_id=<?php echo $user_id; ?>', // Endpoint to fetch availability
-                    method: 'GET',
-                    failure: function() {
-                        alert('There was an error while fetching availability!');
-                    }
-                },
-                select: function(info) {
-                    handleSelectEvent(info);
-                },
-                eventClick: function(info) {
-                    handleEventClick(info);
-                }
-            });
-
-            calendar.render();
-
-            // Handle the selection of time/date range
-            function handleSelectEvent(info) {
-                let status = prompt("Enter 'Available' or 'Not Available'");
-                if (status) {
-                    // Determine if the selection is a day range or time range
-                    if (info.allDay || info.view.type === 'dayGridMonth') {
-                        // Handle full day range
-                        fetch('/api/set_doctor_availability_day_range.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}&allDay=1`
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.message);
-                                if (data.status) {
-                                    calendar.refetchEvents();
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    } else {
-                        // Handle specific time range
-                        fetch('/api/set_doctor_availability_time_range.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: `date=${info.startStr.split('T')[0]}&start_time=${info.startStr.split('T')[1]}&end_time=${info.endStr.split('T')[1]}&status=${status}`
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.message);
-                                if (data.status) {
-                                    calendar.refetchEvents();
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    }
-                }
-            }
-
-            // Handle click on an existing event
-            function handleEventClick(info) {
-                if (confirm('Do you want to delete this schedule?')) {
-                    fetch('/api/delete_doctor_availability.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                id: info.event.id
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            alert(data.message);
-                            if (data.status) {
-                                info.event.remove(); // Remove event from calendar view
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-            }
-
-            // Fetch appointments and update the dashboard
-            const patient_id = <?php echo json_encode($user_id); ?>; // Get patient ID from PHP session
-
-            // Fetch appointments for patients
-            if ('<?php echo $user_role; ?>' === 'patient') {
-                fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.length > 0) {
-                            document.getElementById('rescheduleMessage').textContent = 'You have scheduled appointments.';
-                            document.getElementById('cancelMessage').textContent = 'You have scheduled appointments.';
-
-                            document.getElementById('rescheduleButton').classList.remove('hidden');
-                            document.getElementById('cancelButton').classList.remove('hidden');
-                        } else {
-                            // If no appointments, display schedule button
-                            document.getElementById('rescheduleMessage').textContent = 'No appointments scheduled.';
-                            document.getElementById('cancelMessage').textContent = 'No appointments scheduled.';
-                        }
-                    })
-                    .catch(error => console.error('Error fetching appointments:', error));
-            }
-        });
-    </script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/dashboard.js"></script>
 </body>
 
 </html>

@@ -30,6 +30,11 @@ $userInfo = $query->get_result()->fetch_assoc();
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <style>
+        .doctor-card {
+            transition: border-color 0.2s;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
@@ -42,7 +47,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">
-                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
+                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -59,208 +64,66 @@ $userInfo = $query->get_result()->fetch_assoc();
             Schedule Appointment
         </h1>
         <form id="scheduleForm" class="w-full">
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="doctor_id">Select Doctor</label>
-                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="doctor_id">
-                    <!-- Populate this with options using JavaScript -->
-                </select>
-            </div>
-            <div class="mb-6">
+            <!-- Step 1: Select Service -->
+            <div class="step" id="step-1">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="service_id">Select Service</label>
                 <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="service_id">
                     <!-- Populate this with options using JavaScript -->
                 </select>
             </div>
-            <div class="flex justify-between mb-6">
-                <div class="w-full mr-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
-                    <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="date" type="date" />
-                </div>
-                <div class="w-full ml-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="time">Choose Time</label>
-                    <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="time" type="time" />
+
+            <!-- Step 2: Select Specialization -->
+            <div class="step" id="step-2" style="display:none;">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization_id">Select Specialization</label>
+                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="specialization_id">
+                    <!-- Populate this with options using JavaScript -->
+                </select>
+            </div>
+
+            <!-- Step 3: Select Doctor -->
+            <div class="step" id="step-3" style="display:none;">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="doctor_id">Select Doctor</label>
+                <div id="doctorGridContainer">
+                    <div id="doctorsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Doctor grid will be populated dynamically -->
+                    </div>
                 </div>
             </div>
-            <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
-                Schedule Appointment
-            </button>
+
+            <!-- Step 4: Schedule Appointment -->
+            <div class="step" id="step-4" style="display:none;">
+                <div id="appointmentScheduler">
+                    <div class="flex justify-between mb-6">
+                        <div class="w-full mr-2">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
+                            <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="date" type="date" />
+                        </div>
+                        <div class="w-full ml-2">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="time">Choose Time</label>
+                            <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="time" type="time" />
+                        </div>
+                    </div>
+                    <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
+                        Schedule Appointment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8">
+                <button type="button" id="prevBtn" class="bg-red-600 text-white py-2 px-4 rounded-lg" onclick="nextPrev(-1)" style="display:none;">Back</button>
+                <button type="button" id="nextBtn" class="bg-green-600 text-white py-2 px-4 rounded-lg" onclick="nextPrev(1)">Next</button>
+            </div>
         </form>
-        <div id="calendar"></div> <!-- Add Calendar to Show Availability -->
+        <div id="calendar" class="mt-8"></div> <!-- Calendar for availability -->
     </div>
+
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    <script src="assets/js/main.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    fetch('/api/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                sessionStorage.removeItem('user_id');
-                                sessionStorage.removeItem('role');
-                                window.location.href = '/index.php';
-                            } else {
-                                alert('Failed to log out. Please try again.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-            }
-
-            // Fetch Doctors
-            function fetchDoctors() {
-                fetch('/api/get_doctors.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const doctorSelect = document.getElementById('doctor_id');
-                        doctorSelect.innerHTML = data.map(doctor => `<option value="${doctor.user_id}">${doctor.first_name} ${doctor.last_name}</option>`).join('');
-                    })
-                    .catch(error => console.error('Error fetching doctors:', error));
-            }
-
-            // Fetch Services
-            function fetchServices() {
-                fetch('/api/get_services.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const serviceSelect = document.getElementById('service_id');
-                        serviceSelect.innerHTML = data.map(service => `<option value="${service.id}">${service.name}</option>`).join('');
-                    })
-                    .catch(error => console.error('Error fetching services:', error));
-            }
-
-            // Fetch availability and disable unavailable slots visually
-            const doctorIdSelect = document.getElementById('doctor_id');
-            const dateInput = document.getElementById('date');
-            const timeInput = document.getElementById('time');
-            const scheduleButton = document.querySelector('button[type="submit"]');
-
-            doctorIdSelect.addEventListener('change', fetchDoctorAvailability);
-
-            function fetchDoctorAvailability() {
-                const doctorId = doctorIdSelect.value;
-                if (!doctorId) return;
-
-                fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
-                    .then(response => response.json())
-                    .then(events => {
-                        displayAvailability(events);
-                        disableUnavailableSlots(events);
-                    })
-                    .catch(error => console.error('Error fetching availability:', error));
-            }
-
-            function disableUnavailableSlots(events) {
-                const unavailableDays = events.filter(event => event.allDay && event.title === 'Not Available').map(event => event.start.split('T')[0]);
-                const unavailableTimes = events.filter(event => !event.allDay && event.title === 'Not Available').map(event => ({
-                    date: event.start.split('T')[0],
-                    start: event.start.split('T')[1],
-                    end: event.end.split('T')[1]
-                }));
-
-                // Check for full-day unavailability
-                dateInput.addEventListener('change', function() {
-                    const selectedDate = this.value;
-                    if (unavailableDays.includes(selectedDate)) {
-                        alert('This date is unavailable for any appointments. Please choose another date.');
-                        this.value = '';
-                    }
-                });
-
-                // Check for specific time unavailability
-                timeInput.addEventListener('change', function() {
-                    const selectedDate = dateInput.value;
-                    const selectedTime = this.value;
-
-                    const isUnavailable = unavailableTimes.some(unavailable =>
-                        unavailable.date === selectedDate &&
-                        unavailable.start <= selectedTime &&
-                        unavailable.end > selectedTime
-                    );
-
-                    if (isUnavailable) {
-                        alert('This time slot is unavailable. Please choose another time.');
-                        this.value = '';
-                    }
-                });
-            }
-
-            // Function to display availability on FullCalendar
-            function displayAvailability(events) {
-                const calendarEl = document.getElementById('calendar');
-                const calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek',
-                    events: events, // Load events to display
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    eventColor: 'green',
-                    eventTextColor: 'white'
-                });
-
-                calendar.render();
-            }
-
-            // Form submission
-            scheduleButton.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                const selectedDate = dateInput.value;
-                const selectedTime = timeInput.value;
-                const doctorId = doctorIdSelect.value;
-                const serviceId = document.getElementById('service_id').value;
-
-                if (!selectedDate || !selectedTime || !doctorId || !serviceId) {
-                    alert('Please fill in all fields');
-                    return;
-                }
-
-                const requestData = {
-                    patient_id: <?php echo json_encode($user_id); ?>,
-                    doctor_id: doctorId,
-                    service_id: serviceId,
-                    date: selectedDate,
-                    time: selectedTime,
-                };
-
-                fetch('/api/schedule_appointment.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if (data.status) {
-                            window.location.href = '/dashboard.php'; // Redirect on success
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-
-            // Fetch initial data
-            // fetchDoctors();
-            // fetchServices();
-        });
-    </script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/schedule.js"></script>
+    <script src="assets/js/multistep.js"></script> <!-- Add this for multi-step functionality -->
 </body>
 
 </html>

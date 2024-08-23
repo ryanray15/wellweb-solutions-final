@@ -70,44 +70,9 @@ $userInfo = $query->get_result()->fetch_assoc();
             </button>
         </form>
     </div>
-    <script src="assets/js/main.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Profile Dropdown
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            // Logout functionality
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    fetch('/api/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                // Clear client-side session data
-                                sessionStorage.removeItem('user_id');
-                                sessionStorage.removeItem('role');
-                                // Redirect to index.php or login.html
-                                window.location.href = '/index.php';
-                            } else {
-                                alert('Failed to log out. Please try again.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-            }
-        });
-    </script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/cancel.js"></script>
 </body>
 
 </html>

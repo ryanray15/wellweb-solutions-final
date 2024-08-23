@@ -13,10 +13,22 @@ $db = include '../config/database.php';
 
 // Fetch user information
 $user_id = $_SESSION['user_id'];
-$query = $db->prepare("SELECT first_name, middle_initial, last_name, email, contact_number, address FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email, contact_number, address, gender FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
+
+// Fetch specializations if the user is a doctor
+$specializations = [];
+if ($_SESSION['role'] === 'doctor') {
+    $specQuery = $db->prepare("SELECT specialization_id FROM doctor_specializations WHERE doctor_id = ?");
+    $specQuery->bind_param("i", $user_id);
+    $specQuery->execute();
+    $result = $specQuery->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $specializations[] = $row['specialization_id'];
+    }
+}
 
 // Handle form submission for profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -26,12 +38,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
     $contact_number = $_POST['contact_number'] ?? '';
     $address = $_POST['address'] ?? '';
+    $gender = $_POST['gender'] ?? ''; // Handle gender input
+    $new_specializations = $_POST['specialization_id'] ?? [];
 
     // Prepare and bind update statement
-    $updateQuery = $db->prepare("UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, contact_number = ?, address = ? WHERE user_id = ?");
-    $updateQuery->bind_param("ssssssi", $first_name, $middle_initial, $last_name, $email, $contact_number, $address, $user_id);
+    $updateQuery = $db->prepare("UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, contact_number = ?, address = ?, gender = ? WHERE user_id = ?");
+    $updateQuery->bind_param("sssssssi", $first_name, $middle_initial, $last_name, $email, $contact_number, $address, $gender, $user_id);
 
     if ($updateQuery->execute()) {
+        // Update specializations if user is a doctor
+        if ($_SESSION['role'] === 'doctor') {
+            $deleteQuery = $db->prepare("DELETE FROM doctor_specializations WHERE doctor_id = ?");
+            $deleteQuery->bind_param("i", $user_id);
+            $deleteQuery->execute();
+
+            $insertQuery = $db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
+            foreach ($new_specializations as $spec_id) {
+                $insertQuery->bind_param("ii", $user_id, $spec_id);
+                $insertQuery->execute();
+            }
+        }
+
         $message = "Profile updated successfully!";
         // Refresh user info after update
         $query->execute();
@@ -110,50 +137,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address</label>
                 <input type="text" id="address" name="address" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
             </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="gender">Gender</label>
+                <select id="gender" name="gender" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" required>
+                    <option value="male" <?php echo $userInfo['gender'] === 'male' ? 'selected' : ''; ?>>Male</option>
+                    <option value="female" <?php echo $userInfo['gender'] === 'female' ? 'selected' : ''; ?>>Female</option>
+                    <option value="other" <?php echo $userInfo['gender'] === 'other' ? 'selected' : ''; ?>>Other</option>
+                </select>
+            </div>
+
+            <?php if ($_SESSION['role'] === 'doctor') : ?>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization_id">Specializations</label>
+                    <select multiple id="specialization_id" name="specialization_id[]" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        <?php
+                        $specQuery = $db->query("SELECT id, name FROM specializations");
+                        while ($spec = $specQuery->fetch_assoc()) {
+                            $selected = in_array($spec['id'], $specializations) ? 'selected' : '';
+                            echo "<option value='" . $spec['id'] . "' $selected>" . htmlspecialchars($spec['name']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            <?php endif; ?>
+
             <button type="submit" class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
                 Update Profile
             </button>
         </form>
     </div>
 
-    <script src="assets/js/main.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Profile Dropdown
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            // Logout functionality
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    fetch('/api/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                // Clear client-side session data
-                                sessionStorage.removeItem('user_id');
-                                sessionStorage.removeItem('role');
-                                // Redirect to index.php or login.html
-                                window.location.href = '/index.php';
-                            } else {
-                                alert('Failed to log out. Please try again.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-            }
-        });
-    </script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
 </body>
 
 </html>

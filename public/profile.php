@@ -14,10 +14,22 @@ $user_role = $_SESSION['role'];
 // Fetch user information from the database
 require_once '../config/database.php';
 $db = include '../config/database.php';
-$query = $db->prepare("SELECT first_name, middle_initial, last_name, email, contact_number, address FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email, contact_number, address, gender FROM users WHERE user_id = ?");
 $query->bind_param("i", $user_id);
 $query->execute();
 $userInfo = $query->get_result()->fetch_assoc();
+
+// Fetch specializations if the user is a doctor
+$specializations = [];
+if ($user_role === 'doctor') {
+    $specQuery = $db->prepare("SELECT s.name FROM doctor_specializations ds JOIN specializations s ON ds.specialization_id = s.id WHERE ds.doctor_id = ?");
+    $specQuery->bind_param("i", $user_id);
+    $specQuery->execute();
+    $result = $specQuery->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $specializations[] = $row['name'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -63,49 +75,19 @@ $userInfo = $query->get_result()->fetch_assoc();
             <p class="text-gray-700 mb-3"><strong>Email:</strong> <?php echo htmlspecialchars($userInfo['email']); ?></p>
             <p class="text-gray-700 mb-3"><strong>Contact Number:</strong> <?php echo htmlspecialchars($userInfo['contact_number']); ?></p>
             <p class="text-gray-700 mb-3"><strong>Address:</strong> <?php echo htmlspecialchars($userInfo['address']); ?></p>
+            <p class="text-gray-700 mb-3"><strong>Gender:</strong> <?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p> <!-- Display gender -->
+
+            <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
+                <p class="text-gray-700 mb-3"><strong>Specializations:</strong> <?php echo implode(', ', $specializations); ?></p>
+            <?php endif; ?>
+
             <a href="edit_profile.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
             <a href="reset_password.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
         </div>
     </div>
 
-    <script src="assets/js/main.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Profile Dropdown
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            // Logout functionality
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    fetch('/api/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                // Clear client-side session data
-                                sessionStorage.removeItem('user_id');
-                                sessionStorage.removeItem('role');
-                                // Redirect to index.php or login.html
-                                window.location.href = '/index.php';
-                            } else {
-                                alert('Failed to log out. Please try again.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-            }
-        });
-    </script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
 </body>
 
 </html>

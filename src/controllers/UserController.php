@@ -14,7 +14,7 @@ class UserController
         $this->user = new User($db);
     }
 
-    public function create($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role)
+    public function create($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations = [])
     {
         $this->user->first_name = $first_name;
         $this->user->middle_initial = $middle_initial;
@@ -24,12 +24,13 @@ class UserController
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;
+        $this->user->gender = $gender; // Handling the gender field
 
         if ($this->user->find_by_email()) {
             return ['status' => false, 'message' => 'User already exists'];
         }
 
-        if ($this->user->register()) {
+        if ($this->user->register($specializations)) {
             return ['status' => true, 'message' => 'User created successfully'];
         }
 
@@ -47,7 +48,7 @@ class UserController
         return ['status' => false, 'message' => 'User not found'];
     }
 
-    public function update($user_id, $first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role)
+    public function update($user_id, $first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations = [])
     {
         $this->user->user_id = $user_id;
         $this->user->first_name = $first_name;
@@ -58,8 +59,9 @@ class UserController
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;
+        $this->user->gender = $gender; // Handling the gender field
 
-        if ($this->user->update()) {
+        if ($this->user->update($specializations)) {
             return ['status' => true, 'message' => 'User updated successfully'];
         }
 

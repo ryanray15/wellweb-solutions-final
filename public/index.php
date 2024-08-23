@@ -98,31 +98,8 @@ if ($loggedIn) {
         </div>
     </div>
 
-    <script src="assets/js/main.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Profile Dropdown
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            profileDropdown.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            // Logout functionality
-            const logoutButton = document.getElementById('logout');
-            logoutButton.addEventListener('click', () => {
-                fetch('/api/logout.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status) {
-                            window.location.href = '/index.php';
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        });
-    </script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
 </body>
 
 </html>
