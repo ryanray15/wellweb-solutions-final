@@ -92,6 +92,7 @@ function fetchDoctors(specializationId) {
 // Attach click handlers to doctor cards
 function attachDoctorClickHandlers() {
   const doctorCards = document.querySelectorAll(".doctor-card");
+
   doctorCards.forEach((card) => {
     card.addEventListener("click", function () {
       // Remove the highlight from all cards
