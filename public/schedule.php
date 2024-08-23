@@ -59,25 +59,32 @@ $userInfo = $query->get_result()->fetch_assoc();
             Schedule Appointment
         </h1>
         <form id="scheduleForm" class="w-full">
-            <div class="mb-6">
+            <!-- Step 1: Select Service -->
+            <div class="step" id="step-1">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="service_id">Select Service</label>
                 <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="service_id">
                     <!-- Populate this with options using JavaScript -->
                 </select>
             </div>
-            <div class="mb-6">
+
+            <!-- Step 2: Select Specialization -->
+            <div class="step" id="step-2" style="display:none;">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization_id">Select Specialization</label>
                 <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="specialization_id">
                     <!-- Populate this with options using JavaScript -->
                 </select>
             </div>
-            <div class="mb-6" id="doctorGridContainer">
+
+            <!-- Step 3: Select Doctor -->
+            <div class="step" id="step-3" style="display:none;">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="doctor_id">Select Doctor</label>
                 <div id="doctorsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <!-- Doctor grid will be populated dynamically -->
                 </div>
             </div>
-            <div id="appointmentScheduler" class="hidden">
+
+            <!-- Step 4: Schedule Appointment -->
+            <div class="step" id="step-4" style="display:none;">
                 <div class="flex justify-between mb-6">
                     <div class="w-full mr-2">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
@@ -92,8 +99,14 @@ $userInfo = $query->get_result()->fetch_assoc();
                     Schedule Appointment
                 </button>
             </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8">
+                <button type="button" id="prevBtn" class="bg-red-600 text-white py-2 px-4 rounded-lg" onclick="nextPrev(-1)" style="display:none;">Back</button>
+                <button type="button" id="nextBtn" class="bg-green-600 text-white py-2 px-4 rounded-lg" onclick="nextPrev(1)">Next</button>
+            </div>
         </form>
-        <div id="calendar"></div> <!-- Calendar for availability -->
+        <div id="calendar" class="mt-8"></div> <!-- Calendar for availability -->
     </div>
 
     <!-- JavaScript -->
@@ -101,6 +114,7 @@ $userInfo = $query->get_result()->fetch_assoc();
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>
     <script src="assets/js/schedule.js"></script>
+    <script src="assets/js/multistep.js"></script> <!-- Add this for multi-step functionality -->
 </body>
 
 </html>

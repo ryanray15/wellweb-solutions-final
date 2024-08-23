@@ -6,7 +6,7 @@ function fetchServicesDropdown() {
     .then((response) => response.json())
     .then((data) => {
       const serviceSelect = document.getElementById("service_id");
-      serviceSelect.innerHTML = ""; // Clear any existing options
+      serviceSelect.innerHTML = '<optgroup label="Services"></optgroup>'; // Default option
 
       if (data.length > 0) {
         data.forEach((service) => {
@@ -224,19 +224,28 @@ function handleScheduleAppointment(patientId) {
 // Load the schedule page data when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
   checkUserSession().then((sessionData) => {
-    const patientId = sessionData.user_id;
+    if (sessionData.status && sessionData.user_id) {
+      // Load services when the form is ready
+      fetchServicesDropdown();
 
-    // Proceed with page load after session check
-    fetchServicesDropdown();
-    fetchSpecializationsDropdown();
+      // Add event listener to load specializations when service is selected
+      document
+        .getElementById("service_id")
+        .addEventListener("change", function () {
+          const serviceId = this.value;
+          fetchSpecializationsDropdown(serviceId);
+        });
 
-    const specializationSelect = document.getElementById("specialization_id");
-    specializationSelect.addEventListener("change", function () {
-      const specializationId = this.value;
-      fetchDoctors(specializationId);
-    });
+      // Add event listener to load doctors when specialization is selected
+      document
+        .getElementById("specialization_id")
+        .addEventListener("change", function () {
+          const specializationId = this.value;
+          fetchDoctors(specializationId);
+        });
 
-    // Handle scheduling logic, passing the patientId
-    handleScheduleAppointment(patientId);
+      // Ensure form submission and scheduling logic still works
+      handleScheduleAppointment(sessionData.user_id);
+    }
   });
 });
