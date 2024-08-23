@@ -108,7 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
 </body>
 
 </html>
