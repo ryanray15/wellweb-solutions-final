@@ -30,6 +30,11 @@ $userInfo = $query->get_result()->fetch_assoc();
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <style>
+        .doctor-card {
+            transition: border-color 0.2s;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
@@ -78,26 +83,30 @@ $userInfo = $query->get_result()->fetch_assoc();
             <!-- Step 3: Select Doctor -->
             <div class="step" id="step-3" style="display:none;">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="doctor_id">Select Doctor</label>
-                <div id="doctorsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Doctor grid will be populated dynamically -->
+                <div id="doctorGridContainer">
+                    <div id="doctorsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Doctor grid will be populated dynamically -->
+                    </div>
                 </div>
             </div>
 
             <!-- Step 4: Schedule Appointment -->
             <div class="step" id="step-4" style="display:none;">
-                <div class="flex justify-between mb-6">
-                    <div class="w-full mr-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
-                        <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="date" type="date" />
+                <div id="appointmentScheduler">
+                    <div class="flex justify-between mb-6">
+                        <div class="w-full mr-2">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
+                            <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="date" type="date" />
+                        </div>
+                        <div class="w-full ml-2">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="time">Choose Time</label>
+                            <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="time" type="time" />
+                        </div>
                     </div>
-                    <div class="w-full ml-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="time">Choose Time</label>
-                        <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="time" type="time" />
-                    </div>
+                    <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
+                        Schedule Appointment
+                    </button>
                 </div>
-                <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
-                    Schedule Appointment
-                </button>
             </div>
 
             <!-- Navigation Buttons -->

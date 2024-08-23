@@ -15,20 +15,20 @@ function showStep(step) {
 
   if (step === steps.length - 1) {
     document.getElementById("nextBtn").innerHTML = "Submit";
+    loadCalendar(selectedDoctorId); // Load the calendar when on the final step
   } else {
     document.getElementById("nextBtn").innerHTML = "Next";
   }
 }
 
 function nextPrev(n) {
-  // This function will figure out which step to display
   const steps = document.getElementsByClassName("step");
 
   // Hide the current step:
   steps[currentStep].style.display = "none";
 
   // Increase or decrease the current step by 1:
-  currentStep = currentStep + n;
+  currentStep += n;
 
   // If you have reached the end of the form...
   if (currentStep >= steps.length) {
@@ -38,4 +38,9 @@ function nextPrev(n) {
 
   // Otherwise, display the correct step:
   showStep(currentStep);
+
+  // If moving back and the calendar was loaded, clear it
+  if (n < 0 && currentStep < steps.length - 1) {
+    document.getElementById("calendar").innerHTML = "";
+  }
 }

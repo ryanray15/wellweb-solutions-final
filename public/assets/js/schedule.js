@@ -26,8 +26,8 @@ function fetchServicesDropdown() {
 }
 
 // Function to fetch and populate specializations
-function fetchSpecializationsDropdown() {
-  fetch("/api/get_specializations.php")
+function fetchSpecializationsDropdown(serviceId) {
+  fetch(`/api/get_specializations.php?service_id=${serviceId}`)
     .then((response) => response.json())
     .then((data) => {
       const specializationSelect = document.getElementById("specialization_id");
@@ -80,7 +80,7 @@ function fetchDoctors(specializationId) {
           .join("");
 
         doctorsContainer.classList.remove("hidden"); // Ensure the doctor grid is shown
-        attachDoctorClickHandlers(); // Re-attach click handlers to the new doctor cards
+        attachDoctorClickHandlers(); // Attach click handlers to the new doctor cards
       } else {
         doctorsContainer.innerHTML =
           "<p>No doctors available for this specialization.</p>";
@@ -94,23 +94,28 @@ function attachDoctorClickHandlers() {
   const doctorCards = document.querySelectorAll(".doctor-card");
   doctorCards.forEach((card) => {
     card.addEventListener("click", function () {
+      // Remove the highlight from all cards
+      doctorCards.forEach((c) => c.classList.remove("border-green-500"));
+
+      // Highlight the selected card
+      this.classList.add("border-green-500");
+
+      // Store the selected doctor ID
       selectedDoctorId = this.getAttribute("data-doctor-id");
-      showScheduler(selectedDoctorId);
+
+      // Debugging: Check if the doctor ID is being correctly captured
+      console.log("Selected Doctor ID:", selectedDoctorId);
     });
   });
 }
 
-// Show Calendar and Appointment Scheduler
-function showScheduler(doctorId) {
-  const doctorGridContainer = document.getElementById("doctorGridContainer");
-  const appointmentScheduler = document.getElementById("appointmentScheduler");
-  doctorGridContainer.classList.add("hidden");
-  appointmentScheduler.classList.remove("hidden");
-  loadCalendar(doctorId);
-}
-
-// Load Calendar
+// Load Calendar (called from multistep.js when moving to the final step)
 function loadCalendar(doctorId) {
+  if (!doctorId) {
+    console.error("Doctor ID is not selected.");
+    return;
+  }
+
   fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
     .then((response) => response.json())
     .then((events) => {
@@ -243,9 +248,6 @@ document.addEventListener("DOMContentLoaded", function () {
           const specializationId = this.value;
           fetchDoctors(specializationId);
         });
-
-      // Ensure form submission and scheduling logic still works
-      handleScheduleAppointment(sessionData.user_id);
     }
   });
 });
