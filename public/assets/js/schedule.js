@@ -187,7 +187,7 @@ function disableUnavailableSlots(events) {
 function handleScheduleAppointment(patientId) {
   const scheduleButton = document.querySelector('button[type="submit"]');
   scheduleButton.addEventListener("click", function (e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the form from submitting immediately
 
     const selectedDate = document.getElementById("date").value;
     const selectedTime = document.getElementById("time").value;
@@ -227,7 +227,7 @@ function handleScheduleAppointment(patientId) {
   });
 }
 
-// Load the schedule page data when DOM is ready
+// Ensure the form submission and scheduling logic still works
 document.addEventListener("DOMContentLoaded", function () {
   checkUserSession().then((sessionData) => {
     if (sessionData.status && sessionData.user_id) {
@@ -249,6 +249,9 @@ document.addEventListener("DOMContentLoaded", function () {
           const specializationId = this.value;
           fetchDoctors(specializationId);
         });
+
+      // Attach the schedule button functionality
+      handleScheduleAppointment(sessionData.user_id);
     }
   });
 });
