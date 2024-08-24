@@ -71,7 +71,48 @@ function loadDoctorDashboard(doctorId) {
 
   // Initialize and load the calendar for setting availability
   loadDoctorCalendar(doctorId);
+
+  // // Set up event listeners for consultation type and duration change
+  // document
+  //   .getElementById("consultation_type")
+  //   .addEventListener("change", function () {
+  //     savePreferences();
+  //   });
+
+  // document
+  //   .getElementById("consultation_duration")
+  //   .addEventListener("change", function () {
+  //     savePreferences();
+  //   });
 }
+
+// // Function to save the doctor's preferences for consultation type and duration
+// function savePreferences() {
+//   const consultationType = document.getElementById("consultation_type").value;
+//   const consultationDuration = document.getElementById(
+//     "consultation_duration"
+//   ).value;
+
+//   fetch("/api/update_doctor_preferences.php", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       consultation_type: consultationType,
+//       consultation_duration: consultationDuration,
+//     }),
+//   })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       if (data.status) {
+//         alert("Preferences updated successfully");
+//       } else {
+//         alert("Failed to update preferences");
+//       }
+//     })
+//     .catch((error) => console.error("Error:", error));
+// }
 
 // Function to load admin dashboard data
 function loadPatientDashboard(patient_id) {

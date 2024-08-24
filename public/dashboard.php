@@ -126,6 +126,7 @@ if ($user_role === 'admin') {
                 <h1 class="text-3xl font-bold text-green-600 mb-8">Doctor Dashboard</h1>
                 <!-- Include full dashboard functionalities for doctors here -->
 
+                <!-- Doctor Dashboard -->
                 <!-- Display Appointments -->
                 <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
@@ -172,8 +173,29 @@ if ($user_role === 'admin') {
                 <!-- Doctor Availability -->
                 <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-green-700">Set Your Availability</h2>
+
+                    <!-- New Section for Consultation Type and Duration -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_type">Consultation Type</label>
+                            <select id="consultation_type" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                <option value="online">Online Consultation</option>
+                                <option value="physical">Physical Consultation</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                        <div class="w-full ml-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
+                            <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                <option value="30">30 Minutes</option>
+                                <option value="60">1 Hour</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div id="calendar"></div>
                 </div>
+
             <?php endif; ?>
         <?php endif; ?>
 

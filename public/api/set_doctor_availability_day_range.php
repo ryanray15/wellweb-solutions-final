@@ -9,6 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $start_date = $_POST['start_date'] ?? null;
     $end_date = $_POST['end_date'] ?? null;
     $status = $_POST['status'] ?? 'Available';
+    $consultation_type = $_POST['consultation_type'] ?? 'both';
+    $consultation_duration = $_POST['consultation_duration'] ?? 30;
 
     try {
         if ($start_date && $end_date) {
@@ -18,15 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Modify end date for accurate range (exclusive of end)
             $end->modify('-1 day');
 
-            // Correct loop logic to prevent off-by-one error
             while ($start <= $end) {
                 $date = $start->format('Y-m-d');
                 $query = $db->prepare("
-                    INSERT INTO doctor_availability (doctor_id, date, status)
-                    VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE status = VALUES(status)
+                    INSERT INTO doctor_availability (doctor_id, date, status, consultation_type, consultation_duration)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE status = VALUES(status), consultation_type = VALUES(consultation_type), consultation_duration = VALUES(consultation_duration)
                 ");
-                $query->bind_param("iss", $doctor_id, $date, $status);
+                $query->bind_param("isssi", $doctor_id, $date, $status, $consultation_type, $consultation_duration);
                 $query->execute();
 
                 $start->modify('+1 day');

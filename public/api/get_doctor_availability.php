@@ -10,7 +10,10 @@ $doctor_id = $_GET['doctor_id'] ?? null;
 if ($doctor_id) {
     // Fetch availability for the selected doctor
     $query = $db->prepare("
-        SELECT availability_id AS id, date, start_time, end_time, status 
+        SELECT availability_id AS id, date, start_time, end_time, status,
+               MIN(start_time) OVER() AS min_start_time,
+               MAX(end_time) OVER() AS max_end_time,
+               MAX(consultation_duration) OVER() AS consultation_duration
         FROM doctor_availability 
         WHERE doctor_id = ?
     ");
@@ -19,6 +22,10 @@ if ($doctor_id) {
     $result = $query->get_result();
 
     $events = [];
+    $minStartTime = null;
+    $maxEndTime = null;
+    $consultationDuration = null;
+
     while ($row = $result->fetch_assoc()) {
         $event = [
             'id' => $row['id'],
@@ -30,9 +37,19 @@ if ($doctor_id) {
             'textColor' => 'white'
         ];
         $events[] = $event;
+
+        // Capture the overall start and end time, and consultation duration
+        $minStartTime = $row['min_start_time'];
+        $maxEndTime = $row['max_end_time'];
+        $consultationDuration = $row['consultation_duration'];
     }
 
-    echo json_encode($events);
+    echo json_encode([
+        'events' => $events,
+        'start_time' => $minStartTime,
+        'end_time' => $maxEndTime,
+        'consultation_duration' => $consultationDuration
+    ]);
 } else {
     echo json_encode([]);
 }
