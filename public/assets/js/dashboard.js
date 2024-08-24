@@ -174,6 +174,7 @@ function loadDoctorCalendar(doctorId) {
     });
 
     calendar.render();
+    calendar.refetchEvents();
   } else {
     console.error("Calendar element not found");
   }
@@ -195,6 +196,8 @@ function handleSelectEvent(info, doctorId, calendar) {
       ? "/api/set_doctor_availability_day_range.php"
       : "/api/set_doctor_availability_time_range.php";
 
+    console.log("Submitting availability update:", body); // Debugging line
+
     fetch(url, {
       method: "POST",
       headers: {
@@ -204,13 +207,16 @@ function handleSelectEvent(info, doctorId, calendar) {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("API Response:", data); // Debugging line
         alert(data.message);
         if (data.status) {
           // Dynamically refetch and update the calendar with new events
           calendar.refetchEvents();
         }
       })
-      .catch((error) => console.error("Error updating availability:", error));
+      .catch((error) => {
+        console.error("Error updating availability:", error);
+      });
   }
 }
 

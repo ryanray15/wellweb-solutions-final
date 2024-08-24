@@ -44,12 +44,7 @@ if ($doctor_id) {
         $consultationDuration = $row['consultation_duration'];
     }
 
-    echo json_encode([
-        'events' => $events,
-        'start_time' => $minStartTime,
-        'end_time' => $maxEndTime,
-        'consultation_duration' => $consultationDuration
-    ]);
+    echo json_encode($events);
 } else {
     echo json_encode([]);
 }
