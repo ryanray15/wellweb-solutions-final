@@ -45,74 +45,27 @@ function loadAdminDashboard() {
 
 // Function to load doctor dashboard data
 function loadDoctorDashboard(doctorId) {
-  // Fetch and display appointments
-  fetch(`/api/get_doctor_appointments.php?doctor_id=${doctorId}`)
-    .then((response) => response.json())
-    .then((appointments) => {
-      const appointmentContainer = document.getElementById(
-        "appointmentContainer"
-      );
-      if (appointments.length > 0) {
-        // Render appointment details
-        appointmentContainer.innerHTML = appointments
-          .map(
-            (app) => `
-          <div class="appointment-item">
-            <p>${app.patient_name} - ${app.date} ${app.time}</p>
-          </div>
-        `
-          )
-          .join("");
-      } else {
-        appointmentContainer.innerHTML = "<p>No appointments available.</p>";
-      }
-    })
-    .catch((error) => console.error("Error fetching appointments:", error));
-
-  // Initialize and load the calendar for setting availability
+  // Initialize and load the calendar for displaying availability
   loadDoctorCalendar(doctorId);
 
-  // // Set up event listeners for consultation type and duration change
-  // document
-  //   .getElementById("consultation_type")
-  //   .addEventListener("change", function () {
-  //     savePreferences();
-  //   });
+  // Add event listener for "Set Availability" button
+  document
+    .getElementById("set_availability")
+    .addEventListener("click", function () {
+      saveAvailability(doctorId);
+    });
 
-  // document
-  //   .getElementById("consultation_duration")
-  //   .addEventListener("change", function () {
-  //     savePreferences();
-  //   });
+  // Add event listener for "Business Hours" checkbox
+  document
+    .getElementById("business_hours")
+    .addEventListener("change", function () {
+      if (this.checked) {
+        setBusinessHours();
+      } else {
+        clearTimeInputs();
+      }
+    });
 }
-
-// // Function to save the doctor's preferences for consultation type and duration
-// function savePreferences() {
-//   const consultationType = document.getElementById("consultation_type").value;
-//   const consultationDuration = document.getElementById(
-//     "consultation_duration"
-//   ).value;
-
-//   fetch("/api/update_doctor_preferences.php", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       consultation_type: consultationType,
-//       consultation_duration: consultationDuration,
-//     }),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       if (data.status) {
-//         alert("Preferences updated successfully");
-//       } else {
-//         alert("Failed to update preferences");
-//       }
-//     })
-//     .catch((error) => console.error("Error:", error));
-// }
 
 // Function to load admin dashboard data
 function loadPatientDashboard(patient_id) {
@@ -151,7 +104,6 @@ function loadDoctorCalendar(doctorId) {
   if (calendarEl) {
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "timeGridWeek",
-      selectable: true,
       timeZone: "Asia/Manila", // Adjust to your local timezone
       headerToolbar: {
         left: "prev,next today",
@@ -165,58 +117,14 @@ function loadDoctorCalendar(doctorId) {
           alert("There was an error while fetching availability!");
         },
       },
-      select: function (info) {
-        handleSelectEvent(info, doctorId, calendar);
-      },
       eventClick: function (info) {
         handleEventClick(info, doctorId, calendar);
       },
     });
 
     calendar.render();
-    calendar.refetchEvents();
   } else {
     console.error("Calendar element not found");
-  }
-}
-
-// Handle the selection of time/date range in the calendar
-function handleSelectEvent(info, doctorId, calendar) {
-  let status = prompt("Enter 'Available' or 'Not Available'");
-  if (status) {
-    // Check if the selection is a full day range or specific time range
-    const isAllDay = info.allDay || info.view.type === "dayGridMonth";
-    const body = isAllDay
-      ? `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}&allDay=1`
-      : `date=${info.startStr.split("T")[0]}&start_time=${
-          info.startStr.split("T")[1]
-        }&end_time=${info.endStr.split("T")[1]}&status=${status}`;
-
-    const url = isAllDay
-      ? "/api/set_doctor_availability_day_range.php"
-      : "/api/set_doctor_availability_time_range.php";
-
-    console.log("Submitting availability update:", body); // Debugging line
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("API Response:", data); // Debugging line
-        alert(data.message);
-        if (data.status) {
-          // Dynamically refetch and update the calendar with new events
-          calendar.refetchEvents();
-        }
-      })
-      .catch((error) => {
-        console.error("Error updating availability:", error);
-      });
   }
 }
 
@@ -241,6 +149,85 @@ function handleEventClick(info, doctorId, calendar) {
       })
       .catch((error) => console.error("Error deleting event:", error));
   }
+}
+
+function saveAvailability(doctorId) {
+  const consultationType = document.getElementById("consultation_type").value;
+  const consultationDuration = document.getElementById(
+    "consultation_duration"
+  ).value;
+  const availabilityDate = document.getElementById("availability_date").value;
+  const startTime = document.getElementById("start_time").value;
+  const endTime = document.getElementById("end_time").value;
+  const status = document.getElementById("status").value;
+
+  fetch("/api/set_doctor_availability.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      doctor_id: doctorId,
+      consultation_type: consultationType,
+      consultation_duration: consultationDuration,
+      date: availabilityDate,
+      start_time: startTime,
+      end_time: endTime,
+      status: status,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status) {
+        alert("Availability set successfully");
+        loadDoctorCalendar(doctorId); // Refresh the calendar
+      } else {
+        alert("Failed to set availability");
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+function setBusinessHours() {
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const startTime = "08:00";
+  const endTime = "17:00";
+  const consultationType = document.getElementById("consultation_type").value;
+  const consultationDuration = document.getElementById(
+    "consultation_duration"
+  ).value;
+
+  fetch("/api/set_doctor_availability.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      doctor_id: 1, // Replace with actual doctor_id
+      consultation_type: consultationType,
+      consultation_duration: consultationDuration,
+      days: daysOfWeek,
+      start_time: startTime,
+      end_time: endTime,
+      status: "Available",
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status) {
+        alert("Business hours set successfully for all weekdays");
+        // Optionally, refresh the calendar view here
+        calendar.refetchEvents();
+      } else {
+        alert("Failed to set business hours");
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+function clearTimeInputs() {
+  document.getElementById("start_time").value = "";
+  document.getElementById("end_time").value = "";
 }
 
 // Function to load specializations and update the UI

@@ -193,7 +193,40 @@ if ($user_role === 'admin') {
                         </div>
                     </div>
 
-                    <div id="calendar"></div>
+                    <!-- New Section for Availability Controls -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="availability_date">Choose Date</label>
+                            <input type="date" id="availability_date" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        </div>
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
+                            <input type="time" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        </div>
+                        <div class="w-full ml-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
+                            <input type="time" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center mb-6">
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
+                            <select id="status" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                <option value="Available">Available</option>
+                                <option value="Not Available">Not Available</option>
+                            </select>
+                        </div>
+                        <div class="w-full ml-4">
+                            <input type="checkbox" id="business_hours" class="mr-2 leading-tight">
+                            <label for="business_hours" class="text-gray-700 text-sm font-bold">Set as Business Hours</label>
+                        </div>
+                    </div>
+
+                    <button id="set_availability" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">Set Availability</button>
+
+                    <!-- FullCalendar Display -->
+                    <div id="calendar" class="mt-6"></div>
                 </div>
 
             <?php endif; ?>
