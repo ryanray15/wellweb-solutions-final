@@ -91,15 +91,18 @@ function fetchDoctors(specializationId, consultationType) {
     .catch((error) => console.error("Error fetching doctors:", error));
 }
 
-// Assuming you have code where the specialization is selected, call fetchDoctors with consultationType as well
+// Adjust event listener to include consultation type (now derived from the service_id dropdown)
 document
   .getElementById("specialization_id")
   .addEventListener("change", function () {
     const specializationId = this.value;
-    const consultationType = document.querySelector(
-      'input[name="consultation_type"]:checked'
-    ).value; // Assuming radio buttons for consultation type
-    fetchDoctors(specializationId, consultationType);
+    const consultationType = document.getElementById("service_id").value;
+
+    if (specializationId && consultationType) {
+      fetchDoctors(specializationId, consultationType);
+    } else {
+      console.error("Specialization ID or Consultation Type is missing");
+    }
   });
 
 // Attach click handlers to doctor cards

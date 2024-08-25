@@ -20,7 +20,12 @@ if ($specialization_id) {
 }
 
 if ($consultation_type) {
-    $query .= " AND da.consultation_type = '" . $db->real_escape_string($consultation_type) . "'";
+    // Adjust the consultation type logic to match the service selected by the patient
+    if ($consultation_type == 1) { // Assuming 1 corresponds to "Online Consultation"
+        $query .= " AND (da.consultation_type = 'online' OR da.consultation_type = 'both')";
+    } elseif ($consultation_type == 2) { // Assuming 2 corresponds to "Physical Consultation"
+        $query .= " AND (da.consultation_type = 'physical' OR da.consultation_type = 'both')";
+    }
 }
 
 $result = $db->query($query);
