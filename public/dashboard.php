@@ -212,12 +212,12 @@ if ($user_role === 'admin') {
                     <div class="mb-6">
                         <div class="w-full mr-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
-                            <select id="status" class="shadow border rounded-lg w-3 py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                            <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
                                 <option value="Available">Available</option>
                                 <option value="Not Available">Not Available</option>
                             </select>
                         </div>
-                        <div class="w-full ml-4 mt-4">
+                        <div class="w-full mt-4">
                             <button id="set_availability" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">Set Availability</button>
                         </div>
                     </div>

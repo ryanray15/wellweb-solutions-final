@@ -91,20 +91,6 @@ function fetchDoctors(specializationId, consultationType) {
     .catch((error) => console.error("Error fetching doctors:", error));
 }
 
-// Adjust event listener to include consultation type (now derived from the service_id dropdown)
-document
-  .getElementById("specialization_id")
-  .addEventListener("change", function () {
-    const specializationId = this.value;
-    const consultationType = document.getElementById("service_id").value;
-
-    if (specializationId && consultationType) {
-      fetchDoctors(specializationId, consultationType);
-    } else {
-      console.error("Specialization ID or Consultation Type is missing");
-    }
-  });
-
 // Attach click handlers to doctor cards
 function attachDoctorClickHandlers() {
   const doctorCards = document.querySelectorAll(".doctor-card");
@@ -289,12 +275,18 @@ document.addEventListener("DOMContentLoaded", function () {
           fetchSpecializationsDropdown(serviceId);
         });
 
-      // Add event listener to load doctors when specialization is selected
+      // Adjust event listener to include consultation type (now derived from the service_id dropdown)
       document
         .getElementById("specialization_id")
         .addEventListener("change", function () {
           const specializationId = this.value;
-          fetchDoctors(specializationId);
+          const consultationType = document.getElementById("service_id").value;
+
+          if (specializationId && consultationType) {
+            fetchDoctors(specializationId, consultationType);
+          } else {
+            console.error("Specialization ID or Consultation Type is missing");
+          }
         });
 
       // Attach the schedule button functionality
