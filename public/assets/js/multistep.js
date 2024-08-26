@@ -2,9 +2,8 @@ let currentStep = 0; // Current step is set to be the first step (0)
 showStep(currentStep); // Display the current step
 
 function showStep(step) {
-  // This function will display the specified step of the form
   const steps = document.getElementsByClassName("step");
-  steps[step].style.display = "block";
+  steps[step].style.display = "block"; // Show the current step
 
   // Fix the Previous/Next buttons:
   if (step === 0) {
@@ -14,9 +13,10 @@ function showStep(step) {
   }
 
   if (step === steps.length - 1) {
-    // Instead of changing the next button to "Submit", you can just hide it
-    document.getElementById("nextBtn").style.display = "none";
-    loadCalendar(selectedDoctorId); // Load the calendar when on the final step
+    document.getElementById("nextBtn").style.display = "none"; // Hide the Next button on the final step
+    if (selectedDoctorId) {
+      loadDoctorCalendar(selectedDoctorId); // Load the calendar only when reaching the final step
+    }
   } else {
     document.getElementById("nextBtn").style.display = "inline";
     document.getElementById("nextBtn").innerHTML = "Next";

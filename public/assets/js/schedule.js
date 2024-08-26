@@ -91,7 +91,6 @@ function fetchDoctors(specializationId, consultationType) {
     .catch((error) => console.error("Error fetching doctors:", error));
 }
 
-// Attach click handlers to doctor cards
 function attachDoctorClickHandlers() {
   const doctorCards = document.querySelectorAll(".doctor-card");
 
@@ -104,15 +103,9 @@ function attachDoctorClickHandlers() {
       this.classList.add("border-green-500");
 
       // Store the selected doctor ID
-      const selectedDoctorId = this.getAttribute("data-doctor-id");
+      selectedDoctorId = this.getAttribute("data-doctor-id");
 
-      // Fetch the selected doctor's consultation_duration
-      const selectedDoctor = doctors.find(
-        (doctor) => doctor.user_id == selectedDoctorId
-      );
-
-      // Update time slots based on the doctor's consultation_duration
-      updateTimeSlots(selectedDoctor.consultation_duration);
+      // No need to load the calendar here, it will be loaded in Step 4
     });
   });
 }
@@ -134,17 +127,12 @@ function loadDoctorCalendar(doctorId) {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data.events,
+          events: data, // Pass the fetched data directly
+          eventColor: "green", // Default event color
+          eventTextColor: "white", // Default text color
         });
 
         calendar.render();
-
-        // Use the start_time, end_time, and consultation_duration to generate time slots
-        updateTimeSlots(
-          data.consultation_duration,
-          data.start_time,
-          data.end_time
-        );
       })
       .catch((error) => console.error("Error loading calendar:", error));
   } else {
@@ -288,8 +276,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Specialization ID or Consultation Type is missing");
           }
         });
-
-      loadDoctorCalendar(doctorId);
 
       // Attach the schedule button functionality
       handleScheduleAppointment(sessionData.user_id);
