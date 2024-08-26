@@ -289,6 +289,8 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
 
+      loadDoctorCalendar(doctorId);
+
       // Attach the schedule button functionality
       handleScheduleAppointment(sessionData.user_id);
     }
