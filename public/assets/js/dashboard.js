@@ -20,6 +20,56 @@ document.addEventListener("DOMContentLoaded", function () {
         loadDoctorDashboard(sessionData.user_id);
       } else {
         loadPatientDashboard(sessionData.user_id);
+
+        // Add search functionality only for patients
+        document
+          .getElementById("doctorSearchBar")
+          .addEventListener("input", function () {
+            const query = this.value;
+
+            if (query.length > 2) {
+              // Start searching after typing 3 characters
+              fetch(
+                `/api/search_doctors.php?query=${encodeURIComponent(query)}`
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  const searchResults =
+                    document.getElementById("searchResults");
+                  searchResults.innerHTML = ""; // Clear previous results
+                  if (data.length > 0) {
+                    searchResults.classList.remove("hidden");
+                    data.forEach((doctor) => {
+                      const resultItem = document.createElement("div");
+                      resultItem.className =
+                        "flex items-center p-3 cursor-pointer hover:bg-gray-200";
+
+                      // Adding image if available, or a placeholder if not
+                      const profileImage = document.createElement("img");
+                      profileImage.src =
+                        doctor.image || "/path/to/default-image.png"; // Adjust the path accordingly
+                      profileImage.alt = "Doctor Image";
+                      profileImage.className = "w-8 h-8 rounded-full mr-3"; // Small rounded image with margin-right
+
+                      const name = document.createElement("span");
+                      name.textContent = `${doctor.name}`;
+
+                      resultItem.appendChild(profileImage);
+                      resultItem.appendChild(name);
+
+                      resultItem.addEventListener("click", () => {
+                        window.location.href = `/doctor_info.php?doctor_id=${doctor.user_id}`;
+                      });
+                      searchResults.appendChild(resultItem);
+                    });
+                  } else {
+                    searchResults.classList.add("hidden");
+                  }
+                });
+            } else {
+              document.getElementById("searchResults").classList.add("hidden");
+            }
+          });
       }
     }
   });
@@ -53,17 +103,6 @@ function loadDoctorDashboard(doctorId) {
     .getElementById("set_availability")
     .addEventListener("click", function () {
       saveAvailability(doctorId);
-    });
-
-  // Add event listener for "Business Hours" checkbox
-  document
-    .getElementById("business_hours")
-    .addEventListener("change", function () {
-      if (this.checked) {
-        setBusinessHours();
-      } else {
-        clearTimeInputs();
-      }
     });
 }
 
@@ -186,48 +225,6 @@ function saveAvailability(doctorId) {
       }
     })
     .catch((error) => console.error("Error:", error));
-}
-
-function setBusinessHours() {
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  const startTime = "08:00";
-  const endTime = "17:00";
-  const consultationType = document.getElementById("consultation_type").value;
-  const consultationDuration = document.getElementById(
-    "consultation_duration"
-  ).value;
-
-  fetch("/api/set_doctor_availability.php", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      doctor_id: 1, // Replace with actual doctor_id
-      consultation_type: consultationType,
-      consultation_duration: consultationDuration,
-      days: daysOfWeek,
-      start_time: startTime,
-      end_time: endTime,
-      status: "Available",
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status) {
-        alert("Business hours set successfully for all weekdays");
-        // Optionally, refresh the calendar view here
-        calendar.refetchEvents();
-      } else {
-        alert("Failed to set business hours");
-      }
-    })
-    .catch((error) => console.error("Error:", error));
-}
-
-function clearTimeInputs() {
-  document.getElementById("start_time").value = "";
-  document.getElementById("end_time").value = "";
 }
 
 // Function to load specializations and update the UI

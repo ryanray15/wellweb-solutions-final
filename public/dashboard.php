@@ -83,6 +83,51 @@ if ($user_role === 'admin') {
     <!-- Correct FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        #searchResults {
+            top: 100%;
+            /* Position just below the search bar */
+            left: 0;
+            z-index: 10;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            /* Increased width */
+        }
+
+        #doctorSearchBar {
+            width: 350px;
+            /* Match width with search results for consistency */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #searchResults div {
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            /* Flexbox for aligning image and text */
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        #searchResults div:hover {
+            background-color: #f1f1f1;
+        }
+
+        #searchResults img {
+            width: 40px;
+            /* Image size */
+            height: 40px;
+            border-radius: 50%;
+            /* Circular image */
+            margin-right: 10px;
+            /* Space between image and text */
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
@@ -93,9 +138,14 @@ if ($user_role === 'admin') {
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
+            <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
+                <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
+                    class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
+            </div>
             <div class="relative">
-                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
                 <button id="profileDropdown" class="text-white focus:outline-none">
+                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
