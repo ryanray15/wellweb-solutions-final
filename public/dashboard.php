@@ -138,11 +138,13 @@ if ($user_role === 'admin') {
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
-            <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
-                <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
-                    class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
-            </div>
+            <?php if ($user_role === 'patient') : ?>
+                <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
+                    <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
+                        class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
+                </div>
+            <?php endif; ?>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">
                     <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
