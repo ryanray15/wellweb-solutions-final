@@ -110,6 +110,8 @@ function loadDoctorDashboard(doctorId) {
 function loadPatientDashboard(patient_id) {
   // Logic for dashboard interactions
 
+  fetchAppointments(patient_id);
+
   // Fetch appointments and update the dashboard
   if (patient_id) {
     fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
@@ -134,6 +136,76 @@ function loadPatientDashboard(patient_id) {
       })
       .catch((error) => console.error("Error fetching appointments:", error));
   }
+}
+
+function fetchAppointments(patient_id) {
+  fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const appointmentsTable = document.getElementById("appointmentsTable");
+      appointmentsTable.innerHTML = ""; // Clear previous appointments
+
+      data.forEach((appointment) => {
+        const row = document.createElement("tr");
+        const doctorCell = document.createElement("td");
+        doctorCell.className = "border px-4 py-2";
+        doctorCell.textContent = "Dr. " + appointment.doctor_name;
+
+        const dateCell = document.createElement("td");
+        dateCell.className = "border px-4 py-2";
+        dateCell.textContent = appointment.date;
+
+        const timeCell = document.createElement("td");
+        timeCell.className = "border px-4 py-2";
+        timeCell.textContent = appointment.time;
+
+        const dueInCell = document.createElement("td");
+        dueInCell.className = "border px-4 py-2";
+        const daysDue = calculateDaysDue(appointment.date);
+        dueInCell.textContent = `${daysDue} days`;
+
+        if (daysDue <= 3) {
+          dueInCell.classList.add("text-red-500", "font-bold");
+        }
+
+        const actionsCell = document.createElement("td");
+        actionsCell.className = "border px-4 py-2";
+        const actionButton = document.createElement("button");
+
+        if (appointment.service_id == 1) {
+          // Online Consultation
+          actionButton.textContent = "Join Room";
+          actionButton.className =
+            "bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded";
+          actionButton.disabled = new Date() < new Date(appointment.date);
+          // Add logic to join online room here...
+        } else {
+          // Physical Consultation
+          actionButton.textContent = "Locate Clinic";
+          actionButton.className =
+            "bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded";
+          actionButton.addEventListener("click", () => {
+            window.location.href = `/doctor_info.php?doctor_id=${appointment.doctor_id}`;
+          });
+        }
+
+        actionsCell.appendChild(actionButton);
+        row.appendChild(doctorCell);
+        row.appendChild(dateCell);
+        row.appendChild(timeCell);
+        row.appendChild(dueInCell);
+        row.appendChild(actionsCell);
+        appointmentsTable.appendChild(row);
+      });
+    })
+    .catch((error) => console.error("Error fetching appointments:", error));
+}
+
+function calculateDaysDue(appointmentDate) {
+  const currentDate = new Date();
+  const targetDate = new Date(appointmentDate);
+  const timeDiff = targetDate.getTime() - currentDate.getTime();
+  return Math.ceil(timeDiff / (1000 * 3600 * 24));
 }
 
 // Function to initialize and load the FullCalendar component for doctors

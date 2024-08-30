@@ -395,6 +395,25 @@ if ($user_role === 'admin') {
         <?php if ($user_role === 'patient') : ?>
             <h1 class="text-3xl font-bold text-green-600 mb-8">Patient Dashboard</h1>
 
+            <!-- New Appointments Section -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-green-200">
+                        <tr>
+                            <th class="w-1/4 px-4 py-2">Doctor Name</th>
+                            <th class="w-1/4 px-4 py-2">Date</th>
+                            <th class="w-1/4 px-4 py-2">Time</th>
+                            <th class="w-1/4 px-4 py-2">Due in</th>
+                            <th class="w-1/4 px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTable">
+                        <!-- Appointments will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
             <!-- Schedule Appointment Section -->
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-green-700">Schedule Appointment</h2>

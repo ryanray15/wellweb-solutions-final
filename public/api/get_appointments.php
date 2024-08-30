@@ -10,6 +10,7 @@ $query = "
         a.appointment_id, 
         a.date, 
         a.time, 
+        a.service_id,   /* Include service_id in the selection */
         u.user_id as doctor_id,   /* Include doctor_id in the selection */
         CONCAT(u.first_name, ' ', u.middle_initial, ' ', u.last_name) as doctor_name
     FROM appointments a
