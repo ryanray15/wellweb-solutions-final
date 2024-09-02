@@ -111,6 +111,11 @@ function loadPatientDashboard(patient_id) {
   // Logic for dashboard interactions
 
   fetchAppointments(patient_id);
+  loadNotifications(patient_id);
+
+  setInterval(function () {
+    fetchUpcomingAppointments(patient_id);
+  }, 5 * 60 * 1000); // Check every 5 minutes
 
   // Fetch appointments and update the dashboard
   if (patient_id) {
@@ -137,6 +142,84 @@ function loadPatientDashboard(patient_id) {
       .catch((error) => console.error("Error fetching appointments:", error));
   }
 }
+
+// Function to load notifications
+function loadNotifications(patient_id) {
+  fetch(`/api/get_notifications.php?patient_id=${patient_id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const notificationList = document.getElementById("notificationList");
+      notificationList.innerHTML = ""; // Clear previous notifications
+
+      data.forEach((notification) => {
+        const listItem = document.createElement("li");
+        listItem.className = "px-4 py-2 hover:bg-gray-200";
+        listItem.textContent = notification.message;
+        notificationList.appendChild(listItem);
+      });
+    })
+    .catch((error) => console.error("Error fetching notifications:", error));
+}
+
+// Function to fetch upcoming appointments for reminders
+function fetchUpcomingAppointments(patient_id) {
+  fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+    .then((response) => response.json())
+    .then((appointments) => {
+      const now = new Date();
+
+      appointments.forEach((appointment) => {
+        const appointmentDate = new Date(
+          `${appointment.date}T${appointment.time}`
+        );
+        const timeDiff = (appointmentDate - now) / (1000 * 60); // Difference in minutes
+
+        if (appointment.service_id == 1 && timeDiff <= 30 && timeDiff > 0) {
+          // Trigger a reminder notification 30 minutes before an online consultation
+          showNotification(
+            `Reminder: Your online consultation with Dr. ${appointment.doctor_name} starts in 30 minutes.`
+          );
+        }
+      });
+    })
+    .catch((error) =>
+      console.error("Error fetching upcoming appointments:", error)
+    );
+}
+
+// Utility function to show notifications
+function showNotification(message) {
+  const notificationMenu = document.getElementById("notificationMenu");
+  const notificationList = document.getElementById("notificationList");
+
+  const listItem = document.createElement("li");
+  listItem.className = "px-4 py-2 hover:bg-gray-200";
+  listItem.textContent = message;
+
+  notificationList.appendChild(listItem);
+  notificationMenu.classList.remove("hidden");
+}
+
+// Toggle notification menu visibility
+document
+  .getElementById("notificationDropdown")
+  .addEventListener("click", () => {
+    const notificationMenu = document.getElementById("notificationMenu");
+    notificationMenu.classList.toggle("hidden");
+  });
+
+// // Load notifications on page load
+// document.addEventListener("DOMContentLoaded", function () {
+//   checkUserSession().then((sessionData) => {
+//     if (
+//       sessionData.status &&
+//       sessionData.user_id &&
+//       sessionData.role === "patient"
+//     ) {
+//       loadNotifications(sessionData.user_id);
+//     }
+//   });
+// });
 
 function fetchAppointments(patient_id) {
   fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
