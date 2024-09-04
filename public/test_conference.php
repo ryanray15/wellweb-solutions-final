@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+
+  <body>
+    <div id="join-screen">
+      <!-- Create new Meeting Button -->
+      <button id="createMeetingBtn">New Meeting</button>
+      OR
+      <!-- Join existing Meeting -->
+      <input type="text" id="meetingIdTxt" placeholder="Enter Meeting id" />
+      <button id="joinBtn">Join Meeting</button>
+    </div>
+
+    <!-- for Managing meeting status -->
+    <div id="textDiv"></div>
+
+    <div id="grid-screen" style="display: none">
+      <!-- To Display MeetingId -->
+      <h3 id="meetingIdHeading"></h3>
+
+      <!-- Controllers -->
+      <button id="leaveBtn">Leave</button>
+      <button id="toggleMicBtn">Toggle Mic</button>
+      <button id="toggleWebCamBtn">Toggle WebCam</button>
+
+      <!-- render Video -->
+      <div class="row" id="videoContainer"></div>
+    </div>
+    <script src="https://sdk.videosdk.live/js-sdk/0.0.82/videosdk.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/videoChat.js"></script>
+  </body>
+</html>

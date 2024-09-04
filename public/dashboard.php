@@ -83,6 +83,83 @@ if ($user_role === 'admin') {
     <!-- Correct FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        #searchResults {
+            top: 100%;
+            /* Position just below the search bar */
+            left: 0;
+            z-index: 10;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            /* Increased width */
+        }
+
+        #doctorSearchBar {
+            width: 350px;
+            /* Match width with search results for consistency */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #searchResults div {
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            /* Flexbox for aligning image and text */
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        #searchResults div:hover {
+            background-color: #f1f1f1;
+        }
+
+        #searchResults img {
+            width: 40px;
+            /* Image size */
+            height: 40px;
+            border-radius: 50%;
+            /* Circular image */
+            margin-right: 10px;
+            /* Space between image and text */
+        }
+
+        /* Notification Dropdown Styles */
+        #dropdownMenu {
+            max-width: 300px;
+            /* Set a max-width that fits your design */
+            white-space: normal;
+            /* Allows text to wrap */
+            word-wrap: break-word;
+            /* Ensures long words break and wrap to the next line */
+            padding: 10px;
+            /* Add some padding for a better look */
+        }
+
+        #dropdownMenu a {
+            padding: 8px 12px;
+            /* Adjust padding inside each notification */
+            display: block;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            /* Optional: Add a border between notifications */
+        }
+
+        #dropdownMenu a:last-child {
+            border-bottom: none;
+            /* Remove border from the last notification */
+        }
+
+        #dropdownMenu a:hover {
+            background-color: #f0f0f0;
+            /* Highlight the notification on hover */
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
@@ -93,9 +170,28 @@ if ($user_role === 'admin') {
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
                 <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
             </div>
+            <?php if ($user_role === 'patient') : ?>
+                <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
+                    <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
+                        class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
+                </div>
+            <?php endif; ?>
+            <?php if ($user_role === 'patient') : ?>
+                <div class="relative">
+                    <button id="notificationDropdown" class="text-white focus:outline-none">
+                        <i class="fas fa-bell fa-2x mr-4"></i>
+                    </button>
+                    <div id="notificationMenu" class="hidden absolute right-0 mt-2 py-2 w-64 bg-white rounded-lg shadow-xl z-20">
+                        <ul id="notificationList">
+                            <!-- Notifications will be dynamically loaded here -->
+                        </ul>
+                    </div>
+                </div>
+            <?php endif; ?>
             <div class="relative">
-                <span class="text-white mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
                 <button id="profileDropdown" class="text-white focus:outline-none">
+                    <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -126,6 +222,7 @@ if ($user_role === 'admin') {
                 <h1 class="text-3xl font-bold text-green-600 mb-8">Doctor Dashboard</h1>
                 <!-- Include full dashboard functionalities for doctors here -->
 
+                <!-- Doctor Dashboard -->
                 <!-- Display Appointments -->
                 <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
@@ -172,8 +269,59 @@ if ($user_role === 'admin') {
                 <!-- Doctor Availability -->
                 <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-green-700">Set Your Availability</h2>
-                    <div id="calendar"></div>
+
+                    <!-- New Section for Consultation Type and Duration -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_type">Consultation Type</label>
+                            <select id="consultation_type" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                <option value="online">Online Consultation</option>
+                                <option value="physical">Physical Consultation</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                        <div class="w-full ml-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
+                            <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                <option value="30">30 Minutes</option>
+                                <option value="60">1 Hour</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- New Section for Availability Controls -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="availability_date">Choose Date</label>
+                            <input type="date" id="availability_date" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        </div>
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
+                            <input type="time" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        </div>
+                        <div class="w-full ml-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
+                            <input type="time" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="w-full mr-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
+                            <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                <option value="Available">Available</option>
+                                <option value="Not Available">Not Available</option>
+                            </select>
+                        </div>
+                        <div class="w-full mt-4">
+                            <button id="set_availability" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">Set Availability</button>
+                        </div>
+                    </div>
+
+                    <!-- FullCalendar Display -->
+                    <div id="calendar" class="mt-6"></div>
                 </div>
+
             <?php endif; ?>
         <?php endif; ?>
 
@@ -290,6 +438,25 @@ if ($user_role === 'admin') {
         <!-- Patient Dashboard -->
         <?php if ($user_role === 'patient') : ?>
             <h1 class="text-3xl font-bold text-green-600 mb-8">Patient Dashboard</h1>
+
+            <!-- New Appointments Section -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-green-200">
+                        <tr>
+                            <th class="w-1/4 px-4 py-2">Doctor Name</th>
+                            <th class="w-1/4 px-4 py-2">Date</th>
+                            <th class="w-1/4 px-4 py-2">Time</th>
+                            <th class="w-1/4 px-4 py-2">Due in</th>
+                            <th class="w-1/4 px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTable">
+                        <!-- Appointments will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Schedule Appointment Section -->
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">

@@ -20,6 +20,56 @@ document.addEventListener("DOMContentLoaded", function () {
         loadDoctorDashboard(sessionData.user_id);
       } else {
         loadPatientDashboard(sessionData.user_id);
+
+        // Add search functionality only for patients
+        document
+          .getElementById("doctorSearchBar")
+          .addEventListener("input", function () {
+            const query = this.value;
+
+            if (query.length > 2) {
+              // Start searching after typing 3 characters
+              fetch(
+                `/api/search_doctors.php?query=${encodeURIComponent(query)}`
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  const searchResults =
+                    document.getElementById("searchResults");
+                  searchResults.innerHTML = ""; // Clear previous results
+                  if (data.length > 0) {
+                    searchResults.classList.remove("hidden");
+                    data.forEach((doctor) => {
+                      const resultItem = document.createElement("div");
+                      resultItem.className =
+                        "flex items-center p-3 cursor-pointer hover:bg-gray-200";
+
+                      // Adding image if available, or a placeholder if not
+                      const profileImage = document.createElement("img");
+                      profileImage.src =
+                        doctor.image || "/path/to/default-image.png"; // Adjust the path accordingly
+                      profileImage.alt = "Doctor Image";
+                      profileImage.className = "w-8 h-8 rounded-full mr-3"; // Small rounded image with margin-right
+
+                      const name = document.createElement("span");
+                      name.textContent = `${doctor.name}`;
+
+                      resultItem.appendChild(profileImage);
+                      resultItem.appendChild(name);
+
+                      resultItem.addEventListener("click", () => {
+                        window.location.href = `/doctor_info.php?doctor_id=${doctor.user_id}`;
+                      });
+                      searchResults.appendChild(resultItem);
+                    });
+                  } else {
+                    searchResults.classList.add("hidden");
+                  }
+                });
+            } else {
+              document.getElementById("searchResults").classList.add("hidden");
+            }
+          });
       }
     }
   });
@@ -45,37 +95,27 @@ function loadAdminDashboard() {
 
 // Function to load doctor dashboard data
 function loadDoctorDashboard(doctorId) {
-  // Fetch and display appointments
-  fetch(`/api/get_doctor_appointments.php?doctor_id=${doctorId}`)
-    .then((response) => response.json())
-    .then((appointments) => {
-      const appointmentContainer = document.getElementById(
-        "appointmentContainer"
-      );
-      if (appointments.length > 0) {
-        // Render appointment details
-        appointmentContainer.innerHTML = appointments
-          .map(
-            (app) => `
-          <div class="appointment-item">
-            <p>${app.patient_name} - ${app.date} ${app.time}</p>
-          </div>
-        `
-          )
-          .join("");
-      } else {
-        appointmentContainer.innerHTML = "<p>No appointments available.</p>";
-      }
-    })
-    .catch((error) => console.error("Error fetching appointments:", error));
-
-  // Initialize and load the calendar for setting availability
+  // Initialize and load the calendar for displaying availability
   loadDoctorCalendar(doctorId);
+
+  // Add event listener for "Set Availability" button
+  document
+    .getElementById("set_availability")
+    .addEventListener("click", function () {
+      saveAvailability(doctorId);
+    });
 }
 
 // Function to load admin dashboard data
 function loadPatientDashboard(patient_id) {
   // Logic for dashboard interactions
+
+  fetchAppointments(patient_id);
+  loadNotifications(patient_id);
+
+  setInterval(function () {
+    fetchUpcomingAppointments(patient_id);
+  }, 5 * 60 * 1000); // Check every 5 minutes
 
   // Fetch appointments and update the dashboard
   if (patient_id) {
@@ -103,6 +143,154 @@ function loadPatientDashboard(patient_id) {
   }
 }
 
+// Function to load notifications
+function loadNotifications(patient_id) {
+  fetch(`/api/get_notifications.php?patient_id=${patient_id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const notificationList = document.getElementById("notificationList");
+      notificationList.innerHTML = ""; // Clear previous notifications
+
+      data.forEach((notification) => {
+        const listItem = document.createElement("li");
+        listItem.className = "px-4 py-2 hover:bg-gray-200";
+        listItem.textContent = notification.message;
+        notificationList.appendChild(listItem);
+      });
+    })
+    .catch((error) => console.error("Error fetching notifications:", error));
+}
+
+// Function to fetch upcoming appointments for reminders
+function fetchUpcomingAppointments(patient_id) {
+  fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+    .then((response) => response.json())
+    .then((appointments) => {
+      const now = new Date();
+
+      appointments.forEach((appointment) => {
+        const appointmentDate = new Date(
+          `${appointment.date}T${appointment.time}`
+        );
+        const timeDiff = (appointmentDate - now) / (1000 * 60); // Difference in minutes
+
+        if (appointment.service_id == 1 && timeDiff <= 30 && timeDiff > 0) {
+          // Trigger a reminder notification 30 minutes before an online consultation
+          showNotification(
+            `Reminder: Your online consultation with Dr. ${appointment.doctor_name} starts in 30 minutes.`
+          );
+        }
+      });
+    })
+    .catch((error) =>
+      console.error("Error fetching upcoming appointments:", error)
+    );
+}
+
+// Utility function to show notifications
+function showNotification(message) {
+  const notificationMenu = document.getElementById("notificationMenu");
+  const notificationList = document.getElementById("notificationList");
+
+  const listItem = document.createElement("li");
+  listItem.className = "px-4 py-2 hover:bg-gray-200";
+  listItem.textContent = message;
+
+  notificationList.appendChild(listItem);
+  notificationMenu.classList.remove("hidden");
+}
+
+// Toggle notification menu visibility
+document
+  .getElementById("notificationDropdown")
+  .addEventListener("click", () => {
+    const notificationMenu = document.getElementById("notificationMenu");
+    notificationMenu.classList.toggle("hidden");
+  });
+
+// // Load notifications on page load
+// document.addEventListener("DOMContentLoaded", function () {
+//   checkUserSession().then((sessionData) => {
+//     if (
+//       sessionData.status &&
+//       sessionData.user_id &&
+//       sessionData.role === "patient"
+//     ) {
+//       loadNotifications(sessionData.user_id);
+//     }
+//   });
+// });
+
+function fetchAppointments(patient_id) {
+  fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const appointmentsTable = document.getElementById("appointmentsTable");
+      appointmentsTable.innerHTML = ""; // Clear previous appointments
+
+      data.forEach((appointment) => {
+        const row = document.createElement("tr");
+        const doctorCell = document.createElement("td");
+        doctorCell.className = "border px-4 py-2";
+        doctorCell.textContent = "Dr. " + appointment.doctor_name;
+
+        const dateCell = document.createElement("td");
+        dateCell.className = "border px-4 py-2";
+        dateCell.textContent = appointment.date;
+
+        const timeCell = document.createElement("td");
+        timeCell.className = "border px-4 py-2";
+        timeCell.textContent = appointment.time;
+
+        const dueInCell = document.createElement("td");
+        dueInCell.className = "border px-4 py-2";
+        const daysDue = calculateDaysDue(appointment.date);
+        dueInCell.textContent = `${daysDue} days`;
+
+        if (daysDue <= 3) {
+          dueInCell.classList.add("text-red-500", "font-bold");
+        }
+
+        const actionsCell = document.createElement("td");
+        actionsCell.className = "border px-4 py-2";
+        const actionButton = document.createElement("button");
+
+        if (appointment.service_id == 1) {
+          // Online Consultation
+          actionButton.textContent = "Join Room";
+          actionButton.className =
+            "bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded";
+          actionButton.disabled = new Date() < new Date(appointment.date);
+          // Add logic to join online room here...
+        } else {
+          // Physical Consultation
+          actionButton.textContent = "Locate Clinic";
+          actionButton.className =
+            "bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded";
+          actionButton.addEventListener("click", () => {
+            window.location.href = `/doctor_info.php?doctor_id=${appointment.doctor_id}`;
+          });
+        }
+
+        actionsCell.appendChild(actionButton);
+        row.appendChild(doctorCell);
+        row.appendChild(dateCell);
+        row.appendChild(timeCell);
+        row.appendChild(dueInCell);
+        row.appendChild(actionsCell);
+        appointmentsTable.appendChild(row);
+      });
+    })
+    .catch((error) => console.error("Error fetching appointments:", error));
+}
+
+function calculateDaysDue(appointmentDate) {
+  const currentDate = new Date();
+  const targetDate = new Date(appointmentDate);
+  const timeDiff = targetDate.getTime() - currentDate.getTime();
+  return Math.ceil(timeDiff / (1000 * 3600 * 24));
+}
+
 // Function to initialize and load the FullCalendar component for doctors
 function loadDoctorCalendar(doctorId) {
   const calendarEl = document.getElementById("calendar");
@@ -110,7 +298,6 @@ function loadDoctorCalendar(doctorId) {
   if (calendarEl) {
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "timeGridWeek",
-      selectable: true,
       timeZone: "Asia/Manila", // Adjust to your local timezone
       headerToolbar: {
         left: "prev,next today",
@@ -124,9 +311,6 @@ function loadDoctorCalendar(doctorId) {
           alert("There was an error while fetching availability!");
         },
       },
-      select: function (info) {
-        handleSelectEvent(info, doctorId, calendar);
-      },
       eventClick: function (info) {
         handleEventClick(info, doctorId, calendar);
       },
@@ -135,41 +319,6 @@ function loadDoctorCalendar(doctorId) {
     calendar.render();
   } else {
     console.error("Calendar element not found");
-  }
-}
-
-// Handle the selection of time/date range in the calendar
-function handleSelectEvent(info, doctorId, calendar) {
-  let status = prompt("Enter 'Available' or 'Not Available'");
-  if (status) {
-    // Check if the selection is a full day range or specific time range
-    const isAllDay = info.allDay || info.view.type === "dayGridMonth";
-    const body = isAllDay
-      ? `start_date=${info.startStr}&end_date=${info.endStr}&status=${status}&allDay=1`
-      : `date=${info.startStr.split("T")[0]}&start_time=${
-          info.startStr.split("T")[1]
-        }&end_time=${info.endStr.split("T")[1]}&status=${status}`;
-
-    const url = isAllDay
-      ? "/api/set_doctor_availability_day_range.php"
-      : "/api/set_doctor_availability_time_range.php";
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        alert(data.message);
-        if (data.status) {
-          // Dynamically refetch and update the calendar with new events
-          calendar.refetchEvents();
-        }
-      })
-      .catch((error) => console.error("Error updating availability:", error));
   }
 }
 
@@ -194,6 +343,43 @@ function handleEventClick(info, doctorId, calendar) {
       })
       .catch((error) => console.error("Error deleting event:", error));
   }
+}
+
+function saveAvailability(doctorId) {
+  const consultationType = document.getElementById("consultation_type").value;
+  const consultationDuration = document.getElementById(
+    "consultation_duration"
+  ).value;
+  const availabilityDate = document.getElementById("availability_date").value;
+  const startTime = document.getElementById("start_time").value;
+  const endTime = document.getElementById("end_time").value;
+  const status = document.getElementById("status").value;
+
+  fetch("/api/set_doctor_availability.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      doctor_id: doctorId,
+      consultation_type: consultationType,
+      consultation_duration: consultationDuration,
+      date: availabilityDate,
+      start_time: startTime,
+      end_time: endTime,
+      status: status,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status) {
+        alert("Availability set successfully");
+        loadDoctorCalendar(doctorId); // Refresh the calendar
+      } else {
+        alert("Failed to set availability");
+      }
+    })
+    .catch((error) => console.error("Error:", error));
 }
 
 // Function to load specializations and update the UI

@@ -6,6 +6,7 @@ $user = 'root'; // Change this if you have a different MySQL user
 $pass = ''; // Change this if your MySQL user has a password
 
 // Create a connection
+$mysqli = new mysqli($host, $user, $pass, $db); //test push assdfsdfs
 $mysqli = new mysqli($host, $user, $pass, $db); //test push qwertyu
 
 // Check connection

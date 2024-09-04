@@ -49,9 +49,11 @@ function fetchSpecializationsDropdown(serviceId) {
     .catch((error) => console.error("Error fetching specializations:", error));
 }
 
-// Function to fetch and populate doctors based on specialization
-function fetchDoctors(specializationId) {
-  fetch(`/api/get_doctors.php?specialization_id=${specializationId}`)
+// Function to fetch and populate doctors based on specialization and consultation type
+function fetchDoctors(specializationId, consultationType) {
+  fetch(
+    `/api/get_doctors.php?specialization_id=${specializationId}&consultation_type=${consultationType}`
+  )
     .then((response) => response.json())
     .then((data) => {
       const doctorsContainer = document.getElementById("doctorsContainer");
@@ -83,13 +85,12 @@ function fetchDoctors(specializationId) {
         attachDoctorClickHandlers(); // Attach click handlers to the new doctor cards
       } else {
         doctorsContainer.innerHTML =
-          "<p>No doctors available for this specialization.</p>";
+          "<p>No doctors available for this specialization and consultation type.</p>";
       }
     })
     .catch((error) => console.error("Error fetching doctors:", error));
 }
 
-// Attach click handlers to doctor cards
 function attachDoctorClickHandlers() {
   const doctorCards = document.querySelectorAll(".doctor-card");
 
@@ -104,38 +105,58 @@ function attachDoctorClickHandlers() {
       // Store the selected doctor ID
       selectedDoctorId = this.getAttribute("data-doctor-id");
 
-      // Debugging: Check if the doctor ID is being correctly captured
-      console.log("Selected Doctor ID:", selectedDoctorId);
+      // No need to load the calendar here, it will be loaded in Step 4
     });
   });
 }
 
-// Load Calendar (called from multistep.js when moving to the final step)
-function loadCalendar(doctorId) {
-  if (!doctorId) {
-    console.error("Doctor ID is not selected.");
-    return;
+// Function to load doctor's availability and setup time slots
+function loadDoctorCalendar(doctorId) {
+  const calendarEl = document.getElementById("calendar");
+
+  if (calendarEl) {
+    fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "timeGridWeek",
+          selectable: true,
+          timeZone: "Asia/Manila", // Adjust to your local timezone
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+          events: data, // Pass the fetched data directly
+          eventColor: "green", // Default event color
+          eventTextColor: "white", // Default text color
+        });
+
+        calendar.render();
+      })
+      .catch((error) => console.error("Error loading calendar:", error));
+  } else {
+    console.error("Calendar element not found");
+  }
+}
+
+// Function to dynamically generate time slots based on the doctor's availability
+function updateTimeSlots(duration, startTime, endTime) {
+  const timeInput = document.getElementById("time");
+  let timeSlots = [];
+
+  // Parse start and end times using moment.js (or native Date object)
+  let currentTime = moment(startTime, "HH:mm");
+  let endMomentTime = moment(endTime, "HH:mm");
+
+  while (currentTime.isBefore(endMomentTime)) {
+    timeSlots.push(currentTime.format("HH:mm"));
+    currentTime.add(duration, "minutes");
   }
 
-  fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
-    .then((response) => response.json())
-    .then((events) => {
-      const calendarEl = document.getElementById("calendar");
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: "timeGridWeek",
-        events: events,
-        headerToolbar: {
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        },
-        eventColor: "green",
-        eventTextColor: "white",
-      });
-      calendar.render();
-      disableUnavailableSlots(events);
-    })
-    .catch((error) => console.error("Error loading calendar:", error));
+  timeInput.innerHTML = timeSlots
+    .map((time) => `<option value="${time}">${time}</option>`)
+    .join("");
 }
 
 // Handle disabling unavailable slots
@@ -242,12 +263,18 @@ document.addEventListener("DOMContentLoaded", function () {
           fetchSpecializationsDropdown(serviceId);
         });
 
-      // Add event listener to load doctors when specialization is selected
+      // Adjust event listener to include consultation type (now derived from the service_id dropdown)
       document
         .getElementById("specialization_id")
         .addEventListener("change", function () {
           const specializationId = this.value;
-          fetchDoctors(specializationId);
+          const consultationType = document.getElementById("service_id").value;
+
+          if (specializationId && consultationType) {
+            fetchDoctors(specializationId, consultationType);
+          } else {
+            console.error("Specialization ID or Consultation Type is missing");
+          }
         });
 
       // Attach the schedule button functionality

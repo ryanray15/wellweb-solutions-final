@@ -26,8 +26,10 @@ class DoctorAvailabilityController
             $day = $availability['day'];
             $start_time = $availability['start_time'];
             $end_time = $availability['end_time'];
+            $consultation_type = $availability['consultation_type']; // New field
+            $consultation_duration = $availability['consultation_duration']; // New field
 
-            $this->doctorAvailabilityModel->setAvailability($doctor_id, $day, $start_time, $end_time);
+            $this->doctorAvailabilityModel->setAvailability($doctor_id, $day, $start_time, $end_time, $consultation_type, $consultation_duration);
         }
 
         return ['status' => true, 'message' => 'Availability updated successfully'];

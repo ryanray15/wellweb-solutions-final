@@ -19,12 +19,15 @@ class DoctorAvailability
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function setAvailability($doctor_id, $day, $start_time, $end_time)
+    public function setAvailability($doctor_id, $day, $start_time, $end_time, $consultation_type, $consultation_duration)
     {
-        $query = "INSERT INTO $this->table (doctor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)
-                  ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time)";
+        $query = "INSERT INTO $this->table (doctor_id, date, start_time, end_time, consultation_type, consultation_duration) 
+                  VALUES (?, ?, ?, ?, ?, ?)
+                  ON DUPLICATE KEY UPDATE start_time = VALUES(start_time), end_time = VALUES(end_time),
+                                          consultation_type = VALUES(consultation_type),
+                                          consultation_duration = VALUES(consultation_duration)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("isss", $doctor_id, $day, $start_time, $end_time);
+        $stmt->bind_param("issssi", $doctor_id, $day, $start_time, $end_time, $consultation_type, $consultation_duration);
         $stmt->execute();
     }
 }

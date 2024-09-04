@@ -35,6 +35,16 @@ if (!$patientExists || !$doctorExists || !$serviceExists) {
     exit;
 }
 
+// Fetch doctor name
+$query = "SELECT CONCAT(first_name, ' ', middle_initial, ' ', last_name) as doctor_name FROM users WHERE user_id = ?";
+$stmt = $db->prepare($query);
+$stmt->bind_param('i', $doctor_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$doctor = $result->fetch_assoc();
+
+$doctorName = $doctor['doctor_name'];
+
 // Calculate end time of the appointment
 $appointmentEndTime = date('H:i:s', strtotime("+$appointment_duration minutes", strtotime($time)));
 
@@ -69,6 +79,17 @@ try {
     if (!$response['status']) {
         throw new Exception('Appointment scheduling failed');
     }
+
+    // After successfully scheduling an appointment
+    $query = "INSERT INTO notifications (patient_id, message, type) VALUES (?, ?, 'appointment')";
+    $message = "Your appointment with Dr. $doctorName on $date at $time has been scheduled.";
+    $stmt = $db->prepare($query);
+    $stmt->bind_param(
+        "is",
+        $patient_id,
+        $message
+    );
+    $stmt->execute();
 
     // Adjust doctor's availability
     $start_time = $availableSlot['start_time'];

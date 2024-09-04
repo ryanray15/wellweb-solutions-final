@@ -36,6 +36,7 @@ if (!$appointment) {
 }
 
 $doctor_id = $appointment['doctor_id'];
+$patient_id = $appointment['patient_id'];
 
 // Calculate new end time of the appointment
 $new_end_time = date('H:i:s', strtotime("+$appointment_duration minutes", strtotime($new_time)));
@@ -68,6 +69,23 @@ try {
     if (!$response['status']) {
         throw new Exception('Appointment rescheduling failed');
     }
+
+    // After successfully rescheduling an appointment
+    $doctorQuery = $db->prepare("SELECT CONCAT(first_name, ' ', middle_initial, ' ', last_name) as name FROM users WHERE user_id = ?");
+    $doctorQuery->bind_param("i", $doctor_id);
+    $doctorQuery->execute();
+    $doctorResult = $doctorQuery->get_result()->fetch_assoc();
+    $doctorName = $doctorResult['name'];
+
+    $query = "INSERT INTO notifications (patient_id, message, type) VALUES (?, ?, 'appointment')";
+    $message = "Your appointment with Dr. $doctorName on $new_date at $new_time has been rescheduled.";
+    $stmt = $db->prepare($query);
+    $stmt->bind_param(
+        "is",
+        $patient_id,
+        $message
+    );
+    $stmt->execute();
 
     // Adjust doctor's availability
     $start_time = $availableSlot['start_time'];
