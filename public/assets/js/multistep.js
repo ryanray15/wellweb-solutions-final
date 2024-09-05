@@ -14,9 +14,11 @@ function showStep(step) {
   }
 
   if (step === steps.length - 1) {
-    document.getElementById("nextBtn").innerHTML = "Submit";
+    // Instead of changing the next button to "Submit", you can just hide it
+    document.getElementById("nextBtn").style.display = "none";
     loadCalendar(selectedDoctorId); // Load the calendar when on the final step
   } else {
+    document.getElementById("nextBtn").style.display = "inline";
     document.getElementById("nextBtn").innerHTML = "Next";
   }
 }
