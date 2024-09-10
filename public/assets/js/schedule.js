@@ -1,4 +1,6 @@
-let selectedDoctorId = null; // This will store the selected doctor ID
+let selectedDoctorId = null;
+let consultationType = null;
+let specializationId = null;
 
 // Function to fetch and populate services
 function fetchServicesDropdown() {
@@ -48,7 +50,11 @@ function fetchSpecializationsDropdown(serviceId) {
 }
 
 // Function to fetch and populate doctors based on specialization and consultation type
-function fetchDoctors(specializationId, consultationType) {
+function fetchDoctors(specializationIdValue, consultationTypeValue) {
+  // Assign the values globally
+  consultationType = consultationTypeValue;
+  specializationId = specializationIdValue;
+
   console.log(
     `Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
   );
@@ -106,12 +112,12 @@ function attachDoctorClickHandlers() {
       // Store the selected doctor ID
       selectedDoctorId = this.getAttribute("data-doctor-id");
 
-      // No need to load the calendar here, it will be loaded in Step 4
+      console.log(`Doctor ID: ${selectedDoctorId}`); // Debugging
     });
   });
 }
 
-// Function to load doctor's availability and setup time slots
+// Function to load doctor's availability and setup time slots (only in step 4)
 function loadDoctorCalendar(doctorId, consultationType, specializationId) {
   const calendarEl = document.getElementById("calendar");
 
