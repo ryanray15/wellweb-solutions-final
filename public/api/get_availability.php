@@ -10,6 +10,13 @@ $consultation_type = $_GET['consultation_type'] ?? null;  // Get consultation ty
 $specialization_id = $_GET['specialization_id'] ?? null;
 
 if ($doctor_id && $consultation_type && $specialization_id) {
+    // Convert consultation_type from integer to string
+    if ($consultation_type == 1) {
+        $consultation_type = 'online';
+    } elseif ($consultation_type == 2) {
+        $consultation_type = 'physical';
+    }
+
     // Fetch availability for the selected doctor, consultation type, and specialization
     $query = $db->prepare("
         SELECT da.availability_id AS id, da.date, da.start_time, da.end_time, da.status, da.consultation_type
@@ -19,14 +26,14 @@ if ($doctor_id && $consultation_type && $specialization_id) {
         AND da.consultation_type = ?  -- Filter based on consultation type
         AND ds.specialization_id = ?
     ");
-    $query->bind_param("isi", $doctor_id, $consultation_type, $specialization_id);
+    $query->bind_param("iss", $doctor_id, $consultation_type, $specialization_id);
     $query->execute();
     $result = $query->get_result();
 
     $events = [];
     while ($row = $result->fetch_assoc()) {
         // Set event color based on consultation type
-        $color = ($row['consultation_type'] == 'online') ? 'lightblue' : 'green';
+        $color = ($row['consultation_type'] == 'online') ? 'blue' : 'green';
 
         $event = [
             'id' => $row['id'],
