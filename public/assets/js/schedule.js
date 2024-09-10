@@ -130,6 +130,7 @@ function loadDoctorCalendar(doctorId, consultationType, specializationId) {
     )
       .then((response) => response.json())
       .then((data) => {
+        console.log("Fetched events:", data); // Debugging log to ensure data comes in
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
@@ -139,8 +140,8 @@ function loadDoctorCalendar(doctorId, consultationType, specializationId) {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data.events, // Only relevant consultation type will be displayed
-          eventColor: "green", // Default event color
+          events: data.events, // Display all fetched events, including 'Not Available'
+          eventColor: "green", // Default event color (will be overridden by fetched data)
           eventTextColor: "white", // Default text color
         });
 

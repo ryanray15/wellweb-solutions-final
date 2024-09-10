@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 $doctor_id = $_GET['doctor_id'] ?? null;
 $consultation_type = $_GET['consultation_type'] ?? null;
+$consultation_type = $_GET['consultation_type'] ?? null;
 $specialization_id = $_GET['specialization_id'] ?? null;
 
 if ($doctor_id && $specialization_id) {
@@ -54,7 +55,7 @@ if ($doctor_id && $specialization_id) {
         AND ds.specialization_id = ?
         AND da.status = 'Available'
     ");
-    $query->bind_param("iss", $doctor_id, $consultation_type, $specialization_id);
+    $query->bind_param("ii", $doctor_id, $specialization_id);
     $query->execute();
     $result = $query->get_result();
 
@@ -68,7 +69,7 @@ if ($doctor_id && $specialization_id) {
             'end' => $row['end_time'] ? $row['date'] . 'T' . $row['end_time'] : $row['date'],
             'allDay' => !$row['start_time'],
             'title' => ucfirst($row['consultation_type']) . ' Consultation - ' . $row['status'],
-            'color' => $color,  // Use consultation type to determine color
+            'color' => $color,  // Use consultation type and status to determine color
             'textColor' => 'white'
         ];
         $events[] = $event;
