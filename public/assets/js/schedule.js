@@ -15,8 +15,6 @@ function fetchServicesDropdown() {
           option.text = service.name;
           serviceSelect.appendChild(option);
         });
-
-        console.log("Service dropdown populated:", serviceSelect.innerHTML); // Debugging
       } else {
         serviceSelect.innerHTML =
           "<option value=''>No services available</option>";
@@ -51,6 +49,9 @@ function fetchSpecializationsDropdown(serviceId) {
 
 // Function to fetch and populate doctors based on specialization and consultation type
 function fetchDoctors(specializationId, consultationType) {
+  console.log(
+    `Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
+  );
   fetch(
     `/api/get_doctors.php?specialization_id=${specializationId}&consultation_type=${consultationType}`
   )
@@ -111,11 +112,16 @@ function attachDoctorClickHandlers() {
 }
 
 // Function to load doctor's availability and setup time slots
-function loadDoctorCalendar(doctorId) {
+function loadDoctorCalendar(doctorId, consultationType, specializationId) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
+    console.log(
+      `Doctor ID: ${doctorId}, Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
+    );
+    fetch(
+      `/api/get_availability.php?doctor_id=${doctorId}&consultation_type=${consultationType}&specialization_id=${specializationId}`
+    )
       .then((response) => response.json())
       .then((data) => {
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -127,7 +133,7 @@ function loadDoctorCalendar(doctorId) {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data, // Pass the fetched data directly
+          events: data.events, // Only relevant consultation type will be displayed
           eventColor: "green", // Default event color
           eventTextColor: "white", // Default text color
         });
