@@ -17,7 +17,7 @@ $end_time = $input['end_time'] ?? null;
 $status = $input['status'] ?? 'Available';
 
 if ($doctor_id && $date && $start_time && $end_time && $consultation_type && $consultation_duration) {
-    // Fetch the overlapping availability slot
+    // Fetch overlapping availability slot
     $query = $db->prepare("
         SELECT * FROM doctor_availability 
         WHERE doctor_id = ? 
@@ -50,12 +50,26 @@ if ($doctor_id && $date && $start_time && $end_time && $consultation_type && $co
 
             if ($original_end_time > $end_time) {
                 // Insert the post-split slot (time after the new slot)
-                $postSlotQuery = $db->prepare("
-                    INSERT INTO doctor_availability (doctor_id, consultation_type, consultation_duration, date, start_time, end_time, status)
-                    VALUES (?, ?, ?, ?, ?, ?, 'Available')
+                // **Check if the next time slot is not 'Not Available' or empty**
+                $nextSlotQuery = $db->prepare("
+                    SELECT * FROM doctor_availability 
+                    WHERE doctor_id = ? 
+                    AND date = ? 
+                    AND start_time = ?
                 ");
-                $postSlotQuery->bind_param("isssss", $doctor_id, $consultation_type, $consultation_duration, $date, $end_time, $original_end_time);
-                $postSlotQuery->execute();
+                $nextSlotQuery->bind_param("iss", $doctor_id, $date, $end_time);
+                $nextSlotQuery->execute();
+                $nextSlot = $nextSlotQuery->get_result()->fetch_assoc();
+
+                // Only insert post-split slot if the next slot is neither 'Not Available' nor empty
+                if (!$nextSlot || ($nextSlot['status'] != 'Not Available')) {
+                    $postSlotQuery = $db->prepare("
+                        INSERT INTO doctor_availability (doctor_id, consultation_type, consultation_duration, date, start_time, end_time, status)
+                        VALUES (?, ?, ?, ?, ?, ?, 'Available')
+                    ");
+                    $postSlotQuery->bind_param("isssss", $doctor_id, $consultation_type, $consultation_duration, $date, $end_time, $original_end_time);
+                    $postSlotQuery->execute();
+                }
             }
 
             // Only insert the new slot if it's 'Not Available'
