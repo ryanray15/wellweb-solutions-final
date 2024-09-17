@@ -312,8 +312,13 @@ function loadDoctorCalendar(doctorId) {
         },
       },
       eventClick: function (info) {
-        handleEventClick(info, doctorId, calendar);
+        handleEventClick(info, doctorId, calendar); // Handle event click logic if required
       },
+      // Optional: you can adjust the slot duration, view options, etc.
+      slotMinTime: "08:00:00", // Assuming the doctor's schedule starts at 8 AM
+      slotMaxTime: "18:00:00", // Assuming the doctor's schedule ends at 6 PM
+      eventColor: "green", // Default event color (overridden by individual event colors)
+      eventTextColor: "white", // Default text color
     });
 
     calendar.render();
