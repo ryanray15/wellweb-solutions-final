@@ -379,7 +379,7 @@ function saveAvailability(doctorId) {
     .then((data) => {
       if (data.status) {
         alert("Availability set successfully");
-        loadDoctorCalendar(doctorId); // Refresh the calendar
+        loadDoctorCalendar(doctorId); // Refresh the calendar to reflect changes
       } else {
         alert("Failed to set availability");
       }
