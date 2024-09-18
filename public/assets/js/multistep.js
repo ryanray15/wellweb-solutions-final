@@ -1,4 +1,5 @@
 let currentStep = 0; // Current step is set to be the first step (0)
+
 showStep(currentStep); // Display the current step
 
 function showStep(step) {
@@ -14,8 +15,15 @@ function showStep(step) {
 
   if (step === steps.length - 1) {
     document.getElementById("nextBtn").style.display = "none"; // Hide the Next button on the final step
-    if (selectedDoctorId) {
-      loadDoctorCalendar(selectedDoctorId); // Load the calendar only when reaching the final step
+    if (selectedDoctorId && consultationType && specializationId) {
+      console.log(
+        `Loading Calendar with Doctor ID: ${selectedDoctorId}, Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
+      );
+      loadDoctorCalendar(selectedDoctorId, consultationType, specializationId);
+    } else {
+      console.error(
+        "Doctor ID, consultation type, or specialization ID is missing."
+      );
     }
   } else {
     document.getElementById("nextBtn").style.display = "inline";
@@ -43,6 +51,6 @@ function nextPrev(n) {
 
   // If moving back and the calendar was loaded, clear it
   if (n < 0 && currentStep < steps.length - 1) {
-    document.getElementById("calendar").innerHTML = "";
+    document.getElementById("calendar").innerHTML = ""; // Clear the calendar when moving back
   }
 }

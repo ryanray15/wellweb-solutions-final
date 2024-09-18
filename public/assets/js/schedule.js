@@ -1,4 +1,6 @@
-let selectedDoctorId = null; // This will store the selected doctor ID
+let selectedDoctorId = null;
+let consultationType = null;
+let specializationId = null;
 
 // Function to fetch and populate services
 function fetchServicesDropdown() {
@@ -15,8 +17,6 @@ function fetchServicesDropdown() {
           option.text = service.name;
           serviceSelect.appendChild(option);
         });
-
-        console.log("Service dropdown populated:", serviceSelect.innerHTML); // Debugging
       } else {
         serviceSelect.innerHTML =
           "<option value=''>No services available</option>";
@@ -50,7 +50,14 @@ function fetchSpecializationsDropdown(serviceId) {
 }
 
 // Function to fetch and populate doctors based on specialization and consultation type
-function fetchDoctors(specializationId, consultationType) {
+function fetchDoctors(specializationIdValue, consultationTypeValue) {
+  // Assign the values globally
+  consultationType = consultationTypeValue;
+  specializationId = specializationIdValue;
+
+  console.log(
+    `Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
+  );
   fetch(
     `/api/get_doctors.php?specialization_id=${specializationId}&consultation_type=${consultationType}`
   )
@@ -105,19 +112,25 @@ function attachDoctorClickHandlers() {
       // Store the selected doctor ID
       selectedDoctorId = this.getAttribute("data-doctor-id");
 
-      // No need to load the calendar here, it will be loaded in Step 4
+      console.log(`Doctor ID: ${selectedDoctorId}`); // Debugging
     });
   });
 }
 
-// Function to load doctor's availability and setup time slots
-function loadDoctorCalendar(doctorId) {
+// Function to load doctor's availability and setup time slots (only in step 4)
+function loadDoctorCalendar(doctorId, consultationType, specializationId) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
+    console.log(
+      `Doctor ID: ${doctorId}, Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
+    );
+    fetch(
+      `/api/get_availability.php?doctor_id=${doctorId}&consultation_type=${consultationType}&specialization_id=${specializationId}`
+    )
       .then((response) => response.json())
       .then((data) => {
+        console.log("Fetched events:", data); // Debugging log to ensure data comes in
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
@@ -127,8 +140,8 @@ function loadDoctorCalendar(doctorId) {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data, // Pass the fetched data directly
-          eventColor: "green", // Default event color
+          events: data.events, // Display all fetched events, including 'Not Available'
+          eventColor: "green", // Default event color (will be overridden by fetched data)
           eventTextColor: "white", // Default text color
         });
 
