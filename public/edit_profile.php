@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <a href="/index.php" class="text-white text-2xl font-bold">WellWeb</a>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">

@@ -55,7 +55,7 @@ if ($loggedIn) {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <span class="text-white text-2xl font-bold">Wellweb</span>
+                <span class="text-white text-2xl font-bold">WellWeb</span>
             </div>
             <div>
                 <?php if ($loggedIn) : ?>
@@ -83,7 +83,7 @@ if ($loggedIn) {
     <!-- Main Content -->
     <div class="content-container px-6 py-8">
         <div class="container mx-auto mt-10 p-8">
-            <h1 class="text-4xl font-bold text-green-600 mb-5">Welcome to Wellweb</h1>
+            <h1 class="text-4xl font-bold text-green-600 mb-5">Welcome to WellWeb</h1>
             <p class="text-lg text-gray-700 mb-8">Your convenient way to schedule medical appointments with ease.</p>
 
             <!-- Call to Action -->

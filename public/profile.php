@@ -49,7 +49,7 @@ if ($user_role === 'doctor') {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <a href="/index.php" class="text-white text-2xl font-bold">WellWeb</a>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-white focus:outline-none">
@@ -67,22 +67,30 @@ if ($user_role === 'doctor') {
         <h1 class="text-4xl font-bold text-green-600 mb-8">Profile</h1>
 
         <!-- User Profile Section -->
-        <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-green-700">User Information</h2>
-            <p class="text-gray-700 mb-3"><strong>First Name:</strong> <?php echo htmlspecialchars($userInfo['first_name']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Middle Initial:</strong> <?php echo htmlspecialchars($userInfo['middle_initial']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Last Name:</strong> <?php echo htmlspecialchars($userInfo['last_name']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Email:</strong> <?php echo htmlspecialchars($userInfo['email']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Contact Number:</strong> <?php echo htmlspecialchars($userInfo['contact_number']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Address:</strong> <?php echo htmlspecialchars($userInfo['address']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Gender:</strong> <?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p> <!-- Display gender -->
-
-            <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
-                <p class="text-gray-700 mb-3"><strong>Specializations:</strong> <?php echo implode(', ', $specializations); ?></p>
-            <?php endif; ?>
+        <!-- User Profile Section -->
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-3xl font-semibold mb-6 text-green-700">User Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="text-gray-800">
+                <p class="mb-3"><strong>First Name:</strong> <?php echo htmlspecialchars($userInfo['first_name']); ?></p>
+                <p class="mb-3"><strong>Middle Initial:</strong> <?php echo htmlspecialchars($userInfo['middle_initial']); ?></p>
+                <p class="mb-3"><strong>Last Name:</strong> <?php echo htmlspecialchars($userInfo['last_name']); ?></p>
+                <p class="mb-3"><strong>Email:</strong> <?php echo htmlspecialchars($userInfo['email']); ?></p>
+            </div>
+            <div class="text-gray-800">
+                <p class="mb-3"><strong>Contact Number:</strong> <?php echo htmlspecialchars($userInfo['contact_number']); ?></p>
+                <p class="mb-3"><strong>Address:</strong> <?php echo htmlspecialchars($userInfo['address']); ?></p>
+                <p class="mb-3"><strong>Gender:</strong> <?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p>
+                
+                <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
+                    <p class="mb-3"><strong>Specializations:</strong> <?php echo implode(', ', $specializations); ?></p>
+                <?php endif; ?>
+            </div>
+            <br>
+        </div>
 
             <a href="edit_profile.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
-            <a href="reset_password.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
+            <a href="reset_password.php" class="bg-red-600 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
         </div>
     </div>
 

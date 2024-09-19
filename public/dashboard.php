@@ -168,7 +168,7 @@ if ($user_role === 'admin') {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <a href="/index.php" class="text-white text-2xl font-bold">WellWeb</a>
             </div>
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
