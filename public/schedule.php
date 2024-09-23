@@ -30,6 +30,7 @@ $userInfo = $query->get_result()->fetch_assoc();
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script> <!-- Add Stripe script -->
     <style>
         .doctor-card {
             transition: border-color 0.2s;
@@ -106,6 +107,14 @@ $userInfo = $query->get_result()->fetch_assoc();
                     <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
                         Schedule Appointment
                     </button>
+                </div>
+
+                <!-- Stripe Buy Button -->
+                <div class="mt-4 text-center">
+                    <stripe-buy-button
+                        buy-button-id="buy_btn_1Q249D08GrFUpp2bleRtLFYw"
+                        publishable-key="pk_test_51Q0mWz08GrFUpp2bxZpZ55e16ClgZ5jBudZW6buIyuzozAvD3OpRNb2eRHBcZJjpEtUvPjEeW3QsQj4QFlnZE58H00hT5LUq36">
+                    </stripe-buy-button>
                 </div>
             </div>
 
