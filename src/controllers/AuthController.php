@@ -17,8 +17,7 @@ class AuthController
 
     public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations)
     {
-        // Existing user registration logic
-        // ...
+        // Set the user properties
         $this->user->first_name = $first_name;
         $this->user->middle_initial = $middle_initial;
         $this->user->last_name = $last_name;
@@ -27,30 +26,32 @@ class AuthController
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;
-        $this->user->gender = $gender; // Handling the gender field
+        $this->user->gender = $gender;
 
+        // Check if user exists
         if ($this->user->find_by_email()) {
             return ['status' => false, 'message' => 'User already exists'];
         }
 
+        // Register user
         if ($this->user->register($specializations)) {
-            return ['status' => true, 'message' => 'User registered successfully'];
+            // Fetch the user ID of the newly registered user
+            $user_id = $this->db->insert_id;
+
+            // Insert specializations for the doctor
+            if ($role === 'doctor' && !empty($specializations)) {
+                foreach ($specializations as $specialization_id) {
+                    $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
+                    $stmt->bind_param("ii", $user_id, $specialization_id);
+                    $stmt->execute();
+                }
+            }
+
+            // Return the user ID along with a success message
+            return ['status' => true, 'message' => 'User registered successfully', 'user_id' => $user_id];
         }
 
         return ['status' => false, 'message' => 'Registration failed'];
-
-
-        // Insert the specializations for the doctor
-        if ($role === 'doctor' && !empty($specializations)) {
-            $user_id = $this->db->insert_id; // Assuming the user ID is auto-incremented
-            foreach ($specializations as $specialization_id) {
-                $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
-                $stmt->bind_param("ii", $user_id, $specialization_id);
-                $stmt->execute();
-            }
-        }
-
-        return ['status' => true, 'message' => 'User registered successfully'];
     }
 
     public function login($email, $password)
@@ -74,5 +75,18 @@ class AuthController
         }
 
         return ['status' => false, 'message' => 'Password update failed'];
+    }
+
+    // Method to save the Stripe account ID into the database for the user
+    public function saveStripeAccountId($user_id, $stripe_account_id)
+    {
+        $query = $this->db->prepare("UPDATE users SET stripe_account_id = ? WHERE user_id = ?");
+        $query->bind_param("si", $stripe_account_id, $user_id);
+
+        if ($query->execute()) {
+            return true; // Successfully saved
+        } else {
+            return false; // Failed to save
+        }
     }
 }
