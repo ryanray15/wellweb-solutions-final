@@ -89,4 +89,20 @@ class AuthController
             return false; // Failed to save
         }
     }
+
+    // Method to get the Stripe account ID for the user
+    public function getStripeAccountId($user_id)
+    {
+        $query = $this->db->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
+        $query->bind_param("i", $user_id);
+        $query->execute();
+        $result = $query->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['stripe_account_id'];
+        } else {
+            return null; // No Stripe account ID found
+        }
+    }
 }

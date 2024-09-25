@@ -190,6 +190,10 @@ if ($user_role === 'admin') {
                 </div>
             <?php endif; ?>
             <div class="relative">
+                <!-- Wallet Button -->
+                <button id="walletButton" class="text-white focus:outline-none">
+                    <i class="fas fa-wallet fa-2x"></i>
+                </button>
                 <button id="profileDropdown" class="text-white focus:outline-none">
                     <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
@@ -205,6 +209,7 @@ if ($user_role === 'admin') {
     <!-- Main Content -->
     <div class="container mx-auto mt-10">
         <?php if ($user_role === 'doctor') : ?>
+            <div id="embedded-onboarding-container"></div>
             <?php if (!$documents_submitted) : ?>
                 <!-- Case 1: Documents not submitted -->
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
@@ -481,10 +486,13 @@ if ($user_role === 'admin') {
     </div>
 
     <!-- FullCalendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>
     <script src="assets/js/dashboard.js"></script>
+    <?php if ($user_role === 'doctor') : ?>
+        <script type="module" src="dist/bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <?php endif; ?>
 </body>
 
 </html>
