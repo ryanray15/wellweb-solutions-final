@@ -1,4 +1,10 @@
-//import { loadConnectAndInitialize } from "@stripe/connect-js";
+import { loadConnectAndInitialize } from "@stripe/connect-js";
+
+const instance = loadConnectAndInitialize({
+  publishableKey:
+    "{{pk_test_51Q0mWz08GrFUpp2bxZpZ55e16ClgZ5jBudZW6buIyuzozAvD3OpRNb2eRHBcZJjpEtUvPjEeW3QsQj4QFlnZE58H00hT5LUq36}}",
+  fetchClientSecret: fetchClientSecret,
+});
 
 // Function to fetch the Stripe account ID from the backend
 const fetchStripeAccountId = async () => {
