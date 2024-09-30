@@ -109,13 +109,13 @@ $userInfo = $query->get_result()->fetch_assoc();
                     </button>
                 </div>
 
-                <!-- Stripe Buy Button -->
+                <!-- Stripe Buy Button
                 <div class="mt-4 text-center">
                     <stripe-buy-button
                         buy-button-id="buy_btn_1Q249D08GrFUpp2bleRtLFYw"
                         publishable-key="pk_test_51Q0mWz08GrFUpp2bxZpZ55e16ClgZ5jBudZW6buIyuzozAvD3OpRNb2eRHBcZJjpEtUvPjEeW3QsQj4QFlnZE58H00hT5LUq36">
                     </stripe-buy-button>
-                </div>
+                </div> -->
             </div>
 
             <!-- Navigation Buttons -->
