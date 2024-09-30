@@ -196,11 +196,12 @@ if ($user_role === 'admin') {
                         <i class="fas fa-wallet fa-2x"></i>
                     </button>
 
-                    <script>
+                    <!-- TODO -->
+                    <!-- <script>
                         document.getElementById('walletButton').addEventListener('click', () => {
-                            window.location.href = "/onboarding.php"; // Redirect to the onboarding page
+                            window.location.href = "/stripe-express.php"; 
                         });
-                    </script>
+                    </script> -->
                 <?php endif; ?>
 
                 <button id="profileDropdown" class="text-white focus:outline-none">
@@ -209,6 +210,9 @@ if ($user_role === 'admin') {
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                     <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+                    <?php if ($user_role === 'doctor') : ?>
+                        <a href="onboarding.php" id="onboarding" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Stripe Connect</a>
+                    <?php endif; ?>
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
             </div>

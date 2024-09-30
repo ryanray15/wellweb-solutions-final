@@ -1,11 +1,5 @@
 import { loadConnectAndInitialize } from "@stripe/connect-js";
 
-const instance = loadConnectAndInitialize({
-  publishableKey:
-    "{{pk_test_51Q0mWz08GrFUpp2bxZpZ55e16ClgZ5jBudZW6buIyuzozAvD3OpRNb2eRHBcZJjpEtUvPjEeW3QsQj4QFlnZE58H00hT5LUq36}}",
-  fetchClientSecret: fetchClientSecret,
-});
-
 // Function to fetch the Stripe account ID from the backend
 const fetchStripeAccountId = async () => {
   const response = await fetch("/api/get_stripe_account_id.php", {
@@ -71,8 +65,8 @@ const loadStripeOnboarding = (client_secret) => {
   onboardingContainer.appendChild(onboardingComponent);
 };
 
-// Event listener for the wallet button click
-document.getElementById("walletButton").addEventListener("click", async () => {
+// Automatically trigger onboarding when the page loads
+window.addEventListener("load", async () => {
   try {
     // Fetch the connected account ID from the backend
     const connectedAccountId = await fetchStripeAccountId();

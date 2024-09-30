@@ -4,6 +4,9 @@ session_start(); // Start the session
 // Check if the user is logged in
 $loggedIn = isset($_SESSION['user_id']);
 
+// Safely access the user role if logged in
+$user_role = isset($_SESSION['role']) ? $_SESSION['role'] : null; // Check if 'role' is set
+
 // Fetch user information if logged in
 $userInfo = [];
 if ($loggedIn) {
@@ -68,6 +71,9 @@ if ($loggedIn) {
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                             <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
                             <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+                            <?php if ($user_role === 'doctor') : ?>
+                                <a href="onboarding.php" id="onboarding" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Stripe Connect</a>
+                            <?php endif; ?>
                             <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                         </div>
                     </div>

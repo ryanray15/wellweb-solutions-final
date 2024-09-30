@@ -48,7 +48,6 @@ if ($user_role === 'doctor') {
     rel="stylesheet" />
   <script type="module" src="dist/bundle.js"></script>
   <script src="assets/js/utils.js"></script>
-  <script src="assets/js/common.js"></script>
 </head>
 
 <body>
@@ -60,24 +59,12 @@ if ($user_role === 'doctor') {
         <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
       </div>
       <div class="relative">
-        <?php if ($user_role === 'doctor') : ?>
-          <!-- Wallet Button -->
-          <button id="walletButton" class="text-white focus:outline-none">
-            <i class="fas fa-wallet fa-2x"></i>
-          </button>
-
-          <script>
-            document.getElementById('walletButton').addEventListener('click', () => {
-              // window.location.href = "/onboarding.php"; // Redirect to the onboarding page
-            });
-          </script>
-        <?php endif; ?>
-
         <button id="profileDropdown" class="text-white focus:outline-none">
-          <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
+          <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
           <i class="fas fa-user-circle fa-2x"></i>
         </button>
         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+          <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
           <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
           <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
         </div>
@@ -91,3 +78,37 @@ if ($user_role === 'doctor') {
 </body>
 
 </html>
+
+<script>
+  // Profile Dropdown
+const profileDropdown = document.getElementById("profileDropdown");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+profileDropdown.addEventListener("click", () => {
+  dropdownMenu.classList.toggle("hidden");
+});
+
+// Logout functionality
+const logoutButton = document.getElementById("logout");
+if (logoutButton) {
+  logoutButton.addEventListener("click", () => {
+    fetch("/api/logout.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status) {
+          sessionStorage.removeItem("user_id");
+          sessionStorage.removeItem("role");
+          window.location.href = "/index.php";
+        } else {
+          alert("Failed to log out. Please try again.");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  });
+}
+</script>

@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./src/wallet.js", // Path to your wallet.js file
+  entry: "./src/onboarding.js", // Path to your wallet.js file
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "public/dist"), // Output directory
