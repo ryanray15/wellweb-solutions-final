@@ -62,9 +62,7 @@ const loadStripeOnboarding = (client_secret) => {
   });
 
   // Get the container where the onboarding component will be embedded
-  const onboardingContainer = document.getElementById(
-    "embedded-onboarding-container"
-  );
+  const onboardingContainer = document.getElementById("onboarding-container");
   const onboardingComponent = stripeInstance.create("account-onboarding");
   onboardingComponent.setOnExit(() => {
     console.log("User exited the onboarding flow");

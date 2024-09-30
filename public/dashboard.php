@@ -190,10 +190,19 @@ if ($user_role === 'admin') {
                 </div>
             <?php endif; ?>
             <div class="relative">
-                <!-- Wallet Button -->
-                <button id="walletButton" class="text-white focus:outline-none">
-                    <i class="fas fa-wallet fa-2x"></i>
-                </button>
+                <?php if ($user_role === 'doctor') : ?>
+                    <!-- Wallet Button -->
+                    <button id="walletButton" class="text-white focus:outline-none">
+                        <i class="fas fa-wallet fa-2x"></i>
+                    </button>
+
+                    <script>
+                        document.getElementById('walletButton').addEventListener('click', () => {
+                            window.location.href = "/onboarding.php"; // Redirect to the onboarding page
+                        });
+                    </script>
+                <?php endif; ?>
+
                 <button id="profileDropdown" class="text-white focus:outline-none">
                     <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
