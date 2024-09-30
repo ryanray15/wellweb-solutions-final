@@ -227,34 +227,39 @@ function handleScheduleAppointment(patientId) {
     const selectedTime = document.getElementById("time").value;
     const serviceId = document.getElementById("service_id").value;
 
-    console.log("Selected Service ID:", serviceId); // Debugging log for service_id
-
     if (!selectedDate || !selectedTime || !selectedDoctorId || !serviceId) {
       alert("Please fill in all fields");
       return;
     }
 
+    // Prepare the data to be sent to the server
     const requestData = {
-      patient_id: patientId, // Use the passed patient ID
-      doctor_id: selectedDoctorId, // Use the stored doctor ID
+      patient_id: patientId,
+      doctor_id: selectedDoctorId,
       service_id: serviceId,
       date: selectedDate,
       time: selectedTime,
+      referrer: document.referrer, // To handle the cancel URL
     };
 
-    console.log("Request Data:", requestData); // Debugging line
-    fetch("/api/schedule_appointment.php", {
+    console.log("Request Data: ", requestData); // Debugging the data being sent
+
+    // Make an API call to create the checkout session
+    fetch("/api/create_checkout_session.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        return response.json(); // Ensure response is parsed as JSON
+      })
       .then((data) => {
-        alert(data.message);
-        if (data.status) {
-          window.location.href = "/dashboard.php"; // Redirect on success
+        if (data.error) {
+          console.error("Error: ", data.error); // Handle error
+        } else {
+          window.location.href = data.checkout_url; // Redirect to Stripe
         }
       })
       .catch((error) => console.error("Error:", error));
