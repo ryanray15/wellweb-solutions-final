@@ -62,6 +62,13 @@ try {
                 'destination' => $stripeAccountId,
             ],
         ],
+        'metadata' => [
+            'patient_id' => $patientId,
+            'doctor_id' => $doctorId,
+            'service_id' => $serviceId,
+            'date' => $appointmentDate,
+            'time' => $appointmentTime,
+        ],
         'mode' => 'payment',
         'success_url' => 'http://localhost/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => $referrer,
@@ -69,8 +76,6 @@ try {
 
     // Return the checkout session URL as a JSON response
     echo json_encode(['checkout_url' => $checkout_session->url]);
-
 } catch (Exception $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
-?>
