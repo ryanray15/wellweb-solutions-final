@@ -16,6 +16,7 @@ class AppointmentController
 
     public function schedule($patient_id, $doctor_id, $service_id, $date, $time)
     {
+        error_log("Scheduling appointment for patient $patient_id with doctor $doctor_id at $date $time");
         $this->appointment->patient_id = $patient_id;
         $this->appointment->doctor_id = $doctor_id;
         $this->appointment->service_id = $service_id;
@@ -23,9 +24,11 @@ class AppointmentController
         $this->appointment->time = $time;
 
         if ($this->appointment->create()) {
+            error_log("Appointment scheduled successfully");
             return ['status' => true, 'message' => 'Appointment scheduled successfully'];
         }
 
+        error_log("Failed to schedule appointment");
         return ['status' => false, 'message' => 'Appointment scheduling failed'];
     }
 

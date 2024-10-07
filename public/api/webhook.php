@@ -57,6 +57,10 @@ if ($event['type'] == 'checkout.session.completed') {
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+    // Log the response
+    error_log("Appointment API Response: $response");
+    error_log("HTTP Status Code: $httpcode");
+
     curl_close($ch);
 
     if ($httpcode === 200) {
