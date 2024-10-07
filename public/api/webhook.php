@@ -10,17 +10,23 @@ $payload = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 
 // The webhook secret (from the Stripe dashboard)
-$endpoint_secret = ' whsec_9b3a4d7331b3c23633a41051a138023172d70a9fdbb34bde4277fc499ebe28c9'; // Replace with your webhook secret
+$endpoint_secret = 'whsec_9b3a4d7331b3c23633a41051a138023172d70a9fdbb34bde4277fc499ebe28c9'; // Replace with your webhook secret
+
+// Log the payload and signature header for debugging
+file_put_contents('webhook_payload.log', $payload, FILE_APPEND);
+file_put_contents('sig_header.log', $sig_header, FILE_APPEND);
 
 // Verify that the event came from Stripe
 try {
     $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
 } catch (\UnexpectedValueException $e) {
     // Invalid payload
+    error_log('Invalid payload');
     http_response_code(400);
     exit();
 } catch (\Stripe\Exception\SignatureVerificationException $e) {
     // Invalid signature
+    error_log('Invalid signature');
     http_response_code(400);
     exit();
 }
@@ -38,6 +44,9 @@ if ($event['type'] == 'checkout.session.completed') {
         'time' => $session->metadata['time'],
     ];
 
+    // Log the appointment data for debugging
+    file_put_contents('appointment_data.log', print_r($appointmentData, true), FILE_APPEND);
+
     // Make a request to the existing appointment scheduling API
     $ch = curl_init('http://localhost/api/schedule_appointment.php'); // Adjust the path accordingly
     curl_setopt($ch, CURLOPT_POST, 1);
@@ -53,7 +62,7 @@ if ($event['type'] == 'checkout.session.completed') {
     if ($httpcode === 200) {
         error_log('Appointment scheduled successfully.');
     } else {
-        error_log('Failed to schedule appointment.');
+        error_log('Failed to schedule appointment. HTTP code: ' . $httpcode);
     }
 }
 
