@@ -232,6 +232,8 @@ function handleScheduleAppointment(patientId) {
       return;
     }
 
+    //console.log("Request Data: ", requestData); // Debugging the data being sent
+
     // Prepare the data to be sent to the server
     const requestData = {
       patient_id: patientId,
@@ -239,6 +241,7 @@ function handleScheduleAppointment(patientId) {
       service_id: serviceId,
       date: selectedDate,
       time: selectedTime,
+      consultation_type: consultationType, // Ensure this is included
       referrer: document.referrer, // To handle the cancel URL
     };
 

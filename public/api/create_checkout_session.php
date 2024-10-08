@@ -14,6 +14,8 @@ $doctorId = $input['doctor_id'] ?? null;
 $serviceId = $input['service_id'] ?? null;
 $appointmentDate = $input['date'] ?? null;
 $appointmentTime = $input['time'] ?? null;
+// Extract consultation_type from the input
+$consultationType = $input['consultation_type'] ?? null;
 $referrer = $input['referrer'] ?? null;
 
 if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointmentTime) {
@@ -50,6 +52,12 @@ if (!isset($services[$serviceId])) {
     exit();
 }
 
+if (!$consultationType) {
+    error_log("Consultation type not provided");
+    echo json_encode(['error' => 'Consultation type is required']);
+    exit();
+}
+
 try {
     // Create a new Stripe Checkout session
     $checkout_session = \Stripe\Checkout\Session::create([
@@ -76,6 +84,7 @@ try {
             'service_id' => $serviceId,
             'date' => $appointmentDate,
             'time' => $appointmentTime,
+            'consultation_type' => $consultationType,  // Add consultation type to metadata
         ],
         'mode' => 'payment',
         'success_url' => 'http://localhost/dashboard.php?session_id={CHECKOUT_SESSION_ID}',

@@ -4,7 +4,7 @@
 class Appointment
 {
     private $conn;
-    private $table = 'Appointments';
+    private $table = 'appointments';
 
     public $appointment_id;
     public $patient_id;
@@ -23,10 +23,23 @@ class Appointment
     {
         $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, time, status) VALUES (?, ?, ?, ?, ?, 'pending')";
         $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            error_log("SQL prepare failed: " . $this->conn->error);
+            return false;
+        }
+
         $stmt->bind_param("iiiss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->time);
-        error_log("Executing query: " . $stmt->get_result()); // Add this line to log the query
-        return $stmt->execute();
+        
+        // Execute the query and log the result
+        if ($stmt->execute()) {
+            error_log("Appointment created successfully.");
+            return true;
+        } else {
+            error_log("Failed to create appointment: " . $stmt->error);
+            return false;
+        }
     }
+
 
     public function reschedule()
     {

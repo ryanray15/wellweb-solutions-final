@@ -40,6 +40,7 @@ $service_id = $data->service_id ?? '';
 $date = $data->date ?? '';
 $time = $data->time ?? ''; // Assume this is in 'HH:MM' format
 $appointment_duration = 30; // Duration of appointment in minutes
+$consultation_type = $data->consultation_type ?? ''; // Ensure consultation type is passed
 
 // Log the input data for debugging
 error_log("Scheduling appointment with patient_id: $patient_id, doctor_id: $doctor_id, service_id: $service_id, date: $date, time: $time");
@@ -69,6 +70,8 @@ $doctorName = $doctor['doctor_name'] ?? '';
 // Calculate end time of the appointment
 $appointmentEndTime = date('H:i:s', strtotime("+$appointment_duration minutes", strtotime($time)));
 
+error_log("Consultation Type: " . $consultation_type);
+
 // Check doctor availability
 $availabilityQuery = $db->prepare("
     SELECT * FROM doctor_availability 
@@ -77,10 +80,11 @@ $availabilityQuery = $db->prepare("
     AND status = 'Available'
     AND start_time <= ? 
     AND end_time >= ?
+    AND consultation_type = ?
 ");
 $start_time_check = $time;
 $end_time_check = $appointmentEndTime;
-$availabilityQuery->bind_param("isss", $doctor_id, $date, $start_time_check, $end_time_check);
+$availabilityQuery->bind_param("issss", $doctor_id, $date, $start_time_check, $end_time_check, $consultation_type);
 $availabilityQuery->execute();
 $availableSlot = $availabilityQuery->get_result()->fetch_assoc();
 
@@ -113,22 +117,24 @@ try {
     $start_time = $availableSlot['start_time'];
     $end_time = $availableSlot['end_time'];
 
+    error_log("Original availability slot: " . print_r($availableSlot, true));
+
     // Split availability into new slots around the booked time
     if ($start_time < $time) {
         $preBookingQuery = $db->prepare("
-            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
-            VALUES (?, ?, ?, ?, 'Available')
+            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
+            VALUES (?, ?, ?, ?, 'Available', ?)
         ");
-        $preBookingQuery->bind_param("isss", $doctor_id, $date, $start_time, $time);
+        $preBookingQuery->bind_param("issss", $doctor_id, $date, $start_time, $time, $consultation_type);
         $preBookingQuery->execute();
     }
 
     if ($end_time > $appointmentEndTime) {
         $postBookingQuery = $db->prepare("
-            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
-            VALUES (?, ?, ?, ?, 'Available')
+            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
+            VALUES (?, ?, ?, ?, 'Available', ?)
         ");
-        $postBookingQuery->bind_param("isss", $doctor_id, $date, $appointmentEndTime, $end_time);
+        $postBookingQuery->bind_param("issss", $doctor_id, $date, $appointmentEndTime, $end_time, $consultation_type);
         $postBookingQuery->execute();
     }
 
