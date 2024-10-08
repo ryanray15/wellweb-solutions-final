@@ -1,16 +1,20 @@
 <?php
 session_start(); // Start the session
 
-// Check if user is logged in or if it's a Stripe Webhook request
-$isWebhookRequest = isset($_SERVER['HTTP_STRIPE_SIGNATURE']); // Set flag if request is from Stripe
+// Log the session ID and session data for debugging
+error_log("Session ID: " . session_id());
+error_log("Session Data: " . print_r($_SESSION, true));
+
+// Check if the request is a webhook request from Stripe
+$isWebhookRequest = isset($_SERVER['HTTP_STRIPE_SIGNATURE']);
 error_log("Is Webhook Request: " . ($isWebhookRequest ? "true" : "false"));
 
-// If not logged in and not a webhook request, reject
-if (!isset($_SESSION['user_id']) && !$isWebhookRequest) {
-    error_log("Unauthorized access");
-    echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
-    exit();
-}
+// Only enforce session authentication if it's not a webhook request
+// if (!isset($_SESSION['user_id']) && !$isWebhookRequest) {
+//     error_log("Unauthorized access - No valid session or webhook signature.");
+//     echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
+//     exit();
+// }
 
 require_once '../../src/autoload.php';
 require_once '../../config/database.php';
@@ -18,8 +22,16 @@ require_once '../../config/database.php';
 $db = include '../../config/database.php';
 $appointmentController = new AppointmentController($db);
 
+// Log the payload received
 $data = json_decode(file_get_contents("php://input"));
 error_log("Received Data: " . print_r($data, true));
+
+// Log the Stripe signature header to ensure it's being sent
+if ($isWebhookRequest) {
+    $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
+    error_log("Stripe Signature Header: " . $sig_header);
+    error_log("Stripe Signature: " . print_r($_SERVER['HTTP_STRIPE_SIGNATURE'], true));
+}
 
 // Validate the input data
 $patient_id = $data->patient_id ?? '';

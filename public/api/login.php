@@ -23,6 +23,9 @@ $user = $result->fetch_assoc();
 if ($user && password_verify($password, $user['password'])) {
     $_SESSION['user_id'] = $user['user_id'];
     $_SESSION['role'] = $user['role'];
+    error_log("User logged in with ID: " . $_SESSION['user_id']);
+    error_log("Session ID: " . session_id());
+    error_log("Session Data: " . print_r($_SESSION, true));
 
     // Determine the redirect URL based on the user's role
     $redirectUrl = '/dashboard.php'; // Default to patient dashboard
