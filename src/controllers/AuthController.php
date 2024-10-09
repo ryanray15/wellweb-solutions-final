@@ -33,26 +33,52 @@ class AuthController
             return ['status' => false, 'message' => 'User already exists'];
         }
 
-        // Register user
-        if ($this->user->register($specializations)) {
-            // Fetch the user ID of the newly registered user
-            $user_id = $this->db->insert_id;
+        // Start a transaction to ensure atomicity
+        $this->db->begin_transaction();
 
-            // Insert specializations for the doctor
-            if ($role === 'doctor' && !empty($specializations)) {
-                foreach ($specializations as $specialization_id) {
-                    $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
-                    $stmt->bind_param("ii", $user_id, $specialization_id);
-                    $stmt->execute();
+        try {
+            // Register user
+            if ($this->user->register()) {
+                // Fetch the user ID of the newly registered user
+                $user_id = $this->db->insert_id;
+
+                // Ensure the user registration was successful
+                if (!$user_id) {
+                    throw new Exception('User registration failed: no user_id returned.');
                 }
+
+                // Insert specializations for the doctor AFTER ensuring the user record is committed
+                if ($role === 'doctor' && !empty($specializations)) {
+                    foreach ($specializations as $specialization_id) {
+                        $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
+                        $stmt->bind_param("ii", $user_id, $specialization_id);
+
+                        // Execute the statement and check for errors
+                        if (!$stmt->execute()) {
+                            throw new Exception('Failed to insert doctor specializations: ' . $stmt->error);
+                        }
+                    }
+                }
+
+                // Commit the transaction if all operations succeed
+                $this->db->commit();
+
+                // Return the user ID along with a success message
+                return ['status' => true, 'message' => 'User registered successfully', 'user_id' => $user_id];
             }
 
-            // Return the user ID along with a success message
-            return ['status' => true, 'message' => 'User registered successfully', 'user_id' => $user_id];
-        }
+            throw new Exception('User registration failed.');
+            
+        } catch (Exception $e) {
+            // Rollback transaction if any operation fails
+            $this->db->rollback();
+            error_log($e->getMessage());
 
-        return ['status' => false, 'message' => 'Registration failed'];
+            // Return failure message
+            return ['status' => false, 'message' => 'Registration failed: ' . $e->getMessage()];
+        }
     }
+
 
     public function login($email, $password)
     {
