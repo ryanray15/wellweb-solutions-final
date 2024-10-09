@@ -24,6 +24,13 @@ $appointmentController = new AppointmentController($db);
 
 // Log the payload received
 $data = json_decode(file_get_contents("php://input"));
+
+// Extract consultation_type
+$consultation_type = $data->consultation_type ?? '';  // Ensure consultation type is passed
+
+// Log the input data for debugging
+error_log("Scheduling appointment with patient_id: $patient_id, doctor_id: $doctor_id, service_id: $service_id, consultation_type: $consultation_type, date: $date, time: $time");
+
 error_log("Received Data: " . print_r($data, true));
 
 // Log the Stripe signature header to ensure it's being sent
@@ -99,7 +106,7 @@ $db->begin_transaction();
 
 try {
     // Schedule appointment
-    $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time);
+    $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time, $consultation_type);
     error_log("Schedule response: " . print_r($response, true));
 
     if (!$response['status']) {

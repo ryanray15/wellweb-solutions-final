@@ -221,18 +221,19 @@ function disableUnavailableSlots(events) {
 function handleScheduleAppointment(patientId) {
   const scheduleButton = document.querySelector('button[type="submit"]');
   scheduleButton.addEventListener("click", function (e) {
-    e.preventDefault(); // Prevent the form from submitting immediately
+    e.preventDefault(); // Prevent form from submitting immediately
 
     const selectedDate = document.getElementById("date").value;
     const selectedTime = document.getElementById("time").value;
     const serviceId = document.getElementById("service_id").value;
 
+    // Assume consultation_type is determined by service_id
+    const consultationType = determineConsultationType(serviceId);
+
     if (!selectedDate || !selectedTime || !selectedDoctorId || !serviceId) {
       alert("Please fill in all fields");
       return;
     }
-
-    //console.log("Request Data: ", requestData); // Debugging the data being sent
 
     // Prepare the data to be sent to the server
     const requestData = {
@@ -241,8 +242,8 @@ function handleScheduleAppointment(patientId) {
       service_id: serviceId,
       date: selectedDate,
       time: selectedTime,
-      consultation_type: consultationType, // Ensure this is included
-      referrer: document.referrer, // To handle the cancel URL
+      consultation_type: consultationType, // Add consultation_type
+      referrer: document.referrer,
     };
 
     console.log("Request Data: ", requestData); // Debugging the data being sent
@@ -255,9 +256,7 @@ function handleScheduleAppointment(patientId) {
       },
       body: JSON.stringify(requestData),
     })
-      .then((response) => {
-        return response.json(); // Ensure response is parsed as JSON
-      })
+      .then((response) => response.json())
       .then((data) => {
         if (data.error) {
           console.error("Error: ", data.error); // Handle error
@@ -267,6 +266,16 @@ function handleScheduleAppointment(patientId) {
       })
       .catch((error) => console.error("Error:", error));
   });
+}
+
+// Function to map service_id to consultation_type
+function determineConsultationType(serviceId) {
+  if (serviceId == 1) {
+    return "online"; // Example for online consultation
+  } else if (serviceId == 2) {
+    return "physical"; // Example for physical consultation
+  }
+  return "";
 }
 
 // Ensure the form submission and scheduling logic still works

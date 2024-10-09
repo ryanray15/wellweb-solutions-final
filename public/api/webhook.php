@@ -7,10 +7,33 @@ require_once '../../config/database.php';
 
 // Retrieve the raw body from Stripe
 $payload = @file_get_contents('php://input');
+
+if (!isset($_SERVER['HTTP_STRIPE_SIGNATURE'])) {
+    // Invalid access without the Stripe signature, likely a manual visit or test request
+    http_response_code(400); // Bad request
+    echo "Invalid request. No Stripe signature detected.";
+    exit();
+}
+
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 
 // The webhook secret (from the Stripe dashboard)
 $endpoint_secret = 'whsec_9b3a4d7331b3c23633a41051a138023172d70a9fdbb34bde4277fc499ebe28c9'; // Replace with your webhook secret
+
+// try {
+//     $event = \Stripe\Webhook::constructEvent(
+//         $payload, $sig_header, $endpoint_secret
+//     );
+// } catch (\UnexpectedValueException $e) {
+//     // Invalid payload
+//     http_response_code(400);
+//     exit();
+// } catch (\Stripe\Exception\SignatureVerificationException $e) {
+//     // Invalid signature
+//     error_log('Invalid Stripe signature');
+//     http_response_code(400);
+//     exit();
+// }
 
 // Log the payload and signature header for debugging
 file_put_contents('webhook_payload.log', $payload, FILE_APPEND);
