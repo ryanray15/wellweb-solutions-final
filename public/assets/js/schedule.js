@@ -242,7 +242,7 @@ function handleScheduleAppointment(patientId) {
       service_id: serviceId,
       date: selectedDate,
       time: selectedTime,
-      consultation_type: consultationType, // Add consultation_type
+      //consultation_type: consultationType, // Add consultation_type
       referrer: document.referrer,
     };
 

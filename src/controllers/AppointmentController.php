@@ -14,15 +14,14 @@ class AppointmentController
         $this->appointment = new Appointment($db);
     }
 
-    public function schedule($patient_id, $doctor_id, $service_id, $date, $time, $consultation_type)
+    public function schedule($patient_id, $doctor_id, $service_id, $date, $time)
     {
-        error_log("Scheduling appointment for patient $patient_id with doctor $doctor_id at $date $time, Consultation Type: $consultation_type");
+        error_log("Scheduling appointment for patient $patient_id with doctor $doctor_id at $date $time");
         $this->appointment->patient_id = $patient_id;
         $this->appointment->doctor_id = $doctor_id;
         $this->appointment->service_id = $service_id;
         $this->appointment->date = $date;
         $this->appointment->time = $time;
-        $this->appointment->consultation_type = $consultation_type;  // Add consultation_type here
 
         if ($this->appointment->create()) {
             error_log("Appointment scheduled successfully");

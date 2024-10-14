@@ -10,11 +10,11 @@ $isWebhookRequest = isset($_SERVER['HTTP_STRIPE_SIGNATURE']);
 error_log("Is Webhook Request: " . ($isWebhookRequest ? "true" : "false"));
 
 // Only enforce session authentication if it's not a webhook request
-if (!$isWebhookRequest && !isset($_SESSION['user_id'])) {
-    error_log("Unauthorized access - No valid session or webhook signature.");
-    echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
-    exit();
-}
+// if (!$isWebhookRequest && !isset($_SESSION['user_id'])) {
+//     error_log("Unauthorized access - No valid session or webhook signature.");
+//     echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
+//     exit();
+// }
 
 require_once '../../src/autoload.php';
 require_once '../../config/database.php';
@@ -25,20 +25,8 @@ $appointmentController = new AppointmentController($db);
 // Log the payload received
 $data = json_decode(file_get_contents("php://input"));
 
-// Extract consultation_type
-$consultation_type = $data->consultation_type ?? '';  // Ensure consultation type is passed
-
 // Log the input data for debugging
-error_log("Scheduling appointment with patient_id: $patient_id, doctor_id: $doctor_id, service_id: $service_id, consultation_type: $consultation_type, date: $date, time: $time");
-
 error_log("Received Data: " . print_r($data, true));
-
-// Log the Stripe signature header to ensure it's being sent
-if ($isWebhookRequest) {
-    $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
-    error_log("Stripe Signature Header: " . $sig_header);
-    error_log("Stripe Signature: " . print_r($_SERVER['HTTP_STRIPE_SIGNATURE'], true));
-}
 
 // Validate the input data
 $patient_id = $data->patient_id ?? '';
@@ -47,7 +35,6 @@ $service_id = $data->service_id ?? '';
 $date = $data->date ?? '';
 $time = $data->time ?? ''; // Assume this is in 'HH:MM' format
 $appointment_duration = 30; // Duration of appointment in minutes
-$consultation_type = $data->consultation_type ?? ''; // Ensure consultation type is passed
 
 // Log the input data for debugging
 error_log("Scheduling appointment with patient_id: $patient_id, doctor_id: $doctor_id, service_id: $service_id, date: $date, time: $time");
@@ -77,8 +64,6 @@ $doctorName = $doctor['doctor_name'] ?? '';
 // Calculate end time of the appointment
 $appointmentEndTime = date('H:i:s', strtotime("+$appointment_duration minutes", strtotime($time)));
 
-error_log("Consultation Type: " . $consultation_type);
-
 // Check doctor availability
 $availabilityQuery = $db->prepare("
     SELECT * FROM doctor_availability 
@@ -87,11 +72,10 @@ $availabilityQuery = $db->prepare("
     AND status = 'Available'
     AND start_time <= ? 
     AND end_time >= ?
-    AND consultation_type = ?
 ");
 $start_time_check = $time;
 $end_time_check = $appointmentEndTime;
-$availabilityQuery->bind_param("issss", $doctor_id, $date, $start_time_check, $end_time_check, $consultation_type);
+$availabilityQuery->bind_param("isss", $doctor_id, $date, $start_time_check, $end_time_check);
 $availabilityQuery->execute();
 $availableSlot = $availabilityQuery->get_result()->fetch_assoc();
 
@@ -106,7 +90,7 @@ $db->begin_transaction();
 
 try {
     // Schedule appointment
-    $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time, $consultation_type);
+    $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time);
     error_log("Schedule response: " . print_r($response, true));
 
     if (!$response['status']) {
@@ -129,19 +113,19 @@ try {
     // Split availability into new slots around the booked time
     if ($start_time < $time) {
         $preBookingQuery = $db->prepare("
-            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
-            VALUES (?, ?, ?, ?, 'Available', ?)
+            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
+            VALUES (?, ?, ?, ?, 'Available')
         ");
-        $preBookingQuery->bind_param("issss", $doctor_id, $date, $start_time, $time, $consultation_type);
+        $preBookingQuery->bind_param("isss", $doctor_id, $date, $start_time, $time);
         $preBookingQuery->execute();
     }
 
     if ($end_time > $appointmentEndTime) {
         $postBookingQuery = $db->prepare("
-            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
-            VALUES (?, ?, ?, ?, 'Available', ?)
+            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
+            VALUES (?, ?, ?, ?, 'Available')
         ");
-        $postBookingQuery->bind_param("issss", $doctor_id, $date, $appointmentEndTime, $end_time, $consultation_type);
+        $postBookingQuery->bind_param("isss", $doctor_id, $date, $appointmentEndTime, $end_time);
         $postBookingQuery->execute();
     }
 
