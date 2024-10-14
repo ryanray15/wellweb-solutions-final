@@ -113,29 +113,31 @@ try {
     // Split availability into new slots around the booked time
     if ($start_time < $time) {
         $preBookingQuery = $db->prepare("
-            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
-            VALUES (?, ?, ?, ?, 'Available')
+            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
+            VALUES (?, ?, ?, ?, 'Available', ?)
         ");
-        $preBookingQuery->bind_param("isss", $doctor_id, $date, $start_time, $time);
+        $preBookingQuery->bind_param("issss", $doctor_id, $date, $start_time, $time, $availableSlot['consultation_type']);
         $preBookingQuery->execute();
     }
 
     if ($end_time > $appointmentEndTime) {
         $postBookingQuery = $db->prepare("
-            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
-            VALUES (?, ?, ?, ?, 'Available')
+            INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
+            VALUES (?, ?, ?, ?, 'Available', ?)
         ");
-        $postBookingQuery->bind_param("isss", $doctor_id, $date, $appointmentEndTime, $end_time);
+        $postBookingQuery->bind_param("issss", $doctor_id, $date, $appointmentEndTime, $end_time, $availableSlot['consultation_type']);
         $postBookingQuery->execute();
     }
 
+
     // Insert booked slot
     $bookingQuery = $db->prepare("
-        INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status) 
-        VALUES (?, ?, ?, ?, 'Booked')
-    ");
-    $bookingQuery->bind_param("isss", $doctor_id, $date, $time, $appointmentEndTime);
+        INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, status, consultation_type) 
+        VALUES (?, ?, ?, ?, 'Not Available', ?)
+        ");
+    $bookingQuery->bind_param("issss", $doctor_id, $date, $time, $appointmentEndTime, $availableSlot['consultation_type']);
     $bookingQuery->execute();
+
 
     // Remove original available slot
     $deleteOriginalQuery = $db->prepare("
