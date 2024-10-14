@@ -10,11 +10,11 @@ $isWebhookRequest = isset($_SERVER['HTTP_STRIPE_SIGNATURE']);
 error_log("Is Webhook Request: " . ($isWebhookRequest ? "true" : "false"));
 
 // Only enforce session authentication if it's not a webhook request
-// if (!isset($_SESSION['user_id']) && !$isWebhookRequest) {
-//     error_log("Unauthorized access - No valid session or webhook signature.");
-//     echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
-//     exit();
-// }
+if (!$isWebhookRequest && !isset($_SESSION['user_id'])) {
+    error_log("Unauthorized access - No valid session or webhook signature.");
+    echo json_encode(['status' => false, 'message' => 'Unauthorized access']);
+    exit();
+}
 
 require_once '../../src/autoload.php';
 require_once '../../config/database.php';

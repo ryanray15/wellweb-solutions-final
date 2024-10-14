@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 
 // Restrict access to logged-in users only
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'doctor') {
-    header('Location: login.php'); // Redirect to login page if not logged in or not a doctor
+    header('Location: login.html'); // Redirect to login page if not logged in or not a doctor
     exit();
 }
 

@@ -3,7 +3,7 @@ session_start();
 
 // Restrict access to logged-in users only
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php'); // Redirect to login page if not logged in
+    header('Location: login.html'); // Redirect to login page if not logged in
     exit();
 }
 
