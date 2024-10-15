@@ -350,30 +350,58 @@ function handleEventClick(info, doctorId, calendar) {
   }
 }
 
+function convertTo24Hour(time) {
+  const [timePart, modifier] = time.split(" ");
+  let [hours, minutes] = timePart.split(":");
+
+  // Ensure hours is treated as a string for padStart
+  hours = hours.toString();
+
+  if (hours === "12") {
+    hours = "00";
+  }
+  if (modifier === "PM" && hours !== "12") {
+    hours = (parseInt(hours, 10) + 12).toString();
+  }
+
+  return `${hours.padStart(2, "0")}:${minutes}`;
+}
+
 function saveAvailability(doctorId) {
   const consultationType = document.getElementById("consultation_type").value;
   const consultationDuration = document.getElementById(
     "consultation_duration"
   ).value;
   const availabilityDate = document.getElementById("availability_date").value;
+
+  // Get start and end time from inputs
   const startTime = document.getElementById("start_time").value;
   const endTime = document.getElementById("end_time").value;
+
+  // Convert start and end time to 24-hour format
+  const startTime24 = convertTo24Hour(startTime);
+  const endTime24 = convertTo24Hour(endTime);
+
   const status = document.getElementById("status").value;
 
+  // Prepare data to be sent in JSON
+  const availabilityData = {
+    doctor_id: doctorId,
+    consultation_type: consultationType,
+    consultation_duration: consultationDuration,
+    date: availabilityDate,
+    start_time: startTime24, // Use converted 24-hour format
+    end_time: endTime24, // Use converted 24-hour format
+    status: status,
+  };
+
+  // Send the request
   fetch("/api/set_doctor_availability.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      doctor_id: doctorId,
-      consultation_type: consultationType,
-      consultation_duration: consultationDuration,
-      date: availabilityDate,
-      start_time: startTime,
-      end_time: endTime,
-      status: status,
-    }),
+    body: JSON.stringify(availabilityData),
   })
     .then((response) => response.json())
     .then((data) => {

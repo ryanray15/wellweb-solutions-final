@@ -83,6 +83,7 @@ if ($user_role === 'admin') {
     <!-- Correct FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <style>
         #searchResults {
             top: 100%;
@@ -300,7 +301,7 @@ if ($user_role === 'admin') {
                         </div>
                         <div class="w-full ml-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
-                            <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                            <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
                                 <option value="30">30 Minutes</option>
                                 <option value="60">1 Hour</option>
                             </select>
@@ -315,11 +316,11 @@ if ($user_role === 'admin') {
                         </div>
                         <div class="w-full mr-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
-                            <input type="time" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                            <input type="text" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
                         </div>
                         <div class="w-full ml-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
-                            <input type="time" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                            <input type="text" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
                         </div>
                     </div>
 
@@ -502,6 +503,10 @@ if ($user_role === 'admin') {
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>
     <script src="assets/js/dashboard.js"></script>
+    <!-- Include jQuery first -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/timepicker.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
     <?php if ($user_role === 'doctor') : ?>
         <script type="module" src="dist/bundle.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
