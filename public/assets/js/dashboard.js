@@ -111,6 +111,26 @@ function loadDoctorDashboard(doctorId) {
     return;
   }
 
+  // Function to convert time to 24-hour format
+  function convertTo24Hour(time) {
+    const [timePart, modifier] = time.split(" ");
+    let [hours, minutes] = timePart.split(":");
+
+    // Convert hours to integer
+    hours = parseInt(hours, 10);
+
+    if (hours === 12) {
+      hours = 0;
+    }
+
+    if (modifier === "PM" && hours < 12) {
+      hours += 12;
+    }
+
+    // Convert hours back to a string and pad it to ensure it's always two digits
+    return `${String(hours).padStart(2, "0")}:${minutes}`;
+  }
+
   // Function to add a time range
   addTimeRangeBtn.addEventListener("click", function (event) {
     event.preventDefault();
@@ -122,15 +142,18 @@ function loadDoctorDashboard(doctorId) {
     if (startTime && endTime) {
       console.log("Time range added:", startTime, endTime);
 
-      // Add time range to the array
-      timeRanges.push({ start_time: startTime, end_time: endTime });
+      // Add time range to the array, convert to 24-hour format
+      timeRanges.push({
+        start_time: convertTo24Hour(startTime),
+        end_time: convertTo24Hour(endTime),
+      });
 
       // Add the selected time range to the UI container
       const timeRangeDiv = document.createElement("div");
       timeRangeDiv.classList.add("time-range");
       timeRangeDiv.innerHTML = `
         <span>Start: ${startTime} - End: ${endTime}</span>
-        <button class="remove-time-range">Remove</button>
+        <button class="remove-time-range text-red-500">Remove</button>
       `;
       timeRangesContainer.appendChild(timeRangeDiv);
 
@@ -155,7 +178,9 @@ function loadDoctorDashboard(doctorId) {
 
       // Remove the time range from the array
       timeRanges = timeRanges.filter(
-        (range) => range.start_time !== startTime || range.end_time !== endTime
+        (range) =>
+          range.start_time !== convertTo24Hour(startTime) ||
+          range.end_time !== convertTo24Hour(endTime)
       );
 
       // Remove the div from the UI
@@ -182,7 +207,7 @@ function loadDoctorDashboard(doctorId) {
       consultation_type: consultationType,
       consultation_duration: consultationDuration,
       date: availabilityDate,
-      time_ranges: timeRanges, // Send the array of time ranges
+      time_ranges: timeRanges, // Send the array of time ranges (already converted to 24-hour format)
       status: status,
     };
 
