@@ -5,6 +5,35 @@ require_once '../../config/database.php';
 // Set your secret key from Stripe
 \Stripe\Stripe::setApiKey('sk_test_51Q0mWz08GrFUpp2baKJ76Qx92QtXyK8Yd0WCgvmKgONsI81AV0zrbACPouftbwP9uRUyDJZ6qwOViw1yUT1ZpNhq00IoE3Zn2L');
 
+// This function fetches the dynamic ngrok URL
+function getNgrokPublicUrl() {
+    $ngrokApiUrl = 'http://127.0.0.1:4040/api/tunnels';
+    $ngrokApiResponse = @file_get_contents($ngrokApiUrl);
+
+    if ($ngrokApiResponse === FALSE) {
+        // If there's an error fetching the ngrok URL
+        error_log("Could not retrieve ngrok URL");
+        return null;
+    }
+
+    $ngrokData = json_decode($ngrokApiResponse, true);
+
+    // Extract public URL from the ngrok API response
+    if (isset($ngrokData['tunnels'][0]['public_url'])) {
+        return $ngrokData['tunnels'][0]['public_url'];
+    } else {
+        error_log("ngrok public URL not found in API response");
+        return null;
+    }
+}
+
+// Fetch the ngrok public URL
+$ngrokPublicUrl = getNgrokPublicUrl();
+
+if ($ngrokPublicUrl === null) {
+    die("Error: Could not get ngrok public URL. Please ensure ngrok is running.");
+}
+
 // Capture the request payload
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -78,7 +107,7 @@ try {
             'time' => $appointmentTime,
         ],
         'mode' => 'payment',
-        'success_url' => 'http://localhost/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
+        'success_url' => $ngrokPublicUrl . '/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => $referrer,
     ]);
 
