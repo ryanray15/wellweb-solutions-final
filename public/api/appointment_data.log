@@ -118,3 +118,11 @@ Array
     [date] => 2024-10-17
     [time] => 09:30
 )
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 2
+    [date] => 2024-10-21
+    [time] => 08:00
+)

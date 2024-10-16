@@ -161,7 +161,7 @@ function loadDoctorDashboard(doctorId) {
     }
   });
 
-  // Function to remove a time range
+  // Function to remove a time range //TODO!!!
   timeRangesContainer.addEventListener("click", function (event) {
     if (event.target.classList.contains("remove-time-range")) {
       console.log("Remove Time Range button clicked");
@@ -217,11 +217,14 @@ function loadDoctorDashboard(doctorId) {
       .then((data) => {
         if (data.status) {
           alert("Availability set successfully");
-          timeRanges = []; // Reset the array after successfully setting availability
           loadDoctorCalendar(doctorId); // Refresh the calendar
         } else {
           alert("Failed to set availability");
         }
+
+        // Clear the array and reset UI after setting availability
+        timeRanges = [];
+        timeRangesContainer.innerHTML = ""; // Clear the container UI
       })
       .catch((error) => console.error("Error:", error));
   });
