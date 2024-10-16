@@ -111,26 +111,6 @@ function loadDoctorDashboard(doctorId) {
     return;
   }
 
-  // Function to convert time to 24-hour format
-  function convertTo24Hour(time) {
-    const [timePart, modifier] = time.split(" ");
-    let [hours, minutes] = timePart.split(":");
-
-    // Convert hours to integer
-    hours = parseInt(hours, 10);
-
-    if (hours === 12) {
-      hours = 0;
-    }
-
-    if (modifier === "PM" && hours < 12) {
-      hours += 12;
-    }
-
-    // Convert hours back to a string and pad it to ensure it's always two digits
-    return `${String(hours).padStart(2, "0")}:${minutes}`;
-  }
-
   // Function to add a time range
   addTimeRangeBtn.addEventListener("click", function (event) {
     event.preventDefault();
@@ -138,14 +118,30 @@ function loadDoctorDashboard(doctorId) {
 
     const startTime = document.getElementById("start_time").value;
     const endTime = document.getElementById("end_time").value;
+    const consultationDuration = parseInt(
+      document.getElementById("consultation_duration").value,
+      10
+    );
 
     if (startTime && endTime) {
+      // Check if the time range exceeds the consultation duration
+      const startDate = new Date(`01/01/2020 ${startTime}`);
+      const endDate = new Date(`01/01/2020 ${endTime}`);
+      const timeDifferenceInMinutes = (endDate - startDate) / (1000 * 60); // Convert to minutes
+
+      if (timeDifferenceInMinutes > consultationDuration) {
+        alert(
+          `Time range exceeds your set consultation duration of ${consultationDuration} minutes. Please select a shorter time range.`
+        );
+        return;
+      }
+
       console.log("Time range added:", startTime, endTime);
 
-      // Add time range to the array, convert to 24-hour format
+      // Add time range to the array
       timeRanges.push({
-        start_time: convertTo24Hour(startTime),
-        end_time: convertTo24Hour(endTime),
+        start_time: convertTo24Hour(startTime), // Convert to 24-hour format
+        end_time: convertTo24Hour(endTime), // Convert to 24-hour format
       });
 
       // Add the selected time range to the UI container
@@ -178,9 +174,7 @@ function loadDoctorDashboard(doctorId) {
 
       // Remove the time range from the array
       timeRanges = timeRanges.filter(
-        (range) =>
-          range.start_time !== convertTo24Hour(startTime) ||
-          range.end_time !== convertTo24Hour(endTime)
+        (range) => range.start_time !== startTime || range.end_time !== endTime
       );
 
       // Remove the div from the UI
@@ -207,7 +201,7 @@ function loadDoctorDashboard(doctorId) {
       consultation_type: consultationType,
       consultation_duration: consultationDuration,
       date: availabilityDate,
-      time_ranges: timeRanges, // Send the array of time ranges (already converted to 24-hour format)
+      time_ranges: timeRanges, // Send the array of time ranges
       status: status,
     };
 
@@ -223,6 +217,7 @@ function loadDoctorDashboard(doctorId) {
       .then((data) => {
         if (data.status) {
           alert("Availability set successfully");
+          timeRanges = []; // Reset the array after successfully setting availability
           loadDoctorCalendar(doctorId); // Refresh the calendar
         } else {
           alert("Failed to set availability");
@@ -230,6 +225,24 @@ function loadDoctorDashboard(doctorId) {
       })
       .catch((error) => console.error("Error:", error));
   });
+
+  // Time conversion function (convert to 24-hour format)
+  function convertTo24Hour(time) {
+    const [timePart, modifier] = time.split(" ");
+    let [hours, minutes] = timePart.split(":");
+
+    // Ensure hours is a string before using padStart
+    hours = hours.toString();
+
+    if (hours === "12") {
+      hours = "00";
+    }
+    if (modifier === "PM" && hours !== "12") {
+      hours = (parseInt(hours, 10) + 12).toString(); // Convert back to string after adding 12
+    }
+
+    return `${hours.padStart(2, "0")}:${minutes}`;
+  }
 }
 
 // Function to load admin dashboard data
