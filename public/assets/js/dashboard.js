@@ -98,12 +98,113 @@ function loadDoctorDashboard(doctorId) {
   // Initialize and load the calendar for displaying availability
   loadDoctorCalendar(doctorId);
 
-  // Add event listener for "Set Availability" button
-  document
-    .getElementById("set_availability")
-    .addEventListener("click", function () {
-      saveAvailability(doctorId);
-    });
+  // Ensure button and container elements exist
+  const addTimeRangeBtn = document.getElementById("add_time_range"); // Add Time Range button
+  const setAvailabilityBtn = document.getElementById("set_availability"); // Set Availability button
+  const timeRangesContainer = document.getElementById("time-ranges"); // The container to hold time ranges
+  let timeRanges = []; // Array to store time ranges
+
+  if (!addTimeRangeBtn || !setAvailabilityBtn || !timeRangesContainer) {
+    console.error(
+      "Missing required DOM elements. Ensure the buttons and container exist."
+    );
+    return;
+  }
+
+  // Function to add a time range
+  addTimeRangeBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    console.log("Add Time Range button clicked");
+
+    const startTime = document.getElementById("start_time").value;
+    const endTime = document.getElementById("end_time").value;
+
+    if (startTime && endTime) {
+      console.log("Time range added:", startTime, endTime);
+
+      // Add time range to the array
+      timeRanges.push({ start_time: startTime, end_time: endTime });
+
+      // Add the selected time range to the UI container
+      const timeRangeDiv = document.createElement("div");
+      timeRangeDiv.classList.add("time-range");
+      timeRangeDiv.innerHTML = `
+        <span>Start: ${startTime} - End: ${endTime}</span>
+        <button class="remove-time-range">Remove</button>
+      `;
+      timeRangesContainer.appendChild(timeRangeDiv);
+
+      // Clear the input fields
+      document.getElementById("start_time").value = "";
+      document.getElementById("end_time").value = "";
+    } else {
+      alert("Please select both start and end time.");
+    }
+  });
+
+  // Function to remove a time range
+  timeRangesContainer.addEventListener("click", function (event) {
+    if (event.target.classList.contains("remove-time-range")) {
+      console.log("Remove Time Range button clicked");
+
+      const timeRangeDiv = event.target.parentElement;
+      const timeRangeText = timeRangeDiv.querySelector("span").innerText;
+      const [startText, endText] = timeRangeText.split(" - ");
+      const startTime = startText.split("Start: ")[1];
+      const endTime = endText.split("End: ")[1];
+
+      // Remove the time range from the array
+      timeRanges = timeRanges.filter(
+        (range) => range.start_time !== startTime || range.end_time !== endTime
+      );
+
+      // Remove the div from the UI
+      timeRangeDiv.remove();
+    }
+  });
+
+  // Submit availability with all time ranges
+  setAvailabilityBtn.addEventListener("click", function () {
+    console.log("Set Availability button clicked");
+
+    const consultationType = document.getElementById("consultation_type").value;
+    const consultationDuration = document.getElementById(
+      "consultation_duration"
+    ).value;
+    const availabilityDate = document.getElementById("availability_date").value;
+    const status = document.getElementById("status").value;
+
+    console.log("Collected time ranges:", timeRanges);
+
+    // Prepare the data to be sent
+    const availabilityData = {
+      doctor_id: doctorId, // Use the passed doctorId
+      consultation_type: consultationType,
+      consultation_duration: consultationDuration,
+      date: availabilityDate,
+      time_ranges: timeRanges, // Send the array of time ranges
+      status: status,
+    };
+
+    // Send the request
+    fetch("/api/set_doctor_availability.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(availabilityData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status) {
+          alert("Availability set successfully");
+          loadDoctorCalendar(doctorId); // Refresh the calendar
+        } else {
+          alert("Failed to set availability");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  });
 }
 
 // Function to load admin dashboard data
@@ -365,54 +466,6 @@ function convertTo24Hour(time) {
   }
 
   return `${hours.padStart(2, "0")}:${minutes}`;
-}
-
-function saveAvailability(doctorId) {
-  const consultationType = document.getElementById("consultation_type").value;
-  const consultationDuration = document.getElementById(
-    "consultation_duration"
-  ).value;
-  const availabilityDate = document.getElementById("availability_date").value;
-
-  // Get start and end time from inputs
-  const startTime = document.getElementById("start_time").value;
-  const endTime = document.getElementById("end_time").value;
-
-  // Convert start and end time to 24-hour format
-  const startTime24 = convertTo24Hour(startTime);
-  const endTime24 = convertTo24Hour(endTime);
-
-  const status = document.getElementById("status").value;
-
-  // Prepare data to be sent in JSON
-  const availabilityData = {
-    doctor_id: doctorId,
-    consultation_type: consultationType,
-    consultation_duration: consultationDuration,
-    date: availabilityDate,
-    start_time: startTime24, // Use converted 24-hour format
-    end_time: endTime24, // Use converted 24-hour format
-    status: status,
-  };
-
-  // Send the request
-  fetch("/api/set_doctor_availability.php", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(availabilityData),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status) {
-        alert("Availability set successfully");
-        loadDoctorCalendar(doctorId); // Refresh the calendar
-      } else {
-        alert("Failed to set availability");
-      }
-    })
-    .catch((error) => console.error("Error:", error));
 }
 
 // Function to load specializations and update the UI

@@ -7424,4 +7424,101 @@
     "idempotency_key": null
   },
   "type": "checkout.session.completed"
+}{
+  "id": "evt_1QAZi106799VqeioRxlzbSEJ",
+  "object": "event",
+  "account": "acct_1Q2p5h06799Vqeio",
+  "api_version": "2024-06-20",
+  "created": 1729094665,
+  "data": {
+    "object": {
+      "object": "balance",
+      "available": [
+        {
+          "amount": 0,
+          "currency": "hkd",
+          "source_types": {
+            "card": 0
+          }
+        }
+      ],
+      "livemode": false,
+      "pending": [
+        {
+          "amount": 380504,
+          "currency": "hkd",
+          "source_types": {
+            "card": 380504
+          }
+        }
+      ]
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "balance.available"
+}{
+  "id": "evt_1QAZi208GrFUpp2bQ4NqZrCB",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1729094666,
+  "data": {
+    "object": {
+      "object": "balance",
+      "available": [
+        {
+          "amount": 0,
+          "currency": "hkd",
+          "source_types": {
+            "card": 0
+          }
+        },
+        {
+          "amount": 0,
+          "currency": "usd",
+          "source_types": {
+            "card": 0
+          }
+        }
+      ],
+      "connect_reserved": [
+        {
+          "amount": 0,
+          "currency": "hkd"
+        },
+        {
+          "amount": 0,
+          "currency": "usd"
+        }
+      ],
+      "livemode": false,
+      "pending": [
+        {
+          "amount": 18280,
+          "currency": "hkd",
+          "source_types": {
+            "card": 18280
+          }
+        },
+        {
+          "amount": 13244,
+          "currency": "usd",
+          "source_types": {
+            "card": 13244
+          }
+        }
+      ]
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "balance.available"
 }
