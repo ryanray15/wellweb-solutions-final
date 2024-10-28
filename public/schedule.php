@@ -60,7 +60,7 @@ $userInfo = $query->get_result()->fetch_assoc();
         </div>
     </nav>
 
-    <div class="container mx-auto mt-10 max-w-2xl p-8 bg-white rounded-lg shadow-lg">
+    <div class="container mx-auto mt-10 w-full p-8 bg-white rounded-lg shadow-lg">
         <h1 class="text-3xl font-bold text-green-600 mb-8 text-center">
             Schedule Appointment
         </h1>
@@ -94,7 +94,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             <!-- Step 4: Schedule Appointment -->
             <div class="step" id="step-4" style="display:none;">
                 <div id="appointmentScheduler">
-                    <div class="flex justify-between mb-6">
+                    <!-- <div class="flex justify-between mb-6">
                         <div class="w-full mr-2">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
                             <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="date" type="date" />
@@ -106,16 +106,8 @@ $userInfo = $query->get_result()->fetch_assoc();
                     </div>
                     <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
                         Schedule Appointment
-                    </button>
+                    </button> -->
                 </div>
-
-                <!-- Stripe Buy Button
-                <div class="mt-4 text-center">
-                    <stripe-buy-button
-                        buy-button-id="buy_btn_1Q249D08GrFUpp2bleRtLFYw"
-                        publishable-key="pk_test_51Q0mWz08GrFUpp2bxZpZ55e16ClgZ5jBudZW6buIyuzozAvD3OpRNb2eRHBcZJjpEtUvPjEeW3QsQj4QFlnZE58H00hT5LUq36">
-                    </stripe-buy-button>
-                </div> -->
             </div>
 
             <!-- Navigation Buttons -->

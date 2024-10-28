@@ -6,7 +6,8 @@ require_once '../../config/database.php';
 \Stripe\Stripe::setApiKey('sk_test_51Q0mWz08GrFUpp2baKJ76Qx92QtXyK8Yd0WCgvmKgONsI81AV0zrbACPouftbwP9uRUyDJZ6qwOViw1yUT1ZpNhq00IoE3Zn2L');
 
 // This function fetches the dynamic ngrok URL
-function getNgrokPublicUrl() {
+function getNgrokPublicUrl()
+{
     $ngrokApiUrl = 'http://127.0.0.1:4040/api/tunnels';
     $ngrokApiResponse = @file_get_contents($ngrokApiUrl);
 
@@ -51,8 +52,11 @@ if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointme
     exit();
 }
 
+// Get the database connection
+$db = include '../../config/database.php';
+
 // Fetch doctor's Stripe account ID from the database
-$query = $mysqli->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
 $query->bind_param("i", $doctorId);
 $query->execute();
 $result = $query->get_result();
@@ -68,8 +72,8 @@ $stripeAccountId = $doctor['stripe_account_id'];
 
 // Define services (could come from a database)
 $services = [
-    '1' => ['name' => 'Online Consultation', 'price' => 100000],
-    '2' => ['name' => 'Physical Consultation', 'price' => 100000],
+    '1' => ['name' => 'Online Consultation', 'price' => 100000], // Price in cents
+    '2' => ['name' => 'Physical Consultation', 'price' => 100000], // Price in cents
 ];
 
 // Check if the service ID exists
@@ -94,7 +98,7 @@ try {
             'quantity' => 1,
         ]],
         'payment_intent_data' => [
-            'application_fee_amount' => 10000,  // Example platform fee
+            'application_fee_amount' => 10000,  // Example platform fee (PHP 100)
             'transfer_data' => [
                 'destination' => $stripeAccountId,
             ],

@@ -117,8 +117,13 @@ function attachDoctorClickHandlers() {
   });
 }
 
-// Function to load doctor's availability and setup time slots (only in step 4)
-function loadDoctorCalendar(doctorId, consultationType, specializationId) {
+// Function to load doctor's availability and setup time slots (updated)
+function loadDoctorCalendar(
+  doctorId,
+  consultationType,
+  specializationId,
+  patientId
+) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
@@ -130,19 +135,21 @@ function loadDoctorCalendar(doctorId, consultationType, specializationId) {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched events:", data); // Debugging log to ensure data comes in
+        console.log("Fetched events:", data);
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
-          timeZone: "Asia/Manila", // Adjust to your local timezone
+          timeZone: "Asia/Manila",
           headerToolbar: {
             left: "prev,next today",
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data.events, // Display all fetched events, including 'Not Available'
-          eventColor: "green", // Default event color (will be overridden by fetched data)
-          eventTextColor: "white", // Default text color
+          events: data.events,
+          eventClick: function (info) {
+            const event = info.event;
+            handleEventSelection(event, doctorId, patientId);
+          },
         });
 
         calendar.render();
@@ -151,6 +158,110 @@ function loadDoctorCalendar(doctorId, consultationType, specializationId) {
   } else {
     console.error("Calendar element not found");
   }
+}
+
+// Function to fetch the current user session
+function fetchCurrentSession() {
+  return fetch("/api/get_session.php")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data && data.status && data.user_id) {
+        return data.user_id; // Return the patient ID
+      } else {
+        console.error("Failed to fetch user session or user is not logged in.");
+        alert("You must be logged in to book an appointment.");
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching session data:", error);
+      return null;
+    });
+}
+
+// Function to handle event selection, fetch accurate time slot details, and confirm booking
+async function handleEventSelection(event, doctorId) {
+  const patientId = await fetchCurrentSession(); // Fetch the patientId directly
+
+  if (!patientId) {
+    console.error(
+      "Patient ID is not defined when calling handleEventSelection."
+    );
+    alert(
+      "There was an issue identifying the patient. Please log in and try again."
+    );
+    return;
+  }
+
+  const availabilityId = event.id;
+
+  // Fetch the time slot details using the availabilityId
+  fetch(
+    `/api/get_time_slot.php?doctor_id=${doctorId}&availability_id=${availabilityId}`
+  )
+    .then((response) => response.text())
+    .then((text) => {
+      console.log("Raw time slot response:", text);
+      try {
+        const timeSlotData = JSON.parse(text);
+        if (timeSlotData && timeSlotData.data && timeSlotData.data.start_time) {
+          const selectedDate = timeSlotData.data.date;
+          const selectedTime = timeSlotData.data.start_time;
+          const serviceId = document.getElementById("service_id").value;
+
+          const requestData = {
+            patient_id: patientId, // Ensure this is directly assigned
+            doctor_id: doctorId,
+            service_id: serviceId,
+            date: selectedDate,
+            time: selectedTime,
+            referrer: document.referrer,
+          };
+
+          console.log("Booking Request Data:", requestData);
+
+          const confirmation = confirm(
+            `Do you want to book this time slot: ${event.title} - Available on ${selectedDate} at ${selectedTime}?`
+          );
+
+          if (confirmation) {
+            createCheckoutSession(requestData);
+          }
+        } else {
+          console.error("Time slot data is missing or invalid", timeSlotData);
+          alert("Failed to fetch time slot details. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error parsing time slot response:", error, text);
+        alert("Failed to parse time slot details. Please try again.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching time slot details:", error);
+      alert("Error fetching time slot details. Please try again.");
+    });
+}
+
+// Function to create a checkout session
+function createCheckoutSession(requestData) {
+  // Make an API call to create the checkout session
+  fetch("/api/create_checkout_session.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.checkout_url) {
+        // Redirect to Stripe Checkout page
+        window.location.href = data.checkout_url;
+      } else {
+        alert("Failed to create checkout session. Please try again.");
+      }
+    })
+    .catch((error) => console.error("Error creating checkout session:", error));
 }
 
 // Function to dynamically generate time slots based on the doctor's availability
@@ -280,8 +391,8 @@ function determineConsultationType(serviceId) {
 
 // Ensure the form submission and scheduling logic still works
 document.addEventListener("DOMContentLoaded", function () {
-  checkUserSession().then((sessionData) => {
-    if (sessionData.status && sessionData.user_id) {
+  fetchCurrentSession().then((patientId) => {
+    if (patientId) {
       // Load services when the form is ready
       fetchServicesDropdown();
 
@@ -293,7 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
           fetchSpecializationsDropdown(serviceId);
         });
 
-      // Adjust event listener to include consultation type (now derived from the service_id dropdown)
+      // Adjust event listener to include consultation type
       document
         .getElementById("specialization_id")
         .addEventListener("change", function () {
@@ -307,8 +418,19 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
 
-      // Attach the schedule button functionality
-      handleScheduleAppointment(sessionData.user_id);
+      // Load the calendar with the patientId
+      if (selectedDoctorId) {
+        loadDoctorCalendar(
+          selectedDoctorId,
+          consultationType,
+          specializationId,
+          patientId
+        );
+      } else {
+        console.error("Please select a doctor before loading the calendar.");
+      }
+    } else {
+      console.error("Failed to get patient session data.");
     }
   });
 });

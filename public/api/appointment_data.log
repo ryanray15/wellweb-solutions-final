@@ -126,3 +126,27 @@ Array
     [date] => 2024-10-21
     [time] => 08:00
 )
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-10-18
+    [time] => 08:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-10-18
+    [time] => 09:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-10-18
+    [time] => 08:30:00
+)
