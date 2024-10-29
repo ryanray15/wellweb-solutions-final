@@ -403,7 +403,24 @@ function fetchAppointments(patient_id) {
           actionButton.className =
             "bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded";
           actionButton.disabled = new Date() < new Date(appointment.date);
-          // Add logic to join online room here...
+
+          actionButton.addEventListener("click", () => {
+            // Fetch the meeting_id and redirect to the video chat page
+            fetch(
+              `/api/get_meeting_id.php?appointment_id=${appointment.appointment_id}&user_id=${patient_id}`
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.meeting_id) {
+                  window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                } else {
+                  alert("Meeting ID not found or unauthorized.");
+                }
+              })
+              .catch((error) =>
+                console.error("Error fetching meeting ID:", error)
+              );
+          });
         } else {
           // Physical Consultation
           actionButton.textContent = "Locate Clinic";
