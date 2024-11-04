@@ -33,7 +33,7 @@
             <h3 id="meetingIdHeading" class="text-lg font-semibold mb-4"></h3>
 
             <!-- Video Container -->
-            <div id="videoContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div id="videoContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
                 <!-- Video frames will be dynamically appended here -->
             </div>
 
@@ -157,7 +157,7 @@
             videoFrame.classList.add("bg-gray-800", "rounded-lg", "p-4", "shadow");
 
             let videoElement = document.createElement("video");
-            videoElement.classList.add("video-frame", "rounded-lg", "w-full", "h-48", "object-cover");
+            videoElement.classList.add("video-frame", "rounded-lg", "w-full", "h-full", "object-cover");
             videoElement.setAttribute("id", `v-${pId}`);
             videoElement.setAttribute("playsinline", true);
             videoElement.setAttribute("autoplay", true);
