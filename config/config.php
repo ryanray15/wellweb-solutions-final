@@ -1,0 +1,3 @@
+<?php
+// config.php
+define("VIDEOSDK_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiJkNzlmNDAzZi05MjgwLTQyOWQtOTBiNy1iYmRjOTcwOGJiZjkiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTczMDIxMDc4OCwiZXhwIjoxNzYxNzQ2Nzg4fQ.nZpJ8Xb6I5heitZVP79TA3qR4L86FUIsZLxrV97oSnE");

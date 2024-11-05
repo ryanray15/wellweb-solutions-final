@@ -18,7 +18,7 @@ $(document).ready(function () {
       interval: interval, // Dynamic interval
       minTime: "8:00am",
       maxTime: "6:00pm",
-      defaultTime: "9:00am",
+      defaultTime: "",
       startTime: "8:00am",
       dynamic: false,
       dropdown: true,

@@ -353,19 +353,28 @@ if ($user_role === 'admin') {
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
                             <input type="text" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
                         </div>
+                        <!-- Button to Add Time Range -->
+                        <button id="add_time_range" class="text-green-600 text-6xl font-extrabold mt-2">+</button>
                     </div>
 
-                    <div class="mb-6">
-                        <div class="w-full mr-4">
+                    <div class="flex justify-evenly items-center mb-6">
+                        <div class="mr-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
                             <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
                                 <option value="Available">Available</option>
                                 <option value="Not Available">Not Available</option>
                             </select>
                         </div>
-                        <div class="w-full mt-4">
-                            <button id="set_availability" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">Set Availability</button>
+
+                        <!-- Container to hold the selected time ranges -->
+                        <div id="time-ranges-container" class="w-full mr-4 text-gray-700 text-sm font-bold">
+                            <h3>Selected Time Ranges:</h3>
+                            <div id="time-ranges"></div>
                         </div>
+                    </div>
+
+                    <div class="w-full mt-4">
+                        <button id="set_availability" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">Set Availability</button>
                     </div>
 
                     <!-- FullCalendar Display -->

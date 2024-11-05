@@ -18,6 +18,9 @@ error_log("Is Webhook Request: " . ($isWebhookRequest ? "true" : "false"));
 
 require_once '../../src/autoload.php';
 require_once '../../config/database.php';
+// Adjust the path to config.php based on your directory structure
+include __DIR__ . '/../../config/config.php';
+echo defined('VIDEOSDK_TOKEN') ? 'Token loaded' : 'Token not loaded'; // Temporary debug line
 
 $db = include '../../config/database.php';
 $appointmentController = new AppointmentController($db);
@@ -35,6 +38,34 @@ $service_id = $data->service_id ?? '';
 $date = $data->date ?? '';
 $time = $data->time ?? ''; // Assume this is in 'HH:MM' format
 $appointment_duration = 30; // Duration of appointment in minutes
+$meeting_id = null; // Initialize meeting_id as null for non-online consultations
+
+// Only generate a meeting_id if the service is for an online consultation (service_id = 1)
+if ($service_id == 1) {
+    $meeting_id = createVideoSDKRoom(); // Generate meeting ID using VideoSDK API
+}
+
+function createVideoSDKRoom()
+{
+    $url = "https://api.videosdk.live/v2/rooms";
+    $options = [
+        "http" => [
+            "header" => "Authorization: " . VIDEOSDK_TOKEN . "\r\nContent-Type: application/json\r\n",
+            "method" => "POST",
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+    $result = json_decode($response, true);
+
+    if (isset($result['roomId'])) {
+        return $result['roomId'];
+    } else {
+        error_log("Error generating VideoSDK roomId: " . json_encode($result));
+        return null;
+    }
+}
 
 // Log the input data for debugging
 error_log("Scheduling appointment with patient_id: $patient_id, doctor_id: $doctor_id, service_id: $service_id, date: $date, time: $time");
@@ -90,7 +121,7 @@ $db->begin_transaction();
 
 try {
     // Schedule appointment
-    $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time);
+    $response = $appointmentController->schedule($patient_id, $doctor_id, $service_id, $date, $time, $meeting_id);
     error_log("Schedule response: " . print_r($response, true));
 
     if (!$response['status']) {

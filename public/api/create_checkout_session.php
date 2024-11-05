@@ -5,6 +5,36 @@ require_once '../../config/database.php';
 // Set your secret key from Stripe
 \Stripe\Stripe::setApiKey('sk_test_51Q0mWz08GrFUpp2baKJ76Qx92QtXyK8Yd0WCgvmKgONsI81AV0zrbACPouftbwP9uRUyDJZ6qwOViw1yUT1ZpNhq00IoE3Zn2L');
 
+// This function fetches the dynamic ngrok URL
+function getNgrokPublicUrl()
+{
+    $ngrokApiUrl = 'http://127.0.0.1:4040/api/tunnels';
+    $ngrokApiResponse = @file_get_contents($ngrokApiUrl);
+
+    if ($ngrokApiResponse === FALSE) {
+        // If there's an error fetching the ngrok URL
+        error_log("Could not retrieve ngrok URL");
+        return null;
+    }
+
+    $ngrokData = json_decode($ngrokApiResponse, true);
+
+    // Extract public URL from the ngrok API response
+    if (isset($ngrokData['tunnels'][0]['public_url'])) {
+        return $ngrokData['tunnels'][0]['public_url'];
+    } else {
+        error_log("ngrok public URL not found in API response");
+        return null;
+    }
+}
+
+// Fetch the ngrok public URL
+$ngrokPublicUrl = getNgrokPublicUrl();
+
+if ($ngrokPublicUrl === null) {
+    die("Error: Could not get ngrok public URL. Please ensure ngrok is running.");
+}
+
 // Capture the request payload
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -22,8 +52,11 @@ if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointme
     exit();
 }
 
+// Get the database connection
+$db = include '../../config/database.php';
+
 // Fetch doctor's Stripe account ID from the database
-$query = $mysqli->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
+$query = $db->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
 $query->bind_param("i", $doctorId);
 $query->execute();
 $result = $query->get_result();
@@ -39,8 +72,8 @@ $stripeAccountId = $doctor['stripe_account_id'];
 
 // Define services (could come from a database)
 $services = [
-    '1' => ['name' => 'Online Consultation', 'price' => 100000],
-    '2' => ['name' => 'Physical Consultation', 'price' => 100000],
+    '1' => ['name' => 'Online Consultation', 'price' => 100000], // Price in cents
+    '2' => ['name' => 'Physical Consultation', 'price' => 100000], // Price in cents
 ];
 
 // Check if the service ID exists
@@ -65,7 +98,7 @@ try {
             'quantity' => 1,
         ]],
         'payment_intent_data' => [
-            'application_fee_amount' => 10000,  // Example platform fee
+            'application_fee_amount' => 10000,  // Example platform fee (PHP 100)
             'transfer_data' => [
                 'destination' => $stripeAccountId,
             ],
@@ -78,7 +111,7 @@ try {
             'time' => $appointmentTime,
         ],
         'mode' => 'payment',
-        'success_url' => 'http://localhost/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
+        'success_url' => $ngrokPublicUrl . '/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => $referrer,
     ]);
 
