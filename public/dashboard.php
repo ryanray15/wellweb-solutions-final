@@ -85,6 +85,14 @@ if ($user_role === 'admin') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <style>
+         body {
+            background-image: url('img/bg_doctor.jpg');
+            /* Update with your image path */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
         #searchResults {
             top: 100%;
             /* Position just below the search bar */
@@ -160,27 +168,50 @@ if ($user_role === 'admin') {
             background-color: #f0f0f0;
             /* Highlight the notification on hover */
         }
+        .transparent-bg {
+            background-color: rgba(255, 255, 255, 0.7);
+            /* White with 70% opacity */
+            backdrop-filter: blur(10px);
+            /* Optional: adds a blur effect to the background */
+            border-radius: 0.5rem;
+            /* Optional: adds rounded corners */
+        }
+        /* Hide all tab content by default */
+.tab-content .tab-pane {
+    display: none;
+}
+
+/* Show active tab content */
+.tab-content .tab-pane.active {
+    display: block;
+}
+
+/* Style for active tab link */
+.tab-link.active {
+    border-bottom: 2px solid #3b82f6;
+    color: #3b82f6;
+}
     </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-green-600 p-4">
+    <nav class="container mx-auto mt-10 transparent-bg p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
             </div>
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
                     <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
-                        class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
                 </div>
             <?php endif; ?>
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative">
-                    <button id="notificationDropdown" class="text-white focus:outline-none">
+                    <button id="notificationDropdown" class="text-blue-500 focus:outline-none">
                         <i class="fas fa-bell fa-2x mr-4"></i>
                     </button>
                     <div id="notificationMenu" class="hidden absolute right-0 mt-2 py-2 w-64 bg-white rounded-lg shadow-xl z-20">
@@ -205,7 +236,7 @@ if ($user_role === 'admin') {
                     </script> -->
                 <?php endif; ?>
 
-                <button id="profileDropdown" class="text-white focus:outline-none">
+                <button id="profileDropdown" class="text-blue-500 focus:outline-none">
                     <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
@@ -454,15 +485,28 @@ if ($user_role === 'admin') {
             </div>
         <?php endif; ?>
 
-        <!-- Patient Dashboard -->
-        <?php if ($user_role === 'patient') : ?>
-            <h1 class="text-3xl font-bold text-green-600 mb-8">Patient Dashboard</h1>
+       <!-- Patient Dashboard -->
+<?php if ($user_role === 'patient') : ?>
+    <h1 class="text-3xl font-bold text-blue-600 mb-8">Patient Dashboard</h1>
 
-            <!-- New Appointments Section -->
+    <!-- Tab Navigation -->
+    <div class="mb-6">
+        <ul class="flex space-x-4">
+            <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="appointments">Your Appointments</button></li>
+            <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="schedule">Schedule Appointment</button></li>
+            <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="reschedule">Reschedule Appointment</button></li>
+            <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="cancel">Cancel Appointment</button></li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Your Appointments Section -->
+        <div class="tab-pane" id="appointments">
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold mb-4 text-green-700">Your Appointments</h2>
+                <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
                 <table class="min-w-full bg-white">
-                    <thead class="bg-green-200">
+                    <thead class="bg-gray-200">
                         <tr>
                             <th class="w-1/4 px-4 py-2">Doctor Name</th>
                             <th class="w-1/4 px-4 py-2">Date</th>
@@ -476,33 +520,43 @@ if ($user_role === 'admin') {
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <!-- Schedule Appointment Section -->
+        <!-- Schedule Appointment Section -->
+        <div class="tab-pane hidden" id="schedule">
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold mb-4 text-green-700">Schedule Appointment</h2>
-                <a href="schedule.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Schedule an Appointment</a>
+                <h2 class="text-2xl font-bold mb-4 text-blue-500">Schedule Appointment</h2>
+                <a href="schedule.php" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">Schedule an Appointment</a>
             </div>
+        </div>
 
-            <!-- Reschedule Appointment Section -->
-            <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="rescheduleSection">
-                <h2 class="text-2xl font-bold mb-4 text-green-700">Reschedule Appointment</h2>
+        <!-- Reschedule Appointment Section -->
+        <div class="tab-pane hidden" id="reschedule">
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-blue-500">Reschedule Appointment</h2>
                 <p id="rescheduleMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
                 <a href="reschedule.php" id="rescheduleButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
             </div>
+        </div>
 
-            <!-- Cancel Appointment Section -->
-            <div class="mb-8 p-6 bg-white rounded-lg shadow-md" id="cancelSection">
-                <h2 class="text-2xl font-bold mb-4 text-green-700">Cancel Appointment</h2>
+        <!-- Cancel Appointment Section -->
+        <div class="tab-pane hidden" id="cancel">
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-blue-500">Cancel Appointment</h2>
                 <p id="cancelMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
                 <a href="cancel.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Cancel Appointment</a>
             </div>
-        <?php endif; ?>
+        </div>
+    </div>
+<?php endif; ?>
+
     </div>
 
     <!-- FullCalendar JS -->
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>
     <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/tabswitch.js"></script>
     <!-- Include jQuery first -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" src="assets/js/timepicker.js"></script>

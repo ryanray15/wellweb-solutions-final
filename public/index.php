@@ -54,11 +54,11 @@ if ($loggedIn) {
 <body class="bg-white">
 
     <!-- Navigation Bar -->
-    <nav class="bg-green-600 p-4">
+    <nav class="container mx-auto mt-10 transparent-bg p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <span class="text-white text-2xl font-bold">Wellweb</span>
+                <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
             </div>
             <div>
                 <?php if ($loggedIn) : ?>
@@ -79,8 +79,8 @@ if ($loggedIn) {
                     </div>
                 <?php else : ?>
                     <!-- Show login/register buttons for guests -->
-                    <button onclick="window.location.href='login.html'" class="bg-white text-green-600 py-2 px-4 rounded hover:bg-red-600 hover:text-white transition duration-300">Login</button>
-                    <button onclick="window.location.href='register.html'" class="bg-white text-green-600 py-2 px-4 rounded hover:bg-red-600 hover:text-white transition duration-300">Register</button>
+                    <button onclick="window.location.href='login.html'" class=" text-gray-700 py-2 px-4 rounded hover:bg-blue-600 hover:text-white transition duration-300">Login</button>
+                    <button onclick="window.location.href='register.html'" class=" text-gray-700 py-2 px-4 rounded hover:bg-blue-600 hover:text-white transition duration-300">Register</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -89,13 +89,13 @@ if ($loggedIn) {
     <!-- Main Content -->
     <div class="content-container px-6 py-8">
         <div class="container mx-auto mt-10 p-8">
-            <h1 class="text-4xl font-bold text-green-600 mb-5">Welcome to Wellweb</h1>
+            <h1 class="text-4xl font-bold text-blue-500 mb-5">Welcome to Well Web Solutions</h1>
             <p class="text-lg text-gray-700 mb-8">Your convenient way to schedule medical appointments with ease.</p>
 
             <!-- Call to Action -->
             <div class="flex space-x-4">
-                <a href="schedule.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
-                <a href="learn-more.html" class="bg-white text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-red-600 hover:text-white transition duration-300 border-2 border-green-600">Learn More</a>
+                <a href="schedule.php" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
+                <a href="learn-more.html" class="bg-white text-blue-500 font-bold py-2 px-6 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300 border-2 border-blue-500">Learn More</a>
             </div>
         </div>
 
@@ -104,21 +104,45 @@ if ($loggedIn) {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Feature 1 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <i class="fas fa-calendar-check fa-3x text-green-600 mb-4"></i>
+                    <i class="fas fa-calendar-check fa-3x  mb-4" style="color: #3b82f6"></i>
                     <h3 class="text-xl font-bold mb-2">Easy Scheduling</h3>
                     <p class="text-gray-700">Schedule appointments effortlessly with our user-friendly interface.</p>
                 </div>
 
                 <!-- Feature 2 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <i class="fas fa-stethoscope fa-3x text-green-600 mb-4"></i>
+                    <i class="fas fa-stethoscope fa-3x mb-4" style="color: #3b82f6"></i>
                     <h3 class="text-xl font-bold mb-2">Qualified Doctors</h3>
                     <p class="text-gray-700">Access a network of highly qualified healthcare professionals.</p>
                 </div>
 
                 <!-- Feature 3 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <i class="fas fa-mobile-alt fa-3x text-green-600 mb-4"></i>
+                    <i class="fas fa-mobile-alt fa-3x  mb-4" style="color: #3b82f6"></i>
+                    <h3 class="text-xl font-bold mb-2">Mobile Access</h3>
+                    <p class="text-gray-700">Manage your appointments on the go with our mobile-friendly platform.</p>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-auto mt-10 transparent-bg p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <i class="fas fa-hospital-user fa-3x  mb-4" style="color: #3b82f6"></i>
+                    <h3 class="text-xl font-bold mb-2">Easy Scheduling</h3>
+                    <p class="text-gray-700">Schedule appointments effortlessly with our user-friendly interface.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <i class="fas fa-user-nurse fa-3x mb-4" style="color: #3b82f6"></i>
+                    <h3 class="text-xl font-bold mb-2">Qualified Doctors</h3>
+                    <p class="text-gray-700">Access a network of highly qualified healthcare professionals.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <i class="fas fa-home fa-3x  mb-4" style="color: #3b82f6"></i>
                     <h3 class="text-xl font-bold mb-2">Mobile Access</h3>
                     <p class="text-gray-700">Manage your appointments on the go with our mobile-friendly platform.</p>
                 </div>
