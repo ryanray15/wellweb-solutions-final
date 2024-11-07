@@ -351,10 +351,20 @@ document
     notificationMenu.classList.toggle("hidden");
   });
 
+document.getElementById("appointmentType").addEventListener("change", () => {
+  fetchAppointments(patient_id); // Adjust to doctor_id if needed on the doctor’s side
+});
+
 function fetchAppointments(patient_id) {
-  fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+  // Get the selected type from the dropdown
+  const type = document.getElementById("appointmentType").value;
+  console.log("Fetching appointments for type:", type); // Debugging
+
+  // Pass the selected type as a query parameter to the backend
+  fetch(`/api/get_appointments.php?patient_id=${patient_id}&type=${type}`)
     .then((response) => response.json())
     .then((data) => {
+      console.log("Fetched appointments data:", data); // Debugging
       const appointmentsTable = document.getElementById("appointmentsTable");
       appointmentsTable.innerHTML = ""; // Clear previous appointments
 
@@ -405,7 +415,6 @@ function fetchAppointments(patient_id) {
           rescheduleButton.className =
             "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
           rescheduleButton.addEventListener("click", () => {
-            // Redirect to reschedule page or open reschedule modal
             window.location.href = `/reschedule_appointment.php?appointment_id=${appointment.appointment_id}`;
           });
 
@@ -414,13 +423,10 @@ function fetchAppointments(patient_id) {
           cancelButton.className =
             "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded";
           cancelButton.addEventListener("click", () => {
-            // Confirm and call cancel_appointment.php endpoint
             if (confirm("Are you sure you want to cancel this appointment?")) {
               fetch(`/api/cancel_appointment.php`, {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   appointment_id: appointment.appointment_id,
                 }),
@@ -450,11 +456,9 @@ function fetchAppointments(patient_id) {
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
-            // Online Consultation
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            // Check if the appointment is today to enable the Join Room button
             const appointmentDate = new Date(appointment.date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -471,7 +475,6 @@ function fetchAppointments(patient_id) {
             }
 
             actionButton.addEventListener("click", () => {
-              // Fetch the meeting_id and redirect to the video chat page
               fetch(
                 `/api/get_meeting_id.php?appointment_id=${appointment.appointment_id}&user_id=${patient_id}`
               )
@@ -488,7 +491,6 @@ function fetchAppointments(patient_id) {
                 );
             });
           } else {
-            // Physical Consultation
             actionButton.textContent = "Locate Clinic";
             actionButton.className =
               "bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded";

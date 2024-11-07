@@ -4,7 +4,9 @@ require_once '../../config/database.php';
 
 $db = include '../../config/database.php';
 $patient_id = $_GET['patient_id'];
+$type = $_GET['type'] ?? 'all'; // Default to 'all' if no type is provided
 
+// Base query
 $query = "
     SELECT 
         a.appointment_id, 
@@ -17,6 +19,13 @@ $query = "
     JOIN users u ON a.doctor_id = u.user_id
     WHERE a.patient_id = ? AND a.status != 'canceled'
 ";
+
+// Modify the query based on the appointment type
+if ($type === 'online') {
+    $query .= " AND a.service_id = 1"; // Online Consultation
+} elseif ($type === 'physical') {
+    $query .= " AND a.service_id = 2"; // Physical Consultation
+}
 
 $stmt = $db->prepare($query);
 $stmt->bind_param("i", $patient_id);
