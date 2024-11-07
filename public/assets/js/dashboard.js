@@ -97,6 +97,7 @@ function loadAdminDashboard() {
 function loadDoctorDashboard(doctorId) {
   // Initialize and load the calendar for displaying availability
   loadDoctorCalendar(doctorId);
+  fetchDoctorAppointments(doctorId);
 
   // Ensure button and container elements exist
   const addTimeRangeBtn = document.getElementById("add_time_range"); // Add Time Range button
@@ -350,19 +351,6 @@ document
     notificationMenu.classList.toggle("hidden");
   });
 
-// // Load notifications on page load
-// document.addEventListener("DOMContentLoaded", function () {
-//   checkUserSession().then((sessionData) => {
-//     if (
-//       sessionData.status &&
-//       sessionData.user_id &&
-//       sessionData.role === "patient"
-//     ) {
-//       loadNotifications(sessionData.user_id);
-//     }
-//   });
-// });
-
 function fetchAppointments(patient_id) {
   fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
     .then((response) => response.json())
@@ -523,6 +511,160 @@ function fetchAppointments(patient_id) {
     .catch((error) => console.error("Error fetching appointments:", error));
 }
 
+function fetchDoctorAppointments(doctor_id) {
+  fetch(`/api/get_doctor_appointments.php?doctor_id=${doctor_id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const appointmentsTable = document.getElementById(
+        "doctorAppointmentsTable"
+      );
+      appointmentsTable.innerHTML = ""; // Clear previous appointments
+
+      data.forEach((appointment) => {
+        const row = document.createElement("tr");
+
+        // Doctor's Name Cell
+        const patientCell = document.createElement("td");
+        patientCell.className = "border px-4 py-2";
+        patientCell.textContent = appointment.patient_name;
+
+        // Appointment Date Cell
+        const dateCell = document.createElement("td");
+        dateCell.className = "border px-4 py-2";
+        dateCell.textContent = appointment.date;
+
+        // Appointment Time Cell
+        const timeCell = document.createElement("td");
+        timeCell.className = "border px-4 py-2";
+        timeCell.textContent = appointment.time;
+
+        // Due In Cell
+        const dueInCell = document.createElement("td");
+        dueInCell.className = "border px-4 py-2";
+
+        const daysDue = calculateDaysDue(appointment.date);
+        let isOverdue = false;
+
+        if (daysDue < 0) {
+          dueInCell.textContent = "Overdue";
+          dueInCell.classList.add("text-red-500", "font-bold");
+          isOverdue = true;
+        } else {
+          dueInCell.textContent = `${daysDue} days`;
+          if (daysDue <= 3) {
+            dueInCell.classList.add("text-red-500", "font-bold");
+          }
+        }
+
+        // Actions Cell for Join Room / Locate Clinic or Reschedule / Cancel
+        const actionsCell = document.createElement("td");
+        actionsCell.className = "border px-4 py-2";
+
+        if (isOverdue) {
+          // Show Reschedule and Cancel buttons for overdue appointments
+          const rescheduleButton = document.createElement("button");
+          rescheduleButton.textContent = "Reschedule";
+          rescheduleButton.className =
+            "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
+          rescheduleButton.addEventListener("click", () => {
+            // Redirect to reschedule page or open reschedule modal
+            window.location.href = `/reschedule_appointment.php?appointment_id=${appointment.appointment_id}`;
+          });
+
+          const cancelButton = document.createElement("button");
+          cancelButton.textContent = "Cancel";
+          cancelButton.className =
+            "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded";
+          cancelButton.addEventListener("click", () => {
+            // Confirm and call cancel_appointment.php endpoint
+            if (confirm("Are you sure you want to cancel this appointment?")) {
+              fetch(`/api/cancel_appointment.php`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  appointment_id: appointment.appointment_id,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status) {
+                    alert("Appointment canceled successfully.");
+                    fetchDoctorAppointments(doctor_id); // Refresh the appointments
+                  } else {
+                    alert(
+                      data.message ||
+                        "Failed to cancel appointment. Please try again."
+                    );
+                  }
+                })
+                .catch((error) =>
+                  console.error("Error canceling appointment:", error)
+                );
+            }
+          });
+
+          actionsCell.appendChild(rescheduleButton);
+          actionsCell.appendChild(cancelButton);
+        } else {
+          // If not overdue, show Join Room or Locate Clinic based on service_id
+          const actionButton = document.createElement("button");
+
+          if (appointment.service_id == 1) {
+            // Online Consultation
+            actionButton.textContent = "Join Room";
+            actionButton.className = "font-bold py-1 px-3 rounded text-white";
+
+            // Check if the appointment is today to enable the Join Room button
+            const appointmentDate = new Date(appointment.date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            appointmentDate.setHours(0, 0, 0, 0);
+
+            if (today.getTime() === appointmentDate.getTime()) {
+              actionButton.disabled = false;
+              actionButton.classList.add("bg-blue-500", "hover:bg-blue-600");
+            } else {
+              actionButton.disabled = true;
+              actionButton.classList.add("bg-gray-400", "cursor-not-allowed");
+              actionButton.title =
+                "You can only join on the day of the appointment";
+            }
+
+            actionButton.addEventListener("click", () => {
+              // Fetch the meeting_id and redirect to the video chat page
+              fetch(
+                `/api/get_meeting_id.php?appointment_id=${appointment.appointment_id}&user_id=${doctor_id}`
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.meeting_id) {
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                  } else {
+                    alert("Meeting ID not found or unauthorized.");
+                  }
+                })
+                .catch((error) =>
+                  console.error("Error fetching meeting ID:", error)
+                );
+            });
+          }
+
+          actionsCell.appendChild(actionButton);
+        }
+
+        row.appendChild(patientCell);
+        row.appendChild(dateCell);
+        row.appendChild(timeCell);
+        row.appendChild(dueInCell);
+        row.appendChild(actionsCell);
+        appointmentsTable.appendChild(row);
+      });
+    })
+    .catch((error) => console.error("Error fetching appointments:", error));
+}
+
 // Helper function to calculate days due
 function calculateDaysDue(dateString) {
   const today = new Date();
@@ -537,28 +679,6 @@ function handleReschedule(appointmentId) {
   // Implement rescheduling logic here, e.g., open a modal with date picker for rescheduling
   console.log("Reschedule appointment with ID:", appointmentId);
 }
-
-// function handleCancel(appointmentId) {
-//   if (confirm("Are you sure you want to cancel this appointment?")) {
-//     fetch("/api/cancel_appointment.php", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ appointment_id: appointmentId }),
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         if (data.status) {
-//           alert("Appointment canceled successfully.");
-//           location.reload(); // Reload to reflect the change
-//         } else {
-//           alert(data.message || "Failed to cancel the appointment.");
-//         }
-//       })
-//       .catch((error) => console.error("Error canceling appointment:", error));
-//   }
-// }
 
 // Function to initialize and load the FullCalendar component for doctors
 function loadDoctorCalendar(doctorId) {

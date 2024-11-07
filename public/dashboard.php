@@ -34,25 +34,25 @@ if ($user_role === 'doctor') {
     }
 }
 
-// Function to fetch appointments for doctors
-function fetchDoctorAppointments($db, $user_id)
-{
-    $query = $db->prepare(
-        "SELECT a.*, p.first_name, p.middle_initial, p.last_name 
-         FROM appointments a
-         JOIN users p ON a.patient_id = p.user_id
-         WHERE a.doctor_id = ? AND a.status != 'canceled'"
-    );
-    $query->bind_param("i", $user_id);
-    $query->execute();
-    return $query->get_result()->fetch_all(MYSQLI_ASSOC);
-}
+// // Function to fetch appointments for doctors
+// function fetchDoctorAppointments($db, $user_id)
+// {
+//     $query = $db->prepare(
+//         "SELECT a.*, p.first_name, p.middle_initial, p.last_name 
+//          FROM appointments a
+//          JOIN users p ON a.patient_id = p.user_id
+//          WHERE a.doctor_id = ? AND a.status != 'canceled'"
+//     );
+//     $query->bind_param("i", $user_id);
+//     $query->execute();
+//     return $query->get_result()->fetch_all(MYSQLI_ASSOC);
+// }
 
-// Fetch doctor appointments if the user is a doctor
-$appointments = [];
-if ($user_role === 'doctor' && $is_verified) {
-    $appointments = fetchDoctorAppointments($db, $user_id);
-}
+// // Fetch doctor appointments if the user is a doctor
+// $appointments = [];
+// if ($user_role === 'doctor' && $is_verified) {
+//     $appointments = fetchDoctorAppointments($db, $user_id);
+// }
 
 // Initialize the $verifications variable
 $verifications = [];
@@ -292,46 +292,24 @@ if ($user_role === 'admin') {
                     </ul>
 
                     <!-- Your Appointments Section -->
-                    <div id="appointmentsContent" class="p-6 bg-white rounded-lg shadow-md">
-                        <h2 class="text-2xl font-bold mb-4 text-blue-600">Your Appointments</h2>
-                        <?php if (count($appointments) > 0) : ?>
-                            <table class="w-full text-left">
-                                <thead>
+                    <div class="tab-pane" id="appointments">
+                        <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                            <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
+                            <table class="min-w-full bg-white">
+                                <thead class="bg-gray-200">
                                     <tr>
-                                        <th class="border-b border-gray-200 px-4 py-2">Patient Name</th>
-                                        <th class="border-b border-gray-200 px-4 py-2">Date</th>
-                                        <th class="border-b border-gray-200 px-4 py-2">Time</th>
-                                        <th class="border-b border-gray-200 px-4 py-2">Status</th>
-                                        <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                                        <th class="w-1/4 px-4 py-2">Patient Name</th>
+                                        <th class="w-1/4 px-4 py-2">Date</th>
+                                        <th class="w-1/4 px-4 py-2">Time</th>
+                                        <th class="w-1/4 px-4 py-2">Due in</th>
+                                        <th class="w-1/4 px-4 py-2">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php foreach ($appointments as $appointment) : ?>
-                                        <tr>
-                                            <td class="border-b border-gray-200 px-4 py-2">
-                                                <?php echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['middle_initial'] . ' ' . $appointment['last_name']); ?>
-                                            </td>
-                                            <td class="border-b border-gray-200 px-4 py-2">
-                                                <?php echo htmlspecialchars($appointment['date']); ?>
-                                            </td>
-                                            <td class="border-b border-gray-200 px-4 py-2">
-                                                <?php echo htmlspecialchars($appointment['time']); ?>
-                                            </td>
-                                            <td class="border-b border-gray-200 px-4 py-2">
-                                                <?php echo htmlspecialchars($appointment['status']); ?>
-                                            </td>
-                                            <td class="border-b border-gray-200 px-4 py-2">
-                                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'accept')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</button>
-                                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'reschedule')" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</button>
-                                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'cancel')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</button>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                                <tbody id="doctorAppointmentsTable">
+                                    <!-- Appointments will be populated here by JavaScript -->
                                 </tbody>
                             </table>
-                        <?php else : ?>
-                            <p class="text-gray-700">No appointments available.</p>
-                        <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- Set Your Availability Section -->
