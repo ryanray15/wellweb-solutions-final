@@ -538,6 +538,11 @@ function fetchDoctorAppointments(doctor_id) {
         timeCell.className = "border px-4 py-2";
         timeCell.textContent = appointment.time;
 
+        // Appointment Time Cell
+        const statusCell = document.createElement("td");
+        statusCell.className = "border px-4 py-2";
+        statusCell.textContent = appointment.status;
+
         // Due In Cell
         const dueInCell = document.createElement("td");
         dueInCell.className = "border px-4 py-2";
@@ -657,6 +662,7 @@ function fetchDoctorAppointments(doctor_id) {
         row.appendChild(patientCell);
         row.appendChild(dateCell);
         row.appendChild(timeCell);
+        row.appendChild(statusCell);
         row.appendChild(dueInCell);
         row.appendChild(actionsCell);
         appointmentsTable.appendChild(row);

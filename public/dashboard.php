@@ -301,6 +301,7 @@ if ($user_role === 'admin') {
                                         <th class="w-1/4 px-4 py-2">Patient Name</th>
                                         <th class="w-1/4 px-4 py-2">Date</th>
                                         <th class="w-1/4 px-4 py-2">Time</th>
+                                        <th class="w-1/4 px-4 py-2">Status</th>
                                         <th class="w-1/4 px-4 py-2">Due in</th>
                                         <th class="w-1/4 px-4 py-2">Actions</th>
                                     </tr>
