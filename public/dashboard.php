@@ -85,7 +85,7 @@ if ($user_role === 'admin') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <style>
-         body {
+        body {
             background-image: url('img/bg_doctor.jpg');
             /* Update with your image path */
             background-size: cover;
@@ -93,6 +93,7 @@ if ($user_role === 'admin') {
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
+
         #searchResults {
             top: 100%;
             /* Position just below the search bar */
@@ -168,6 +169,7 @@ if ($user_role === 'admin') {
             background-color: #f0f0f0;
             /* Highlight the notification on hover */
         }
+
         .transparent-bg {
             background-color: rgba(255, 255, 255, 0.7);
             /* White with 70% opacity */
@@ -176,6 +178,7 @@ if ($user_role === 'admin') {
             border-radius: 0.5rem;
             /* Optional: adds rounded corners */
         }
+
         /* Hide all tab content by default */
         .tab-content .tab-pane {
             display: none;
@@ -191,8 +194,10 @@ if ($user_role === 'admin') {
             border-bottom: 2px solid #3b82f6;
             color: #3b82f6;
         }
+
         #calendar {
-             min-height: 400px; /* Adjust height as needed */
+            min-height: 400px;
+            /* Adjust height as needed */
         }
     </style>
 </head>
@@ -275,121 +280,121 @@ if ($user_role === 'admin') {
                 <h1 class="text-3xl font-bold text-blue-600 mb-8">Doctor Dashboard</h1>
                 <!-- Include full dashboard functionalities for doctors here -->
 
-<!-- Doctor Dashboard Tabs -->
-<div class="mb-8">
-    <ul class="flex border-b">
-        <li class="mr-1">
-            <button id="appointmentsTab" class="bg-green-600 text-white py-2 px-4 rounded-t-lg focus:outline-none">Your Appointments</button>
-        </li>
-        <li>
-            <button id="availabilityTab" class="bg-white text-green-600 py-2 px-4 rounded-t-lg focus:outline-none">Set Your Availability</button>
-        </li>
-    </ul>
+                <!-- Doctor Dashboard Tabs -->
+                <div class="mb-8">
+                    <ul class="flex border-b">
+                        <li class="mr-1">
+                            <button id="appointmentsTab" class="bg-green-600 text-white py-2 px-4 rounded-t-lg focus:outline-none">Your Appointments</button>
+                        </li>
+                        <li>
+                            <button id="availabilityTab" class="bg-white text-green-600 py-2 px-4 rounded-t-lg focus:outline-none">Set Your Availability</button>
+                        </li>
+                    </ul>
 
-    <!-- Your Appointments Section -->
-    <div id="appointmentsContent" class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-blue-600">Your Appointments</h2>
-        <?php if (count($appointments) > 0) : ?>
-            <table class="w-full text-left">
-                <thead>
-                    <tr>
-                        <th class="border-b border-gray-200 px-4 py-2">Patient Name</th>
-                        <th class="border-b border-gray-200 px-4 py-2">Date</th>
-                        <th class="border-b border-gray-200 px-4 py-2">Time</th>
-                        <th class="border-b border-gray-200 px-4 py-2">Status</th>
-                        <th class="border-b border-gray-200 px-4 py-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($appointments as $appointment) : ?>
-                        <tr>
-                            <td class="border-b border-gray-200 px-4 py-2">
-                                <?php echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['middle_initial'] . ' ' . $appointment['last_name']); ?>
-                            </td>
-                            <td class="border-b border-gray-200 px-4 py-2">
-                                <?php echo htmlspecialchars($appointment['date']); ?>
-                            </td>
-                            <td class="border-b border-gray-200 px-4 py-2">
-                                <?php echo htmlspecialchars($appointment['time']); ?>
-                            </td>
-                            <td class="border-b border-gray-200 px-4 py-2">
-                                <?php echo htmlspecialchars($appointment['status']); ?>
-                            </td>
-                            <td class="border-b border-gray-200 px-4 py-2">
-                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'accept')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</button>
-                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'reschedule')" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</button>
-                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'cancel')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else : ?>
-            <p class="text-gray-700">No appointments available.</p>
-        <?php endif; ?>
-    </div>
+                    <!-- Your Appointments Section -->
+                    <div id="appointmentsContent" class="p-6 bg-white rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">Your Appointments</h2>
+                        <?php if (count($appointments) > 0) : ?>
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr>
+                                        <th class="border-b border-gray-200 px-4 py-2">Patient Name</th>
+                                        <th class="border-b border-gray-200 px-4 py-2">Date</th>
+                                        <th class="border-b border-gray-200 px-4 py-2">Time</th>
+                                        <th class="border-b border-gray-200 px-4 py-2">Status</th>
+                                        <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($appointments as $appointment) : ?>
+                                        <tr>
+                                            <td class="border-b border-gray-200 px-4 py-2">
+                                                <?php echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['middle_initial'] . ' ' . $appointment['last_name']); ?>
+                                            </td>
+                                            <td class="border-b border-gray-200 px-4 py-2">
+                                                <?php echo htmlspecialchars($appointment['date']); ?>
+                                            </td>
+                                            <td class="border-b border-gray-200 px-4 py-2">
+                                                <?php echo htmlspecialchars($appointment['time']); ?>
+                                            </td>
+                                            <td class="border-b border-gray-200 px-4 py-2">
+                                                <?php echo htmlspecialchars($appointment['status']); ?>
+                                            </td>
+                                            <td class="border-b border-gray-200 px-4 py-2">
+                                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'accept')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">Accept</button>
+                                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'reschedule')" class="bg-yellow-600 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">Reschedule</button>
+                                                <button onclick="handleAppointmentAction(<?php echo $appointment['appointment_id']; ?>, 'cancel')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded">Cancel</button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else : ?>
+                            <p class="text-gray-700">No appointments available.</p>
+                        <?php endif; ?>
+                    </div>
 
-    <!-- Set Your Availability Section -->
-    <div id="availabilityContent" class="hidden p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-blue-600">Set Your Availability</h2>
+                    <!-- Set Your Availability Section -->
+                    <div id="availabilityContent" class="hidden p-6 bg-white rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">Set Your Availability</h2>
 
-        <div class="flex justify-between items-center mb-6">
-            <div class="w-full mr-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_type">Consultation Type</label>
-                <select id="consultation_type" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
-                    <option value="online">Online Consultation</option>
-                    <option value="physical">Physical Consultation</option>
-                    <option value="both">Both</option>
-                </select>
-            </div>
-            <div class="w-full ml-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
-                <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px- 3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
-                    <option value="30">30 Minutes</option>
-                    <option value="60">1 Hour</option>
-                </select>
-            </div>
-        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="w-full mr-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_type">Consultation Type</label>
+                                <select id="consultation_type" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
+                                    <option value="online">Online Consultation</option>
+                                    <option value="physical">Physical Consultation</option>
+                                    <option value="both">Both</option>
+                                </select>
+                            </div>
+                            <div class="w-full ml-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
+                                <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px- 3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
+                                    <option value="30">30 Minutes</option>
+                                    <option value="60">1 Hour</option>
+                                </select>
+                            </div>
+                        </div>
 
-        <div class="flex justify-between items-center mb-6">
-            <div class="w-full mr-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="availability_date">Choose Date</label>
-                <input type="date" id="availability_date" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
-            </div>
-            <div class="w-full mr-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
-                <input type="text" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
-            </div>
-            <div class="w-full ml-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
-                <input type="text" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
-            </div>
-            <button id="add_time_range" class="text-blue-600 text-6xl font-extrabold mt-2">+</button>
-        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="w-full mr-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="availability_date">Choose Date</label>
+                                <input type="date" id="availability_date" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div class="w-full mr-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
+                                <input type="text" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
+                            </div>
+                            <div class="w-full ml-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
+                                <input type="text" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
+                            </div>
+                            <button id="add_time_range" class="text-blue-600 text-6xl font-extrabold mt-2">+</button>
+                        </div>
 
-        <div class="flex justify-evenly items-center mb-6">
-            <div class="mr-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
-                <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
-                    <option value="Available">Available</option>
-                    <option value="Not Available">Not Available</option>
-                </select>
-            </div>
+                        <div class="flex justify-evenly items-center mb-6">
+                            <div class="mr-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
+                                <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <option value="Available">Available</option>
+                                    <option value="Not Available">Not Available</option>
+                                </select>
+                            </div>
 
-            <div id="time-ranges-container" class="w-full mr-4 text-gray-700 text-sm font-bold">
-                <h3>Selected Time Ranges:</h3>
-                <div id="time-ranges"></div>
-            </div>
-        </div>
+                            <div id="time-ranges-container" class="w-full mr-4 text-gray-700 text-sm font-bold">
+                                <h3>Selected Time Ranges:</h3>
+                                <div id="time-ranges"></div>
+                            </div>
+                        </div>
 
-        <div class="w-full mt-4">
-            <button id="set_availability" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">Set Availability</button>
-        </div>
+                        <div class="w-full mt-4">
+                            <button id="set_availability" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">Set Availability</button>
+                        </div>
 
-        <!-- FullCalendar Display -->
-        <div id="calendar" class="mt-6 w-full p-4 bg-gray-100 rounded-lg shadow-md"></div>
-    </div>
-</div>
+                        <!-- FullCalendar Display -->
+                        <div id="calendar" class="mt-6 w-full p-4 bg-gray-100 rounded-lg shadow-md"></div>
+                    </div>
+                </div>
 
             <?php endif; ?>
         <?php endif; ?>
@@ -400,28 +405,28 @@ if ($user_role === 'admin') {
 
             <!-- Quick Stats Section -->
             <div class="flex flex-wrap -mx-4 mb-8">
-        <div class="col-lg-4 px-4">
-            <div class="card bg-white p-6 rounded-lg shadow-md">
-                <h5 class="card-title text-xl font-bold text-blue-700 mb-2">Total Patients</h5>
-                <p class="card-text font-extrabold text-3xl text-gray-700" id="totalPatients">Loading...</p>
+                <div class="col-lg-4 px-4">
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h5 class="card-title text-xl font-bold text-blue-700 mb-2">Total Patients</h5>
+                        <p class="card-text font-extrabold text-3xl text-gray-700" id="totalPatients">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 px-4">
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h5 class="card-title text-xl font-bold text-blue-700 mb-2">Total Doctors</h5>
+                        <p class="card-text font-extrabold text-3xl text-gray-700" id="totalDoctors">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 px-4">
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h5 class="card-title text-xl font-bold text-blue-700 mb-2">Pending Verifications</h5>
+                        <p class="card-text font-extrabold text-3xl text-gray-700" id="pendingVerifications">Loading...</p>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-4 px-4">
-            <div class="card bg-white p-6 rounded-lg shadow-md">
-                <h5 class="card-title text-xl font-bold text-blue-700 mb-2">Total Doctors</h5>
-                <p class="card-text font-extrabold text-3xl text-gray-700" id="totalDoctors">Loading...</p>
-            </div>
-        </div>
-        <div class="col-lg-4 px-4">
-            <div class="card bg-white p-6 rounded-lg shadow-md">
-                <h5 class="card-title text-xl font-bold text-blue-700 mb-2">Pending Verifications</h5>
-                <p class="card-text font-extrabold text-3xl text-gray-700" id="pendingVerifications">Loading...</p>
-            </div>
-        </div>
-    </div>
 
-           <!-- Manage Sections Tabs -->
-           <div class="mb-8">
+            <!-- Manage Sections Tabs -->
+            <div class="mb-8">
                 <ul class="flex border-b">
                     <li class="mr-1">
                         <button id="specializationsTab" class="bg-white text-blue-600 py-2 px-4 rounded-t-lg focus:outline-none">Manage Specializations</button>
@@ -435,90 +440,90 @@ if ($user_role === 'admin') {
                 </ul>
             </div>
 
-    <div id="specializationsContent" class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-blue-700">Manage Specializations</h2>
-        <form id="addSpecializationForm">
-            <input
-                type="text"
-                id="specializationName"
-                name="specializationName"
-                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                placeholder="Enter specialization name"
-                required />
-            <button
-                type="submit"
-                class="bg-blue-600 mt-8 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
-                Add Specialization
-            </button>
-        </form>
-        <h3 class="text-xl font-bold mt-8 mb-4 text-blue-700">Existing Specializations</h3>
-        <ul id="specializationList">
-            <!-- Specializations will be loaded here dynamically -->
-        </ul>
-    </div>
+            <div id="specializationsContent" class="p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-blue-700">Manage Specializations</h2>
+                <form id="addSpecializationForm">
+                    <input
+                        type="text"
+                        id="specializationName"
+                        name="specializationName"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="Enter specialization name"
+                        required />
+                    <button
+                        type="submit"
+                        class="bg-blue-600 mt-8 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                        Add Specialization
+                    </button>
+                </form>
+                <h3 class="text-xl font-bold mt-8 mb-4 text-blue-700">Existing Specializations</h3>
+                <ul id="specializationList">
+                    <!-- Specializations will be loaded here dynamically -->
+                </ul>
+            </div>
 
-    <div id="usersContent" class="hidden p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-blue-700">Manage Users</h2>
-        <table class="w-full text-left">
-            <thead>
-                <tr>
-                    <th class="border-b border-gray-200 px-4 py-2">ID</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Name</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Email</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Role</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="usersTableBody">
-                <!-- User rows will be dynamically loaded here -->
-            </tbody>
-        </table>
-    </div>
-
-    <div id="verificationContent" class="hidden p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-blue-700">Doctor Verification</h2>
-        <table class="w-full text-left">
-            <thead>
-                <tr>
-                    <th class="border-b border-gray-200 px-4 py-2">ID</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Doctor Name</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Status</th>
-                    <th class="border-b border-gray-200 px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="verificationTableBody">
-                <?php if (!empty($verifications)) : ?>
-                    <?php foreach ($verifications as $verification) : ?>
+            <div id="usersContent" class="hidden p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-blue-700">Manage Users</h2>
+                <table class="w-full text-left">
+                    <thead>
                         <tr>
-                            <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['id']); ?></td>
-                            <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['first_name'] . ' ' . $verification['middle_initial'] . ' ' . $verification['last_name']); ?></td>
-                            <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['status']); ?></td>
-                            <td class="border-b border-gray-200 px-4 py-2">
-                                <?php if (!empty($verification['document_path'])) : ?>
-                                    <a href="<?php echo htmlspecialchars($verification['document_path']); ?>" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 ```php
-                                    px-3 rounded">
-                                        View Document
-                                    </a>
-                                <?php else : ?>
-                                    <span class="text-gray-500">No document uploaded</span>
-                                <?php endif; ?>
-                                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['doctor_id']; ?>, 'approve')">Verify</button>
-                                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['doctor_id']; ?>, 'reject')">Reject</button>
-                            </td>
+                            <th class="border-b border-gray-200 px-4 py-2">ID</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Name</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Email</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Role</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else : ?>
-                    <tr>
-                        <td colspan="4" class="text-center text-gray-600">No pending verifications found.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-        <?php endif; ?>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- User rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
 
-       <!-- Patient Dashboard -->
+            <div id="verificationContent" class="hidden p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-blue-700">Doctor Verification</h2>
+                <table class="w-full text-left">
+                    <thead>
+                        <tr>
+                            <th class="border-b border-gray-200 px-4 py-2">ID</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Doctor Name</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Status</th>
+                            <th class="border-b border-gray-200 px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verificationTableBody">
+                        <?php if (!empty($verifications)) : ?>
+                            <?php foreach ($verifications as $verification) : ?>
+                                <tr>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['id']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['first_name'] . ' ' . $verification['middle_initial'] . ' ' . $verification['last_name']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2"><?php echo htmlspecialchars($verification['status']); ?></td>
+                                    <td class="border-b border-gray-200 px-4 py-2">
+                                        <?php if (!empty($verification['document_path'])) : ?>
+                                            <a href="<?php echo htmlspecialchars($verification['document_path']); ?>" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 ```php
+                                    px-3 rounded">
+                                                View Document
+                                            </a>
+                                        <?php else : ?>
+                                            <span class="text-gray-500">No document uploaded</span>
+                                        <?php endif; ?>
+                                        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['doctor_id']; ?>, 'approve')">Verify</button>
+                                        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="verifyDoctor(<?php echo $verification['doctor_id']; ?>, 'reject')">Reject</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="4" class="text-center text-gray-600">No pending verifications found.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+    </div>
+<?php endif; ?>
+
+<!-- Patient Dashboard -->
 <?php if ($user_role === 'patient') : ?>
     <h1 class="text-3xl font-bold text-blue-600 mb-8">Patient Dashboard</h1>
 
@@ -583,16 +588,16 @@ if ($user_role === 'admin') {
     </div>
 <?php endif; ?>
 
-    </div>
+</div>
 
-    <!-- FullCalendar JS -->
-    <script src="assets/js/utils.js"></script>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/dashboard.js"></script>
-    <!-- for patient tabs -->
-    <script src="assets/js/tabswitch.js"></script>
-    <!-- for admin tabs -->
-    <script src="assets/js/tabswitch-admin.js"></script>
+<!-- FullCalendar JS -->
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<!-- for patient tabs -->
+<script src="assets/js/tabswitch.js"></script>
+<!-- for admin tabs -->
+<script src="assets/js/tabswitch-admin.js"></script>
 <!-- for doctor tabs -->
 <script>
     document.getElementById('appointmentsTab').addEventListener('click', function() {
@@ -609,14 +614,14 @@ if ($user_role === 'admin') {
         document.getElementById('appointmentsTab').classList.remove('bg-green-600', 'text-white');
     });
 </script>
-    <!-- Include jQuery first -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="text/javascript" src="assets/js/timepicker.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
-    <?php if ($user_role === 'doctor') : ?>
-        <script type="module" src="dist/bundle.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    <?php endif; ?>
+<!-- Include jQuery first -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="assets/js/timepicker.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+<?php if ($user_role === 'doctor') : ?>
+    <script type="module" src="dist/bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<?php endif; ?>
 </body>
 
 </html>
