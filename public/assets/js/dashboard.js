@@ -3,7 +3,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Check user role and load the corresponding dashboard
   checkUserSession().then((sessionData) => {
     if (sessionData.status && sessionData.user_id) {
-      if (sessionData.role === "admin") {
+      // Set a global variable for user_id and user_role if needed
+      const user_id = sessionData.user_id;
+      const user_role = sessionData.role;
+
+      if (user_role === "admin") {
+        // Admin-specific setup
         loadAdminDashboard();
         loadSpecializations();
 
@@ -16,15 +21,41 @@ document.addEventListener("DOMContentLoaded", function () {
             handleAddSpecialization
           );
         }
-      } else if (sessionData.role === "doctor") {
-        loadDoctorDashboard(sessionData.user_id);
-      } else {
-        loadPatientDashboard(sessionData.user_id);
+      } else if (user_role === "doctor") {
+        // Doctor-specific setup
+        loadDoctorDashboard(user_id);
+
+        const doctorTypeDropdown = document.getElementById(
+          "doctorAppointmentType"
+        );
+        if (doctorTypeDropdown) {
+          console.log("Doctor type dropdown found. Adding event listener."); // Debugging line
+          doctorTypeDropdown.addEventListener("change", () => {
+            console.log("Doctor type changed."); // Debugging line
+            fetchDoctorAppointments(user_id);
+          });
+        } else {
+          console.log("Doctor type dropdown not found."); // Debugging line
+        }
+      } else if (user_role === "patient") {
+        // Patient-specific setup
+        loadPatientDashboard(user_id);
+
+        const patientTypeDropdown = document.getElementById(
+          "patientAppointmentType"
+        );
+        if (patientTypeDropdown) {
+          console.log("Patient type dropdown found. Adding event listener."); // Debugging line
+          patientTypeDropdown.addEventListener("change", () => {
+            console.log("Patient type changed."); // Debugging line
+            fetchAppointments(user_id);
+          });
+        }
 
         // Add search functionality only for patients
-        document
-          .getElementById("doctorSearchBar")
-          .addEventListener("input", function () {
+        const doctorSearchBar = document.getElementById("doctorSearchBar");
+        if (doctorSearchBar) {
+          doctorSearchBar.addEventListener("input", function () {
             const query = this.value;
 
             if (query.length > 2) {
@@ -70,6 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById("searchResults").classList.add("hidden");
             }
           });
+        }
       }
     }
   });
@@ -351,13 +383,9 @@ document
     notificationMenu.classList.toggle("hidden");
   });
 
-document.getElementById("appointmentType").addEventListener("change", () => {
-  fetchAppointments(patient_id); // Adjust to doctor_id if needed on the doctor’s side
-});
-
 function fetchAppointments(patient_id) {
   // Get the selected type from the dropdown
-  const type = document.getElementById("appointmentType").value;
+  const type = document.getElementById("patientAppointmentType").value;
   console.log("Fetching appointments for type:", type); // Debugging
 
   // Pass the selected type as a query parameter to the backend
@@ -514,9 +542,24 @@ function fetchAppointments(patient_id) {
 }
 
 function fetchDoctorAppointments(doctor_id) {
-  fetch(`/api/get_doctor_appointments.php?doctor_id=${doctor_id}`)
-    .then((response) => response.json())
+  console.log("Doctor ID:", doctor_id);
+  // Get the selected type from the dropdown
+  const type = document.getElementById("doctorAppointmentType").value;
+  console.log("Fetching appointments for type:", type); // Debugging
+  console.log(
+    "Fetching appointments for doctor_id:",
+    doctor_id,
+    "with type:",
+    type
+  ); // Debugging line
+
+  fetch(`/api/get_doctor_appointments.php?doctor_id=${doctor_id}&type=${type}`)
+    .then((response) => {
+      console.log("Response Status:", response.status); // Debugging
+      return response.json();
+    })
     .then((data) => {
+      console.log("Data received:", data); // Debugging
       const appointmentsTable = document.getElementById(
         "doctorAppointmentsTable"
       );

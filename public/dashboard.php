@@ -295,6 +295,14 @@ if ($user_role === 'admin') {
                     <div class="tab-pane" id="appointments">
                         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
+                            <div class="flex items-center">
+                                <label for="doctorAppointmentType" class="mr-2 font-semibold">Filter by Type:</label>
+                                <select id="doctorAppointmentType" class="px-2 py-1 border rounded">
+                                    <option value="all">All</option>
+                                    <option value="online">Online Consultation</option>
+                                    <option value="physical">Physical Consultation</option>
+                                </select>
+                            </div>
                             <table class="min-w-full bg-white">
                                 <thead class="bg-gray-200">
                                     <tr>
@@ -523,8 +531,8 @@ if ($user_role === 'admin') {
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
                 <div class="flex items-center">
-                    <label for="appointmentType" class="mr-2 font-semibold">Filter by Type:</label>
-                    <select id="appointmentType" class="px-2 py-1 border rounded">
+                    <label for="patientAppointmentType" class="mr-2 font-semibold">Filter by Type:</label>
+                    <select id="patientAppointmentType" class="px-2 py-1 border rounded">
                         <option value="all">All</option>
                         <option value="online">Online Consultation</option>
                         <option value="physical">Physical Consultation</option>
@@ -577,12 +585,9 @@ if ($user_role === 'admin') {
 
 </div>
 
-<!-- FullCalendar JS -->
 <script>
-    <?php if ($user_role === 'patient') : ?>
-        // Set patient_id globally in JavaScript
-        const patient_id = <?php echo json_encode($user_id); ?>;
-    <?php endif; ?>
+    const user_id = <?php echo json_encode($user_id); ?>;
+    const user_role = <?php echo json_encode($user_role); ?>; // Assuming $user_role is defined as either 'patient' or 'doctor'
 </script>
 <script src="assets/js/utils.js"></script>
 <script src="assets/js/common.js"></script>
