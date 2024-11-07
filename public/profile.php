@@ -31,6 +31,18 @@ if ($user_role === 'doctor') {
     }
 }
 ?>
+<style>
+
+
+        .transparent-bg {
+            background-color: rgba(255, 255, 255, 0.7);
+            /* White with 70% opacity */
+            backdrop-filter: blur(10px);
+            /* Optional: adds a blur effect to the background */
+            border-radius: 0.5rem;
+            /* Optional: adds rounded corners */
+        }
+    </style>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,14 +57,14 @@ if ($user_role === 'doctor') {
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-green-600 p-4">
+    <nav class="container mx-auto mt-10 transparent-bg p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-white focus:outline-none">
+                <button id="profileDropdown" class="text-blue-600 focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -67,11 +79,11 @@ if ($user_role === 'doctor') {
     </nav>
     <!-- Main Content -->
     <div class="container mx-auto mt-10 px-6 py-8">
-        <h1 class="text-4xl font-bold text-green-600 mb-8">Profile</h1>
+        <h1 class="text-4xl font-bold text-blue-600 mb-8">Profile</h1>
 
         <!-- User Profile Section -->
         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-green-700">User Information</h2>
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">User Information</h2>
             <p class="text-gray-700 mb-3"><strong>First Name:</strong> <?php echo htmlspecialchars($userInfo['first_name']); ?></p>
             <p class="text-gray-700 mb-3"><strong>Middle Initial:</strong> <?php echo htmlspecialchars($userInfo['middle_initial']); ?></p>
             <p class="text-gray-700 mb-3"><strong>Last Name:</strong> <?php echo htmlspecialchars($userInfo['last_name']); ?></p>
@@ -84,8 +96,8 @@ if ($user_role === 'doctor') {
                 <p class="text-gray-700 mb-3"><strong>Specializations:</strong> <?php echo implode(', ', $specializations); ?></p>
             <?php endif; ?>
 
-            <a href="edit_profile.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
-            <a href="reset_password.php" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
+            <a href="edit_profile.php" class=" bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
+            <a href="reset_password.php" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
         </div>
     </div>
 
