@@ -4,7 +4,7 @@
 class Appointment
 {
     private $conn;
-    private $table = 'Appointments';
+    private $table = 'appointments';
 
     public $appointment_id;
     public $patient_id;
@@ -13,6 +13,7 @@ class Appointment
     public $date;
     public $time;
     public $status;
+    public $meeting_id;
 
     public function __construct($db)
     {
@@ -21,11 +22,23 @@ class Appointment
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, time, status) VALUES (?, ?, ?, ?, ?, 'pending')";
+        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, time, status, meeting_id) 
+                  VALUES (?, ?, ?, ?, ?, 'pending', ?)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("iiiss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->time);
-        error_log("Executing query: " . $stmt->get_result()); // Add this line to log the query
-        return $stmt->execute();
+        if (!$stmt) {
+            error_log("SQL prepare failed: " . $this->conn->error);
+            return false;
+        }
+
+        $stmt->bind_param("iiisss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->time, $this->meeting_id);
+
+        if ($stmt->execute()) {
+            error_log("Appointment created successfully.");
+            return true;
+        } else {
+            error_log("Failed to create appointment: " . $stmt->error);
+            return false;
+        }
     }
 
     public function reschedule()
@@ -61,6 +74,4 @@ class Appointment
         $stmt->bind_param("si", $status, $appointment_id);
         $stmt->execute();
     }
-
-    // Existing methods (find_by_id, update, delete) ...
 }

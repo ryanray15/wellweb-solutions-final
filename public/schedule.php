@@ -30,6 +30,7 @@ $userInfo = $query->get_result()->fetch_assoc();
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script> <!-- Add Stripe script -->
     <style>
         .doctor-card {
             transition: border-color 0.2s;
@@ -59,7 +60,7 @@ $userInfo = $query->get_result()->fetch_assoc();
         </div>
     </nav>
 
-    <div class="container mx-auto mt-10 max-w-2xl p-8 bg-white rounded-lg shadow-lg">
+    <div class="container mx-auto mt-10 w-full p-8 bg-white rounded-lg shadow-lg">
         <h1 class="text-3xl font-bold text-green-600 mb-8 text-center">
             Schedule Appointment
         </h1>
@@ -93,7 +94,7 @@ $userInfo = $query->get_result()->fetch_assoc();
             <!-- Step 4: Schedule Appointment -->
             <div class="step" id="step-4" style="display:none;">
                 <div id="appointmentScheduler">
-                    <div class="flex justify-between mb-6">
+                    <!-- <div class="flex justify-between mb-6">
                         <div class="w-full mr-2">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Choose Date</label>
                             <input class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="date" type="date" />
@@ -105,7 +106,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                     </div>
                     <button class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
                         Schedule Appointment
-                    </button>
+                    </button> -->
                 </div>
             </div>
 

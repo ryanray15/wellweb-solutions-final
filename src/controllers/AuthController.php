@@ -17,8 +17,7 @@ class AuthController
 
     public function register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations)
     {
-        // Existing user registration logic
-        // ...
+        // Set the user properties
         $this->user->first_name = $first_name;
         $this->user->middle_initial = $middle_initial;
         $this->user->last_name = $last_name;
@@ -27,31 +26,59 @@ class AuthController
         $this->user->email = $email;
         $this->user->password = password_hash($password, PASSWORD_BCRYPT); // Hash the password
         $this->user->role = $role;
-        $this->user->gender = $gender; // Handling the gender field
+        $this->user->gender = $gender;
 
+        // Check if user exists
         if ($this->user->find_by_email()) {
             return ['status' => false, 'message' => 'User already exists'];
         }
 
-        if ($this->user->register($specializations)) {
-            return ['status' => true, 'message' => 'User registered successfully'];
-        }
+        // Start a transaction to ensure atomicity
+        $this->db->begin_transaction();
 
-        return ['status' => false, 'message' => 'Registration failed'];
+        try {
+            // Register user
+            if ($this->user->register()) {
+                // Fetch the user ID of the newly registered user
+                $user_id = $this->db->insert_id;
 
+                // Ensure the user registration was successful
+                if (!$user_id) {
+                    throw new Exception('User registration failed: no user_id returned.');
+                }
 
-        // Insert the specializations for the doctor
-        if ($role === 'doctor' && !empty($specializations)) {
-            $user_id = $this->db->insert_id; // Assuming the user ID is auto-incremented
-            foreach ($specializations as $specialization_id) {
-                $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
-                $stmt->bind_param("ii", $user_id, $specialization_id);
-                $stmt->execute();
+                // Insert specializations for the doctor AFTER ensuring the user record is committed
+                if ($role === 'doctor' && !empty($specializations)) {
+                    foreach ($specializations as $specialization_id) {
+                        $stmt = $this->db->prepare("INSERT INTO doctor_specializations (doctor_id, specialization_id) VALUES (?, ?)");
+                        $stmt->bind_param("ii", $user_id, $specialization_id);
+
+                        // Execute the statement and check for errors
+                        if (!$stmt->execute()) {
+                            throw new Exception('Failed to insert doctor specializations: ' . $stmt->error);
+                        }
+                    }
+                }
+
+                // Commit the transaction if all operations succeed
+                $this->db->commit();
+
+                // Return the user ID along with a success message
+                return ['status' => true, 'message' => 'User registered successfully', 'user_id' => $user_id];
             }
-        }
 
-        return ['status' => true, 'message' => 'User registered successfully'];
+            throw new Exception('User registration failed.');
+            
+        } catch (Exception $e) {
+            // Rollback transaction if any operation fails
+            $this->db->rollback();
+            error_log($e->getMessage());
+
+            // Return failure message
+            return ['status' => false, 'message' => 'Registration failed: ' . $e->getMessage()];
+        }
     }
+
 
     public function login($email, $password)
     {
@@ -74,5 +101,34 @@ class AuthController
         }
 
         return ['status' => false, 'message' => 'Password update failed'];
+    }
+
+    // Method to save the Stripe account ID into the database for the user
+    public function saveStripeAccountId($user_id, $stripe_account_id)
+    {
+        $query = $this->db->prepare("UPDATE users SET stripe_account_id = ? WHERE user_id = ?");
+        $query->bind_param("si", $stripe_account_id, $user_id);
+
+        if ($query->execute()) {
+            return true; // Successfully saved
+        } else {
+            return false; // Failed to save
+        }
+    }
+
+    // Method to get the Stripe account ID for the user
+    public function getStripeAccountId($user_id)
+    {
+        $query = $this->db->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
+        $query->bind_param("i", $user_id);
+        $query->execute();
+        $result = $query->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['stripe_account_id'];
+        } else {
+            return null; // No Stripe account ID found
+        }
     }
 }
