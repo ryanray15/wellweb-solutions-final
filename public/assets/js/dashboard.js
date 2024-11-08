@@ -300,8 +300,8 @@ function loadPatientDashboard(patient_id) {
         if (data.length > 0) {
           document.getElementById("rescheduleMessage").textContent =
             "You have scheduled appointments.";
-          document.getElementById("cancelMessage").textContent =
-            "You have scheduled appointments.";
+          // document.getElementById("cancelMessage").textContent =
+          //   "You have scheduled appointments.";
 
           document
             .getElementById("rescheduleButton")
@@ -310,8 +310,8 @@ function loadPatientDashboard(patient_id) {
         } else {
           document.getElementById("rescheduleMessage").textContent =
             "No appointments scheduled.";
-          document.getElementById("cancelMessage").textContent =
-            "No appointments scheduled.";
+          // document.getElementById("cancelMessage").textContent =
+          //   "No appointments scheduled.";
         }
       })
       .catch((error) => console.error("Error fetching appointments:", error));

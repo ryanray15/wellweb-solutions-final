@@ -520,7 +520,7 @@ if ($user_role === 'admin') {
             <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="appointments">Your Appointments</button></li>
             <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="schedule">Schedule Appointment</button></li>
             <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="reschedule">Reschedule Appointment</button></li>
-            <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="cancel">Cancel Appointment</button></li>
+            <li><button class="tab-link text-blue-500 hover:text-blue-700 font-bold py-2 px-4" data-tab="cancel">Canceled Appointment</button></li>
         </ul>
     </div>
 
@@ -572,12 +572,12 @@ if ($user_role === 'admin') {
             </div>
         </div>
 
-        <!-- Cancel Appointment Section -->
+        <!-- Canceled Appointment Section -->
         <div class="tab-pane hidden" id="cancel">
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold mb-4 text-blue-500">Cancel Appointment</h2>
-                <p id="cancelMessage" class="text-gray-700 mb-3">No appointments scheduled.</p>
-                <a href="cancel.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Cancel Appointment</a>
+                <h2 class="text-2xl font-bold mb-4 text-blue-500">Canceled Appointment</h2>
+                <p id="cancelMessage" class="text-gray-700 mb-3">Request a refund here.</p>
+                <a href="canceled.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">View</a>
             </div>
         </div>
     </div>

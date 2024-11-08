@@ -26,7 +26,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cancel Appointment</title>
+    <title>Cancelled Appointments</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
@@ -52,27 +52,36 @@ $userInfo = $query->get_result()->fetch_assoc();
             </div>
         </div>
     </nav>
-    <div class="container mx-auto mt-10 max-w-2xl p-8 bg-white rounded-lg shadow-lg">
+
+    <!-- Canceled Appointments Table -->
+    <div class="container mx-auto mt-10 max-w-4xl p-8 bg-white rounded-lg shadow-lg">
         <h1 class="text-3xl font-bold text-green-600 mb-8 text-center">
-            Cancel Appointment
+            Canceled Appointments
         </h1>
-        <form id="cancelForm" class="w-full">
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="appointment_id">Select Appointment</label>
-                <select class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" id="appointment_id">
-                    <!-- Example Options -->
-                    <!-- <option value="1">Appointment with Dr. John Doe on 2024-08-10 at 10:00 AM</option>
-                    <option value="2">Appointment with Dr. Jane Smith on 2024-08-11 at 11:00 AM</option> -->
-                </select>
-            </div>
-            <button class="w-full bg-red-600 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" type="submit">
-                Cancel Appointment
-            </button>
-        </form>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-4 py-2">Doctor</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Time</th>
+                        <th class="px-4 py-2">Refund Status</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="canceledAppointmentsTable">
+                    <!-- Rows will be populated by canceled.js -->
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script>
+        const patient_id = <?php echo json_encode($user_id); ?>;
+    </script>
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>
-    <script src="assets/js/cancel.js"></script>
+    <script src="assets/js/canceled.js"></script>
 </body>
 
 </html>
