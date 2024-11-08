@@ -386,13 +386,11 @@ document
 function fetchAppointments(patient_id) {
   // Get the selected type from the dropdown
   const type = document.getElementById("patientAppointmentType").value;
-  console.log("Fetching appointments for type:", type); // Debugging
 
-  // Pass the selected type as a query parameter to the backend
+  // Fetch appointments with selected type
   fetch(`/api/get_appointments.php?patient_id=${patient_id}&type=${type}`)
     .then((response) => response.json())
     .then((data) => {
-      console.log("Fetched appointments data:", data); // Debugging
       const appointmentsTable = document.getElementById("appointmentsTable");
       appointmentsTable.innerHTML = ""; // Clear previous appointments
 
@@ -417,7 +415,6 @@ function fetchAppointments(patient_id) {
         // Due In Cell
         const dueInCell = document.createElement("td");
         dueInCell.className = "border px-4 py-2";
-
         const daysDue = calculateDaysDue(appointment.date);
         let isOverdue = false;
 
@@ -434,56 +431,33 @@ function fetchAppointments(patient_id) {
 
         // Actions Cell for Join Room / Locate Clinic or Reschedule / Cancel
         const actionsCell = document.createElement("td");
-        actionsCell.className = "border px-4 py-2";
+        actionsCell.className =
+          "border px-4 py-2 flex justify-center items-center space-x-2";
 
         if (isOverdue) {
-          // Show Reschedule and Cancel buttons for overdue appointments
+          // Show Reschedule and Cancel buttons directly for overdue appointments
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
-          rescheduleButton.className =
-            "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2 mr-2";
           rescheduleButton.addEventListener("click", () => {
             window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
 
           const cancelButton = document.createElement("button");
           cancelButton.textContent = "Cancel";
-          cancelButton.className =
-            "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded";
-          cancelButton.addEventListener("click", () => {
-            if (confirm("Are you sure you want to cancel this appointment?")) {
-              fetch(`/api/cancel_appointment.php`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  appointment_id: appointment.appointment_id,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.status) {
-                    alert("Appointment canceled successfully.");
-                    fetchAppointments(patient_id); // Refresh the appointments
-                  } else {
-                    alert(
-                      data.message ||
-                        "Failed to cancel appointment. Please try again."
-                    );
-                  }
-                })
-                .catch((error) =>
-                  console.error("Error canceling appointment:", error)
-                );
-            }
-          });
+          cancelButton.className = "text-red-500 font-bold py-1 px-2";
+          cancelButton.addEventListener("click", () =>
+            handleCancel(appointment.appointment_id, patient_id)
+          );
 
           actionsCell.appendChild(rescheduleButton);
           actionsCell.appendChild(cancelButton);
         } else {
-          // If not overdue, show Join Room or Locate Clinic based on service_id
+          // Add Join Room / Locate Clinic button and kebab menu
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
+            // Online Consultation
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
@@ -519,6 +493,7 @@ function fetchAppointments(patient_id) {
                 );
             });
           } else {
+            // Physical Consultation
             actionButton.textContent = "Locate Clinic";
             actionButton.className =
               "bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded";
@@ -528,6 +503,37 @@ function fetchAppointments(patient_id) {
           }
 
           actionsCell.appendChild(actionButton);
+
+          // Kebab Menu
+          const kebabMenuContainer = document.createElement("div");
+          kebabMenuContainer.className = "relative";
+
+          const kebabButton = document.createElement("button");
+          kebabButton.className = "text-gray-500 focus:outline-none ml-2";
+          kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+          kebabMenuContainer.appendChild(kebabButton);
+
+          const kebabMenu = document.createElement("div");
+          kebabMenu.className =
+            "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+          kebabMenu.innerHTML = `
+            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+            <button class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100" onclick="handleCancel(${appointment.appointment_id}, ${patient_id})">Cancel</button>
+          `;
+          kebabMenuContainer.appendChild(kebabMenu);
+
+          // Toggle kebab menu visibility on click
+          kebabButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            kebabMenu.classList.toggle("hidden");
+          });
+
+          // Close the menu when clicking outside
+          document.addEventListener("click", () => {
+            kebabMenu.classList.add("hidden");
+          });
+
+          actionsCell.appendChild(kebabMenuContainer);
         }
 
         row.appendChild(doctorCell);
@@ -541,25 +547,39 @@ function fetchAppointments(patient_id) {
     .catch((error) => console.error("Error fetching appointments:", error));
 }
 
+// Function to handle appointment cancellation
+function handleCancel(appointment_id, patient_id) {
+  if (confirm("Are you sure you want to cancel this appointment?")) {
+    fetch(`/api/cancel_appointment.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ appointment_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status) {
+          alert("Appointment canceled successfully.");
+          fetchAppointments(patient_id); // Refresh the appointments
+        } else {
+          alert(
+            data.message || "Failed to cancel appointment. Please try again."
+          );
+        }
+      })
+      .catch((error) => console.error("Error canceling appointment:", error));
+  }
+}
+
 function fetchDoctorAppointments(doctor_id) {
   console.log("Doctor ID:", doctor_id);
+
   // Get the selected type from the dropdown
   const type = document.getElementById("doctorAppointmentType").value;
-  console.log("Fetching appointments for type:", type); // Debugging
-  console.log(
-    "Fetching appointments for doctor_id:",
-    doctor_id,
-    "with type:",
-    type
-  ); // Debugging line
+  console.log("Fetching appointments for type:", type);
 
   fetch(`/api/get_doctor_appointments.php?doctor_id=${doctor_id}&type=${type}`)
-    .then((response) => {
-      console.log("Response Status:", response.status); // Debugging
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      console.log("Data received:", data); // Debugging
       const appointmentsTable = document.getElementById(
         "doctorAppointmentsTable"
       );
@@ -568,7 +588,7 @@ function fetchDoctorAppointments(doctor_id) {
       data.forEach((appointment) => {
         const row = document.createElement("tr");
 
-        // Doctor's Name Cell
+        // Patient's Name Cell
         const patientCell = document.createElement("td");
         patientCell.className = "border px-4 py-2";
         patientCell.textContent = appointment.patient_name;
@@ -583,7 +603,7 @@ function fetchDoctorAppointments(doctor_id) {
         timeCell.className = "border px-4 py-2";
         timeCell.textContent = appointment.time;
 
-        // Appointment Time Cell
+        // Status Cell
         const statusCell = document.createElement("td");
         statusCell.className = "border px-4 py-2";
         statusCell.textContent = appointment.status;
@@ -606,67 +626,28 @@ function fetchDoctorAppointments(doctor_id) {
           }
         }
 
-        // Actions Cell for Join Room / Locate Clinic or Reschedule / Cancel
+        // Actions Cell
         const actionsCell = document.createElement("td");
-        actionsCell.className = "border px-4 py-2";
+        actionsCell.className =
+          "border px-4 py-2 flex justify-center items-center space-x-2";
 
-        if (isOverdue) {
-          // Show Reschedule and Cancel buttons for overdue appointments
+        if (isOverdue || appointment.service_id == 2) {
+          // Directly add the Reschedule button for overdue or physical consultations
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
-          rescheduleButton.className =
-            "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
           rescheduleButton.addEventListener("click", () => {
-            // Redirect to reschedule page or open reschedule modal
             window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
-
-          const cancelButton = document.createElement("button");
-          cancelButton.textContent = "Cancel";
-          cancelButton.className =
-            "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded";
-          cancelButton.addEventListener("click", () => {
-            // Confirm and call cancel_appointment.php endpoint
-            if (confirm("Are you sure you want to cancel this appointment?")) {
-              fetch(`/api/cancel_appointment.php`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  appointment_id: appointment.appointment_id,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.status) {
-                    alert("Appointment canceled successfully.");
-                    fetchDoctorAppointments(doctor_id); // Refresh the appointments
-                  } else {
-                    alert(
-                      data.message ||
-                        "Failed to cancel appointment. Please try again."
-                    );
-                  }
-                })
-                .catch((error) =>
-                  console.error("Error canceling appointment:", error)
-                );
-            }
-          });
-
           actionsCell.appendChild(rescheduleButton);
-          actionsCell.appendChild(cancelButton);
         } else {
-          // If not overdue, show Join Room or Locate Clinic based on service_id
+          // Display Join Room or Locate Clinic button with kebab menu
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
-            // Online Consultation
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            // Check if the appointment is today to enable the Join Room button
             const appointmentDate = new Date(appointment.date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -683,7 +664,6 @@ function fetchDoctorAppointments(doctor_id) {
             }
 
             actionButton.addEventListener("click", () => {
-              // Fetch the meeting_id and redirect to the video chat page
               fetch(
                 `/api/get_meeting_id.php?appointment_id=${appointment.appointment_id}&user_id=${doctor_id}`
               )
@@ -702,6 +682,36 @@ function fetchDoctorAppointments(doctor_id) {
           }
 
           actionsCell.appendChild(actionButton);
+
+          // Kebab Menu for Reschedule option
+          const kebabMenuContainer = document.createElement("div");
+          kebabMenuContainer.className = "relative inline-block";
+
+          const kebabButton = document.createElement("button");
+          kebabButton.className = "text-gray-500 focus:outline-none ml-2";
+          kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+          kebabMenuContainer.appendChild(kebabButton);
+
+          const kebabMenu = document.createElement("div");
+          kebabMenu.className =
+            "absolute top-0 right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+          kebabMenu.innerHTML = `
+            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+          `;
+          kebabMenuContainer.appendChild(kebabMenu);
+
+          // Toggle kebab menu visibility on click
+          kebabButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            kebabMenu.classList.toggle("hidden");
+          });
+
+          // Close the menu when clicking outside
+          document.addEventListener("click", () => {
+            kebabMenu.classList.add("hidden");
+          });
+
+          actionsCell.appendChild(kebabMenuContainer);
         }
 
         row.appendChild(patientCell);
