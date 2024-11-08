@@ -31,18 +31,6 @@ if ($user_role === 'doctor') {
     }
 }
 ?>
-<style>
-
-
-        .transparent-bg {
-            background-color: rgba(255, 255, 255, 0.7);
-            /* White with 70% opacity */
-            backdrop-filter: blur(10px);
-            /* Optional: adds a blur effect to the background */
-            border-radius: 0.5rem;
-            /* Optional: adds rounded corners */
-        }
-    </style>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,15 +41,94 @@ if ($user_role === 'doctor') {
     <title>Profile - Wellweb</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+            /* Light gray background */
+        }
+
+        .transparent-bg {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .profile-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .profile-info div {
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .profile-info div:last-child {
+            margin-right: 0;
+        }
+
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+            color: #3b82f6;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #4b5563;
+            /* Darker gray for labels */
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100">
+<body>
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 transparent-bg p-4">
-        <div class="container mx-auto flex justify-between items-center">
+    <nav class="container mx-auto mt-10 transparent-bg p-4 shadow-lg">
+        <div class="flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
+                <span class="text-blue-500 text-2xl font-bold ml-2">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-blue-600 focus:outline-none">
@@ -77,27 +144,46 @@ if ($user_role === 'doctor') {
             </div>
         </div>
     </nav>
+
     <!-- Main Content -->
     <div class="container mx-auto mt-10 px-6 py-8">
         <h1 class="text-4xl font-bold text-blue-600 mb-8">Profile</h1>
 
         <!-- User Profile Section -->
-        <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-blue-700">User Information</h2>
-            <p class="text-gray-700 mb-3"><strong>First Name:</strong> <?php echo htmlspecialchars($userInfo['first_name']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Middle Initial:</strong> <?php echo htmlspecialchars($userInfo['middle_initial']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Last Name:</strong> <?php echo htmlspecialchars($userInfo['last_name']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Email:</strong> <?php echo htmlspecialchars($userInfo['email']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Contact Number:</strong> <?php echo htmlspecialchars($userInfo['contact_number']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Address:</strong> <?php echo htmlspecialchars($userInfo['address']); ?></p>
-            <p class="text-gray-700 mb-3"><strong>Gender:</strong> <?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p> <!-- Display gender -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">User Information</h2>
+            </div>
+            <div class="profile-info">
+                <div>
+                    <p class="label"><i class="fas fa-user icon"></i> First Name:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['first_name']); ?></p>
+                    <p class="label"><i class="fas fa-user icon"></i> Middle Initial:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['middle_initial']); ?></p>
+                    <p class="label"><i class="fas fa-user icon"></i> Last Name:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['last_name']); ?></p>
+                    <p class="label"><i class="fas fa-envelope icon"></i> Email:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['email']); ?></p>
+                </div>
+                <div>
+                    <p class="label"><i class="fas fa-phone icon"></i> Contact Number:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['contact_number']); ?></p>
+                    <p class="label"><i class="fas fa-map-marker-alt icon"></i> Address:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['address']); ?></p>
+                    <p class="label"><i class="fas fa-venus-mars icon"></i> Gender:</p>
+                    <p class="text-gray-700 mb-3"><?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p>
+                </div>
+            </div>
 
             <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
-                <p class="text-gray-700 mb-3"><strong>Specializations:</strong> <?php echo implode(', ', $specializations); ?></p>
+                <p class="label"><i class="fas fa-stethoscope icon"></i> Specializations:</p>
+                <p class="text-gray-700 mb-3"><?php echo implode(', ', $specializations); ?></p>
             <?php endif; ?>
 
-            <a href="edit_profile.php" class=" bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition duration-200">Edit Profile</a>
-            <a href="reset_password.php" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition duration-200">Reset Password</a>
+            <div class="flex space-x-4 mt-4">
+                <a href="edit_profile.php" class="btn">Edit Profile</a>
+                <a href="reset_password.php" class="btn">Reset Password</a>
+            </div>
         </div>
     </div>
 
