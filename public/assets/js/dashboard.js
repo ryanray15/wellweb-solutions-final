@@ -631,11 +631,21 @@ function fetchDoctorAppointments(doctor_id) {
         actionsCell.className =
           "border px-4 py-2 flex justify-center items-center space-x-2";
 
-        if (isOverdue && appointment.service_id === 2) {
-          // Show Completed / No Show buttons if overdue and physical
+        // Logic for actions based on appointment status and type
+        if (appointment.status === "no show") {
+          // Show "Reschedule" button if the status is "no show"
+          const rescheduleButton = document.createElement("button");
+          rescheduleButton.textContent = "Reschedule";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
+          rescheduleButton.addEventListener("click", () => {
+            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+          });
+          actionsCell.appendChild(rescheduleButton);
+        } else if (isOverdue && appointment.service_id === 2) {
+          // Show toggle buttons for "Completed" and "No Show" if it's an overdue physical consultation
           const completedButton = document.createElement("button");
           completedButton.textContent = "Completed";
-          completedButton.className = "text-blue-600 font-bold py-1 px-2"; // Blue color
+          completedButton.className = "text-blue-600 font-bold py-1 px-2";
           completedButton.addEventListener("click", () =>
             updateAppointmentStatus(
               appointment.appointment_id,
@@ -643,6 +653,7 @@ function fetchDoctorAppointments(doctor_id) {
               doctor_id
             )
           );
+          actionsCell.appendChild(completedButton);
 
           const noShowButton = document.createElement("button");
           noShowButton.textContent = "No Show";
@@ -654,21 +665,18 @@ function fetchDoctorAppointments(doctor_id) {
               doctor_id
             )
           );
-
-          actionsCell.appendChild(completedButton);
           actionsCell.appendChild(noShowButton);
         } else if (appointment.service_id === 2) {
-          // Display the Reschedule button for physical consultations that are not overdue
+          // For non-overdue physical consultations, show the Reschedule button only
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
           rescheduleButton.addEventListener("click", () => {
             window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
-
           actionsCell.appendChild(rescheduleButton);
         } else {
-          // Display Join Room button with kebab menu for online consultations
+          // Display Join Room or Locate Clinic button with kebab menu if needed
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
@@ -710,7 +718,7 @@ function fetchDoctorAppointments(doctor_id) {
 
           actionsCell.appendChild(actionButton);
 
-          // Kebab Menu for Reschedule option
+          // Kebab Menu for Reschedule option (non-overdue online appointments)
           const kebabMenuContainer = document.createElement("div");
           kebabMenuContainer.className = "relative inline-block";
 
@@ -727,13 +735,11 @@ function fetchDoctorAppointments(doctor_id) {
           `;
           kebabMenuContainer.appendChild(kebabMenu);
 
-          // Toggle kebab menu visibility on click
           kebabButton.addEventListener("click", (e) => {
             e.stopPropagation();
             kebabMenu.classList.toggle("hidden");
           });
 
-          // Close the menu when clicking outside
           document.addEventListener("click", () => {
             kebabMenu.classList.add("hidden");
           });
@@ -753,7 +759,7 @@ function fetchDoctorAppointments(doctor_id) {
     .catch((error) => console.error("Error fetching appointments:", error));
 }
 
-// Function to update appointment status
+// Update appointment status function
 function updateAppointmentStatus(appointment_id, status, doctor_id) {
   fetch(`/api/update_appointment_status.php`, {
     method: "POST",
@@ -764,7 +770,7 @@ function updateAppointmentStatus(appointment_id, status, doctor_id) {
     .then((data) => {
       if (data.success) {
         alert(`Appointment marked as ${status}.`);
-        fetchDoctorAppointments(doctor_id); // Refresh the appointments table
+        fetchDoctorAppointments(doctor_id);
       } else {
         alert("Failed to update appointment status.");
       }
