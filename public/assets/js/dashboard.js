@@ -631,8 +631,43 @@ function fetchDoctorAppointments(doctor_id) {
         actionsCell.className =
           "border px-4 py-2 flex justify-center items-center space-x-2";
 
-        if (isOverdue || appointment.service_id == 2) {
-          // Directly add the Reschedule button for overdue or physical consultations
+        // Logic for actions based on appointment status and type
+        if (appointment.status === "no show") {
+          // Show "Reschedule" button if the status is "no show"
+          const rescheduleButton = document.createElement("button");
+          rescheduleButton.textContent = "Reschedule";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
+          rescheduleButton.addEventListener("click", () => {
+            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+          });
+          actionsCell.appendChild(rescheduleButton);
+        } else if (isOverdue && appointment.service_id === 2) {
+          // Show toggle buttons for "Completed" and "No Show" if it's an overdue physical consultation
+          const completedButton = document.createElement("button");
+          completedButton.textContent = "Completed";
+          completedButton.className = "text-blue-600 font-bold py-1 px-2";
+          completedButton.addEventListener("click", () =>
+            updateAppointmentStatus(
+              appointment.appointment_id,
+              "completed",
+              doctor_id
+            )
+          );
+          actionsCell.appendChild(completedButton);
+
+          const noShowButton = document.createElement("button");
+          noShowButton.textContent = "No Show";
+          noShowButton.className = "text-red-500 font-bold py-1 px-2";
+          noShowButton.addEventListener("click", () =>
+            updateAppointmentStatus(
+              appointment.appointment_id,
+              "no show",
+              doctor_id
+            )
+          );
+          actionsCell.appendChild(noShowButton);
+        } else if (appointment.service_id === 2) {
+          // For non-overdue physical consultations, show the Reschedule button only
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
@@ -641,7 +676,7 @@ function fetchDoctorAppointments(doctor_id) {
           });
           actionsCell.appendChild(rescheduleButton);
         } else {
-          // Display Join Room or Locate Clinic button with kebab menu
+          // Display Join Room or Locate Clinic button with kebab menu if needed
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
@@ -683,7 +718,7 @@ function fetchDoctorAppointments(doctor_id) {
 
           actionsCell.appendChild(actionButton);
 
-          // Kebab Menu for Reschedule option
+          // Kebab Menu for Reschedule option (non-overdue online appointments)
           const kebabMenuContainer = document.createElement("div");
           kebabMenuContainer.className = "relative inline-block";
 
@@ -694,19 +729,17 @@ function fetchDoctorAppointments(doctor_id) {
 
           const kebabMenu = document.createElement("div");
           kebabMenu.className =
-            "absolute top-0 right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+            "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
           kebabMenu.innerHTML = `
             <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
           `;
           kebabMenuContainer.appendChild(kebabMenu);
 
-          // Toggle kebab menu visibility on click
           kebabButton.addEventListener("click", (e) => {
             e.stopPropagation();
             kebabMenu.classList.toggle("hidden");
           });
 
-          // Close the menu when clicking outside
           document.addEventListener("click", () => {
             kebabMenu.classList.add("hidden");
           });
@@ -724,6 +757,27 @@ function fetchDoctorAppointments(doctor_id) {
       });
     })
     .catch((error) => console.error("Error fetching appointments:", error));
+}
+
+// Update appointment status function
+function updateAppointmentStatus(appointment_id, status, doctor_id) {
+  fetch(`/api/update_appointment_status.php`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ appointment_id, status }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert(`Appointment marked as ${status}.`);
+        fetchDoctorAppointments(doctor_id);
+      } else {
+        alert("Failed to update appointment status.");
+      }
+    })
+    .catch((error) =>
+      console.error("Error updating appointment status:", error)
+    );
 }
 
 // Helper function to calculate days due

@@ -17,7 +17,7 @@ $query = "
         CONCAT(u.first_name, ' ', u.middle_initial, ' ', u.last_name) as patient_name
     FROM appointments a
     JOIN users u ON a.patient_id = u.user_id
-    WHERE a.doctor_id = ? AND a.status != 'canceled'
+    WHERE a.doctor_id = ? AND a.status != 'canceled' AND a.status != 'completed'
 ";
 
 // Modify the query based on the appointment type
