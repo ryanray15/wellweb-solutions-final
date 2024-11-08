@@ -54,7 +54,7 @@ if ($loggedIn) {
 <body class="bg-white">
 
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 transparent-bg p-4">
+    <nav class="container mx-auto mt-10 transparent-bg shadow-md p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
@@ -129,22 +129,22 @@ if ($loggedIn) {
                 <!-- Feature 1 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <i class="fas fa-hospital-user fa-3x  mb-4" style="color: #3b82f6"></i>
-                    <h3 class="text-xl font-bold mb-2">Easy Scheduling</h3>
-                    <p class="text-gray-700">Schedule appointments effortlessly with our user-friendly interface.</p>
+                    <h3 class="text-xl font-bold mb-2">Locate & Book</h3>
+                    <p class="text-gray-700">Access real-time hospital locations and easily book appointments through our system.</p>
                 </div>
 
                 <!-- Feature 2 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <i class="fas fa-user-nurse fa-3x mb-4" style="color: #3b82f6"></i>
-                    <h3 class="text-xl font-bold mb-2">Qualified Doctors</h3>
-                    <p class="text-gray-700">Access a network of highly qualified healthcare professionals.</p>
+                    <h3 class="text-xl font-bold mb-2">Join Now!</h3>
+                    <p class="text-gray-700">Join our platform to connect with patients as a freelance doctor, offering your expertise and personalized care on-demand.</p>
                 </div>
 
                 <!-- Feature 3 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <i class="fas fa-home fa-3x  mb-4" style="color: #3b82f6"></i>
-                    <h3 class="text-xl font-bold mb-2">Mobile Access</h3>
-                    <p class="text-gray-700">Manage your appointments on the go with our mobile-friendly platform.</p>
+                    <h3 class="text-xl font-bold mb-2">Physical Consultation</h3>
+                    <p class="text-gray-700">Experience the convenience of our Home Service</p>
                 </div>
             </div>
         </div>

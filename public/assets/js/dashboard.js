@@ -306,7 +306,7 @@ function loadPatientDashboard(patient_id) {
           document
             .getElementById("rescheduleButton")
             .classList.remove("hidden");
-          document.getElementById("cancelButton").classList.remove("hidden");
+          // document.getElementById("cancelButton").classList.remove("hidden");
         } else {
           document.getElementById("rescheduleMessage").textContent =
             "No appointments scheduled.";
@@ -443,7 +443,7 @@ function fetchAppointments(patient_id) {
           rescheduleButton.className =
             "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
           rescheduleButton.addEventListener("click", () => {
-            window.location.href = `/reschedule_appointment.php?appointment_id=${appointment.appointment_id}`;
+            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
 
           const cancelButton = document.createElement("button");
@@ -618,7 +618,7 @@ function fetchDoctorAppointments(doctor_id) {
             "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
           rescheduleButton.addEventListener("click", () => {
             // Redirect to reschedule page or open reschedule modal
-            window.location.href = `/reschedule_appointment.php?appointment_id=${appointment.appointment_id}`;
+            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
 
           const cancelButton = document.createElement("button");

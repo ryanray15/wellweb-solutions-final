@@ -37,16 +37,26 @@ if ($doctor_id) {
                 #map {
                     z-index: 1;
                 }
+
+                .transparent-bg {
+                    background-color: rgba(255, 255, 255, 0.7);
+                    /* White with 70% opacity */
+                    backdrop-filter: blur(10px);
+                    /* Optional: adds a blur effect to the background */
+                    border-radius: 0.5rem;
+                    /* Optional: adds rounded corners */
+                }
             </style>
         </head>
 
         <body class="bg-gray-100">
             <!-- Navigation Bar -->
-            <nav class="bg-green-600 p-4">
+            <!-- Navigation Bar -->
+            <nav class="container mx-auto mt-10 transparent-bg p-4 shadow-md">
                 <div class="container mx-auto flex justify-between items-center">
                     <div class="flex items-center">
-                        <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                        <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                        <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                        <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
                     </div>
                     <div class="relative">
                         <button id="profileDropdown" class="text-white focus:outline-none">
@@ -62,11 +72,11 @@ if ($doctor_id) {
             </nav>
             <!-- Main Content -->
             <div class="container mx-auto mt-10 px-6 py-8">
-                <h1 class="text-4xl font-bold text-green-600 mb-8"><?php echo htmlspecialchars($doctor['name']); ?></h1>
+                <h1 class="text-4xl font-bold text-blue-600 mb-8"><?php echo htmlspecialchars($doctor['name']); ?></h1>
 
                 <!-- Doctor Information Section -->
                 <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4 text-green-700">Doctor Information</h2>
+                    <h2 class="text-2xl font-bold mb-4 text-blue-700">Doctor Information</h2>
                     <p class="text-gray-700 mb-3"><strong>Specializations:</strong> <?php echo htmlspecialchars($doctor['specializations']); ?></p>
                     <p class="text-gray-700 mb-3"><strong>Clinic Address:</strong> <?php echo htmlspecialchars($doctor['address']); ?></p>
                 </div>
