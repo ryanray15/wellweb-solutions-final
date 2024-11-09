@@ -577,7 +577,7 @@ if ($user_role === 'admin') {
             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-blue-500">Canceled Appointment</h2>
                 <p id="cancelMessage" class="text-gray-700 mb-3">Request a refund here.</p>
-                <a href="canceled.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">View</a>
+                <a href="canceled.php" id="cancelButton" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">View</a>
             </div>
         </div>
     </div>

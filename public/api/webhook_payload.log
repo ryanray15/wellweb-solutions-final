@@ -22130,4 +22130,24 @@
     "idempotency_key": null
   },
   "type": "application_fee.created"
+}{
+  "id": "evt_1QJGSx018CgLvI9pRLN2V0GT",
+  "object": "event",
+  "account": "acct_1QJGSq018CgLvI9p",
+  "api_version": "2024-06-20",
+  "created": 1731165647,
+  "data": {
+    "object": {
+      "id": "ca_QsXc0I9VNCyYODyffmd3xC7PlUuBTaIx",
+      "object": "application",
+      "name": "WellWeb Solutions "
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.application.authorized"
 }

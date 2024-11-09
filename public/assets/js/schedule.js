@@ -117,6 +117,30 @@ function attachDoctorClickHandlers() {
   });
 }
 
+// Initialize WebSocket connection
+const socket = new WebSocket("ws://localhost:8080");
+
+socket.onopen = () => console.log("WebSocket connection established");
+socket.onclose = () => console.log("WebSocket connection closed");
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  // Check if the message is to delete availability
+  if (data.type === "delete") {
+    removeAvailabilityFromCalendar(data.availabilityId);
+  }
+};
+
+// Function to remove availability from FullCalendar in schedule.js
+function removeAvailabilityFromCalendar(availabilityId) {
+  const calendarEl = document.getElementById("calendar");
+  if (calendarEl && calendarEl.fullCalendar) {
+    const calendar = FullCalendar.getCalendar(calendarEl);
+    const event = calendar.getEventById(availabilityId);
+    if (event) event.remove();
+  }
+}
+
 // Function to load doctor's availability and setup time slots (updated)
 function loadDoctorCalendar(
   doctorId,
@@ -136,6 +160,10 @@ function loadDoctorCalendar(
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched events:", data);
+
+        // Assign event ID for each availability
+        data.events.forEach((event) => (event.id = event.availability_id));
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
@@ -145,7 +173,7 @@ function loadDoctorCalendar(
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data.events,
+          events: data.events, // Use modified events with IDs
           eventClick: function (info) {
             const event = info.event;
             handleEventSelection(event, doctorId, patientId);

@@ -795,6 +795,30 @@ function handleReschedule(appointmentId) {
   console.log("Reschedule appointment with ID:", appointmentId);
 }
 
+// Initialize WebSocket connection
+const socket = new WebSocket("ws://localhost:8080");
+
+socket.onopen = () => console.log("WebSocket connection established");
+socket.onclose = () => console.log("WebSocket connection closed");
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  // Check if the message is to delete availability
+  if (data.type === "delete") {
+    removeAvailabilityFromCalendar(data.availabilityId);
+  }
+};
+
+// Function to remove availability from FullCalendar
+function removeAvailabilityFromCalendar(availabilityId) {
+  const calendarEl = document.getElementById("calendar");
+  if (calendarEl && calendarEl.fullCalendar) {
+    const calendar = FullCalendar.getCalendar(calendarEl);
+    const event = calendar.getEventById(availabilityId);
+    if (event) event.remove();
+  }
+}
+
 // Function to initialize and load the FullCalendar component for doctors
 function loadDoctorCalendar(doctorId) {
   const calendarEl = document.getElementById("calendar");
@@ -811,6 +835,13 @@ function loadDoctorCalendar(doctorId) {
       events: {
         url: `/api/get_doctor_availability.php?doctor_id=${doctorId}`, // Adjust API endpoint as needed
         method: "GET",
+        extraParams: {
+          patient_id: doctorId, // Customize as needed
+        },
+        success: function (events) {
+          // Add IDs to events for tracking deletions
+          events.forEach((event) => (event.id = event.availability_id));
+        },
         failure: function () {
           alert("There was an error while fetching availability!");
         },
