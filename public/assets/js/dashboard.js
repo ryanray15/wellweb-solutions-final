@@ -37,6 +37,33 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           console.log("Doctor type dropdown not found."); // Debugging line
         }
+        // Initialize WebSocket for doctor
+        const socket = new WebSocket("ws://localhost:8080"); // Ensure this matches your WebSocket server address
+
+        // Handle WebSocket connection events
+        socket.onopen = () => {
+          console.log("Connected to WebSocket server");
+        };
+
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "expired_availabilities") {
+            // Update the message type here
+            console.log("Received expired_availabilities message:", message);
+
+            // Reload calendar in the dashboard
+            reloadDashboardCalendar();
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        socket.onclose = () => {
+          console.log("Disconnected from WebSocket server");
+        };
       } else if (user_role === "patient") {
         // Patient-specific setup
         loadPatientDashboard(user_id);
@@ -795,68 +822,67 @@ function handleReschedule(appointmentId) {
   console.log("Reschedule appointment with ID:", appointmentId);
 }
 
-// Initialize WebSocket connection
-const socket = new WebSocket("ws://localhost:8080");
-
-socket.onopen = () => console.log("WebSocket connection established");
-socket.onclose = () => console.log("WebSocket connection closed");
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-
-  // Check if the message is to delete availability
-  if (data.type === "delete") {
-    removeAvailabilityFromCalendar(data.availabilityId);
-  }
-};
-
-// Function to remove availability from FullCalendar
-function removeAvailabilityFromCalendar(availabilityId) {
-  const calendarEl = document.getElementById("calendar");
-  if (calendarEl && calendarEl.fullCalendar) {
-    const calendar = FullCalendar.getCalendar(calendarEl);
-    const event = calendar.getEventById(availabilityId);
-    if (event) event.remove();
+// Function to reload the calendar for the dashboard
+function reloadDashboardCalendar() {
+  console.log("Reloading calendar due to WebSocket update"); // Debugging line
+  const doctorId = user_role === "doctor" ? user_id : null;
+  if (doctorId) {
+    loadDoctorCalendar(doctorId);
+  } else {
+    console.error("Doctor ID not found or user is not a doctor");
   }
 }
 
-// Function to initialize and load the FullCalendar component for doctors
+// Function to load and render doctor's calendar in the dashboard
 function loadDoctorCalendar(doctorId) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "timeGridWeek",
-      timeZone: "Asia/Manila", // Adjust to your local timezone
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      events: {
-        url: `/api/get_doctor_availability.php?doctor_id=${doctorId}`, // Adjust API endpoint as needed
-        method: "GET",
-        extraParams: {
-          patient_id: doctorId, // Customize as needed
-        },
-        success: function (events) {
-          // Add IDs to events for tracking deletions
-          events.forEach((event) => (event.id = event.availability_id));
-        },
-        failure: function () {
-          alert("There was an error while fetching availability!");
-        },
-      },
-      eventClick: function (info) {
-        handleEventClick(info, doctorId, calendar); // Handle event click logic if required
-      },
-      // Optional: you can adjust the slot duration, view options, etc.
-      slotMinTime: "08:00:00", // Assuming the doctor's schedule starts at 8 AM
-      slotMaxTime: "18:00:00", // Assuming the doctor's schedule ends at 6 PM
-      eventColor: "green", // Default event color (overridden by individual event colors)
-      eventTextColor: "white", // Default text color
-    });
+    // Clear any existing calendar instance
+    if (calendarEl.fullCalendar) {
+      calendarEl.fullCalendar.destroy();
+    }
 
-    calendar.render();
+    console.log(`Loading calendar for Doctor ID: ${doctorId}`);
+
+    // Fetch availability data and render the calendar
+    fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if the data is an array or an object with events
+        const events = Array.isArray(data) ? data : data.events;
+
+        if (!events) {
+          console.warn("No events found in data:", data);
+          return;
+        }
+
+        console.log("Fetched events:", events);
+
+        // Assign event ID for each availability if not already set
+        events.forEach((event) => {
+          if (!event.id) event.id = event.availability_id;
+        });
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "timeGridWeek",
+          selectable: true,
+          timeZone: "Asia/Manila",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+          events: events,
+          eventClick: function (info) {
+            const event = info.event;
+            handleEventSelection(event, doctorId, null);
+          },
+        });
+
+        calendar.render();
+      })
+      .catch((error) => console.error("Error loading calendar:", error));
   } else {
     console.error("Calendar element not found");
   }

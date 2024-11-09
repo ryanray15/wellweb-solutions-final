@@ -162,6 +162,9 @@ $userInfo = $query->get_result()->fetch_assoc();
         </div>
     </div>
 
+    <script>
+        const patient_id = <?php echo json_encode($user_id); ?>;
+    </script>
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="assets/js/utils.js"></script>

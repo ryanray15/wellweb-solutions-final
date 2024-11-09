@@ -117,43 +117,35 @@ function attachDoctorClickHandlers() {
   });
 }
 
-// Initialize WebSocket connection
-const socket = new WebSocket("ws://localhost:8080");
-
-socket.onopen = () => console.log("WebSocket connection established");
-socket.onclose = () => console.log("WebSocket connection closed");
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-
-  // Check if the message is to delete availability
-  if (data.type === "delete") {
-    removeAvailabilityFromCalendar(data.availabilityId);
-  }
-};
-
-// Function to remove availability from FullCalendar in schedule.js
-function removeAvailabilityFromCalendar(availabilityId) {
-  const calendarEl = document.getElementById("calendar");
-  if (calendarEl && calendarEl.fullCalendar) {
-    const calendar = FullCalendar.getCalendar(calendarEl);
-    const event = calendar.getEventById(availabilityId);
-    if (event) event.remove();
-  }
+// Function to reload the calendar for the schedule page
+function reloadScheduleCalendar() {
+  const doctorId = selectedDoctorId;
+  const consultationType = this.consultationType;
+  const specializationId = this.specializationId;
+  const patientId = patient_id;
+  loadDoctorCalendar(doctorId, consultationType, specializationId, patientId);
 }
 
-// Function to load doctor's availability and setup time slots (updated)
+// Function to load and render doctor's calendar in the schedule page
 function loadDoctorCalendar(
   doctorId,
-  consultationType,
-  specializationId,
-  patientId
+  consultationType = null,
+  specializationId = null,
+  patientId = null
 ) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
+    // Clear any existing calendar instance
+    if (calendarEl.fullCalendar) {
+      calendarEl.fullCalendar.destroy();
+    }
+
     console.log(
       `Doctor ID: ${doctorId}, Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
     );
+
+    // Fetch availability data and render the calendar
     fetch(
       `/api/get_availability.php?doctor_id=${doctorId}&consultation_type=${consultationType}&specialization_id=${specializationId}`
     )
@@ -173,7 +165,7 @@ function loadDoctorCalendar(
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data.events, // Use modified events with IDs
+          events: data.events,
           eventClick: function (info) {
             const event = info.event;
             handleEventSelection(event, doctorId, patientId);
@@ -419,6 +411,38 @@ function determineConsultationType(serviceId) {
 
 // Ensure the form submission and scheduling logic still works
 document.addEventListener("DOMContentLoaded", function () {
+  // WebSocket connection setup
+  const socket = new WebSocket("ws://localhost:8080"); // Replace with your WebSocket server address
+
+  socket.onopen = () => {
+    console.log("Connected to WebSocket server");
+  };
+
+  socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+
+    if (message.type === "expired_availabilities") {
+      console.log("Received expired_availabilities message:", message);
+
+      // Reload calendar when an availability expires
+      if (selectedDoctorId) {
+        loadDoctorCalendar(
+          selectedDoctorId,
+          consultationType,
+          specializationId,
+          patient_id
+        );
+      } else {
+        console.error("Doctor ID is missing, cannot reload calendar.");
+      }
+    }
+  };
+
+  socket.onclose = () => {
+    console.log("Disconnected from WebSocket server");
+  };
+
+  // Existing functionality
   fetchCurrentSession().then((patientId) => {
     if (patientId) {
       // Load services when the form is ready
