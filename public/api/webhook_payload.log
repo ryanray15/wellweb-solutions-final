@@ -22150,4 +22150,576 @@
     "idempotency_key": null
   },
   "type": "account.application.authorized"
+}{
+  "id": "evt_3QJKWc08GrFUpp2b1TFyVYQI",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731181251,
+  "data": {
+    "object": {
+      "id": "tr_3QJKWc08GrFUpp2b1YurgaAT",
+      "object": "transfer",
+      "amount": 13032,
+      "amount_reversed": 0,
+      "balance_transaction": "txn_3QJKWc08GrFUpp2b1Fvi0UxV",
+      "created": 1731181250,
+      "currency": "hkd",
+      "description": null,
+      "destination": "acct_1Q2p5h06799Vqeio",
+      "destination_payment": "py_1QJKWc06799VqeiopLTROKA8",
+      "livemode": false,
+      "metadata": {
+      },
+      "reversals": {
+        "object": "list",
+        "data": [
+
+        ],
+        "has_more": false,
+        "total_count": 0,
+        "url": "/v1/transfers/tr_3QJKWc08GrFUpp2b1YurgaAT/reversals"
+      },
+      "reversed": false,
+      "source_transaction": "ch_3QJKWc08GrFUpp2b196JdgNc",
+      "source_type": "card",
+      "transfer_group": "group_pi_3QJKWc08GrFUpp2b1cLvd2hJ"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": "req_XpiwOyEsZQWqXO",
+    "idempotency_key": "3eab27ac-dc2c-4991-89dd-ad8e2de604b7"
+  },
+  "type": "transfer.created"
+}{
+  "id": "evt_1QJKWd08GrFUpp2bFXmqnDPT",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731181251,
+  "data": {
+    "object": {
+      "id": "cs_test_a1A3L6OcQlJGJAxuGKiIahsiDrBlp27IS6Dne4IVhSNVOiSfhWXkMD52dT",
+      "object": "checkout.session",
+      "adaptive_pricing": {
+        "enabled": false
+      },
+      "after_expiration": null,
+      "allow_promotion_codes": null,
+      "amount_subtotal": 100000,
+      "amount_total": 100000,
+      "automatic_tax": {
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "billing_address_collection": null,
+      "cancel_url": "https://safely-precise-guppy.ngrok-free.app/dashboard.php",
+      "client_reference_id": null,
+      "client_secret": null,
+      "consent": null,
+      "consent_collection": null,
+      "created": 1731181242,
+      "currency": "php",
+      "currency_conversion": null,
+      "custom_fields": [
+
+      ],
+      "custom_text": {
+        "after_submit": null,
+        "shipping_address": null,
+        "submit": null,
+        "terms_of_service_acceptance": null
+      },
+      "customer": null,
+      "customer_creation": "if_required",
+      "customer_details": {
+        "address": {
+          "city": null,
+          "country": "PH",
+          "line1": null,
+          "line2": null,
+          "postal_code": null,
+          "state": null
+        },
+        "email": "test@email.com",
+        "name": "test test",
+        "phone": null,
+        "tax_exempt": "none",
+        "tax_ids": [
+
+        ]
+      },
+      "customer_email": null,
+      "expires_at": 1731267642,
+      "invoice": null,
+      "invoice_creation": {
+        "enabled": false,
+        "invoice_data": {
+          "account_tax_ids": null,
+          "custom_fields": null,
+          "description": null,
+          "footer": null,
+          "issuer": null,
+          "metadata": {
+          },
+          "rendering_options": null
+        }
+      },
+      "livemode": false,
+      "locale": null,
+      "metadata": {
+        "doctor_id": "29",
+        "date": "2024-11-10",
+        "service_id": "1",
+        "time": "13:00:00",
+        "patient_id": "5"
+      },
+      "mode": "payment",
+      "payment_intent": "pi_3QJKWc08GrFUpp2b1cLvd2hJ",
+      "payment_link": null,
+      "payment_method_collection": "if_required",
+      "payment_method_configuration_details": null,
+      "payment_method_options": {
+        "card": {
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card"
+      ],
+      "payment_status": "paid",
+      "phone_number_collection": {
+        "enabled": false
+      },
+      "recovered_from": null,
+      "saved_payment_method_options": null,
+      "setup_intent": null,
+      "shipping_address_collection": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "shipping_options": [
+
+      ],
+      "status": "complete",
+      "submit_type": null,
+      "subscription": null,
+      "success_url": "https://safely-precise-guppy.ngrok-free.app/dashboard.php?session_id={CHECKOUT_SESSION_ID}",
+      "total_details": {
+        "amount_discount": 0,
+        "amount_shipping": 0,
+        "amount_tax": 0
+      },
+      "ui_mode": "hosted",
+      "url": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "checkout.session.completed"
+}{
+  "id": "evt_3QJKWc08GrFUpp2b1kPcUVMC",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731181251,
+  "data": {
+    "object": {
+      "id": "ch_3QJKWc08GrFUpp2b196JdgNc",
+      "object": "charge",
+      "amount": 100000,
+      "amount_captured": 100000,
+      "amount_refunded": 0,
+      "application": null,
+      "application_fee": "fee_1QJKWc06799Vqeio0xPCD0v1",
+      "application_fee_amount": 10000,
+      "balance_transaction": "txn_3QJKWc08GrFUpp2b1MYSI4hh",
+      "billing_details": {
+        "address": {
+          "city": null,
+          "country": "PH",
+          "line1": null,
+          "line2": null,
+          "postal_code": null,
+          "state": null
+        },
+        "email": "test@email.com",
+        "name": "test test",
+        "phone": null
+      },
+      "calculated_statement_descriptor": "WELLWEB",
+      "captured": true,
+      "created": 1731181250,
+      "currency": "php",
+      "customer": null,
+      "description": null,
+      "destination": "acct_1Q2p5h06799Vqeio",
+      "dispute": null,
+      "disputed": false,
+      "failure_balance_transaction": null,
+      "failure_code": null,
+      "failure_message": null,
+      "fraud_details": {
+      },
+      "invoice": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "on_behalf_of": null,
+      "order": null,
+      "outcome": {
+        "network_status": "approved_by_network",
+        "reason": null,
+        "risk_level": "normal",
+        "risk_score": 19,
+        "seller_message": "Payment complete.",
+        "type": "authorized"
+      },
+      "paid": true,
+      "payment_intent": "pi_3QJKWc08GrFUpp2b1cLvd2hJ",
+      "payment_method": "pm_1QJKWa08GrFUpp2bpfjA38KO",
+      "payment_method_details": {
+        "card": {
+          "amount_authorized": 100000,
+          "authorization_code": null,
+          "brand": "visa",
+          "checks": {
+            "address_line1_check": null,
+            "address_postal_code_check": null,
+            "cvc_check": "pass"
+          },
+          "country": "US",
+          "exp_month": 1,
+          "exp_year": 2027,
+          "extended_authorization": {
+            "status": "disabled"
+          },
+          "fingerprint": "FuQKI1NYBOoWaR2y",
+          "funding": "credit",
+          "incremental_authorization": {
+            "status": "unavailable"
+          },
+          "installments": null,
+          "last4": "4242",
+          "mandate": null,
+          "multicapture": {
+            "status": "unavailable"
+          },
+          "network": "visa",
+          "network_token": {
+            "used": false
+          },
+          "overcapture": {
+            "maximum_amount_capturable": 100000,
+            "status": "unavailable"
+          },
+          "three_d_secure": null,
+          "wallet": null
+        },
+        "type": "card"
+      },
+      "radar_options": {
+      },
+      "receipt_email": null,
+      "receipt_number": null,
+      "receipt_url": "https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xUTBtV3owOEdyRlVwcDJiKMP1vrkGMgYM2VnDq7Q6LBYpM5tBiQtOzqj0Y9ygmSsYa-WzrBiimcmoKuI-nW8I422NceC53ZBSh5Yf",
+      "refunded": false,
+      "review": null,
+      "shipping": null,
+      "source": null,
+      "source_transfer": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "succeeded",
+      "transfer": "tr_3QJKWc08GrFUpp2b1YurgaAT",
+      "transfer_data": {
+        "amount": null,
+        "destination": "acct_1Q2p5h06799Vqeio"
+      },
+      "transfer_group": "group_pi_3QJKWc08GrFUpp2b1cLvd2hJ"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": "req_XpiwOyEsZQWqXO",
+    "idempotency_key": "3eab27ac-dc2c-4991-89dd-ad8e2de604b7"
+  },
+  "type": "charge.succeeded"
+}{
+  "id": "evt_1QJKWd06799VqeioiP8tAWMc",
+  "object": "event",
+  "account": "acct_1Q2p5h06799Vqeio",
+  "api_version": "2024-06-20",
+  "created": 1731181251,
+  "data": {
+    "object": {
+      "id": "py_1QJKWc06799VqeiopLTROKA8",
+      "object": "charge",
+      "amount": 13032,
+      "amount_captured": 13032,
+      "amount_refunded": 0,
+      "application": "ca_QsXc0I9VNCyYODyffmd3xC7PlUuBTaIx",
+      "application_fee": "fee_1QJKWc06799Vqeio0xPCD0v1",
+      "application_fee_amount": 1303,
+      "balance_transaction": "txn_1QJKWd06799VqeioGUWPgADP",
+      "billing_details": {
+        "address": {
+          "city": null,
+          "country": null,
+          "line1": null,
+          "line2": null,
+          "postal_code": null,
+          "state": null
+        },
+        "email": null,
+        "name": null,
+        "phone": null
+      },
+      "calculated_statement_descriptor": null,
+      "captured": true,
+      "created": 1731181250,
+      "currency": "hkd",
+      "customer": null,
+      "description": null,
+      "destination": null,
+      "dispute": null,
+      "disputed": false,
+      "failure_balance_transaction": null,
+      "failure_code": null,
+      "failure_message": null,
+      "fraud_details": {
+      },
+      "invoice": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "on_behalf_of": null,
+      "order": null,
+      "outcome": null,
+      "paid": true,
+      "payment_intent": null,
+      "payment_method": null,
+      "payment_method_details": {
+        "stripe_account": {
+        },
+        "type": "stripe_account"
+      },
+      "receipt_email": null,
+      "receipt_number": null,
+      "receipt_url": "https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xUTJwNWgwNjc5OVZxZWlvKMP1vrkGMgbhtQK3-kg6LBbTuukF7QO2wleCFx9ptlF_oo8sLooZVGISJjKDtvPJM-le0NmAPKaikQN1",
+      "refunded": false,
+      "review": null,
+      "shipping": null,
+      "source": {
+        "id": "acct_1Q0mWz08GrFUpp2b",
+        "object": "account",
+        "application_icon": "https://files.stripe.com/links/MDB8YWNjdF8xUTBtV3owOEdyRlVwcDJifGZsX3Rlc3RfdG94ekRRVmkyWEVialFydW1SbFpJaW0y00OuK43L9T",
+        "application_logo": "https://files.stripe.com/links/MDB8YWNjdF8xUTBtV3owOEdyRlVwcDJifGZsX3Rlc3RfUTg4UUJ1Y29DZjV3bEVjaWZjN3BiUGs100FCe7zXOS",
+        "application_name": "WellWeb Solutions "
+      },
+      "source_transfer": "tr_3QJKWc08GrFUpp2b1YurgaAT",
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "succeeded",
+      "transfer_data": null,
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": "req_XpiwOyEsZQWqXO",
+    "idempotency_key": "3eab27ac-dc2c-4991-89dd-ad8e2de604b7"
+  },
+  "type": "payment.created"
+}{
+  "id": "evt_3QJKWc08GrFUpp2b1D4ICyQN",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731181251,
+  "data": {
+    "object": {
+      "id": "pi_3QJKWc08GrFUpp2b1cLvd2hJ",
+      "object": "payment_intent",
+      "amount": 100000,
+      "amount_capturable": 0,
+      "amount_details": {
+        "tip": {
+        }
+      },
+      "amount_received": 100000,
+      "application": null,
+      "application_fee_amount": 10000,
+      "automatic_payment_methods": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "client_secret": "pi_3QJKWc08GrFUpp2b1cLvd2hJ_secret_Neeehg8YTSHeva7yuSyaMJyVV",
+      "confirmation_method": "automatic",
+      "created": 1731181250,
+      "currency": "php",
+      "customer": null,
+      "description": null,
+      "invoice": null,
+      "last_payment_error": null,
+      "latest_charge": "ch_3QJKWc08GrFUpp2b196JdgNc",
+      "livemode": false,
+      "metadata": {
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_method": "pm_1QJKWa08GrFUpp2bpfjA38KO",
+      "payment_method_configuration_details": null,
+      "payment_method_options": {
+        "card": {
+          "installments": null,
+          "mandate_options": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card"
+      ],
+      "processing": null,
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "succeeded",
+      "transfer_data": {
+        "destination": "acct_1Q2p5h06799Vqeio"
+      },
+      "transfer_group": "group_pi_3QJKWc08GrFUpp2b1cLvd2hJ"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": "req_XpiwOyEsZQWqXO",
+    "idempotency_key": "3eab27ac-dc2c-4991-89dd-ad8e2de604b7"
+  },
+  "type": "payment_intent.succeeded"
+}{
+  "id": "evt_3QJKWc08GrFUpp2b11Vw7dRQ",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731181250,
+  "data": {
+    "object": {
+      "id": "pi_3QJKWc08GrFUpp2b1cLvd2hJ",
+      "object": "payment_intent",
+      "amount": 100000,
+      "amount_capturable": 0,
+      "amount_details": {
+        "tip": {
+        }
+      },
+      "amount_received": 0,
+      "application": null,
+      "application_fee_amount": 10000,
+      "automatic_payment_methods": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "client_secret": "pi_3QJKWc08GrFUpp2b1cLvd2hJ_secret_Neeehg8YTSHeva7yuSyaMJyVV",
+      "confirmation_method": "automatic",
+      "created": 1731181250,
+      "currency": "php",
+      "customer": null,
+      "description": null,
+      "invoice": null,
+      "last_payment_error": null,
+      "latest_charge": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_method": null,
+      "payment_method_configuration_details": null,
+      "payment_method_options": {
+        "card": {
+          "installments": null,
+          "mandate_options": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card"
+      ],
+      "processing": null,
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "requires_payment_method",
+      "transfer_data": {
+        "destination": "acct_1Q2p5h06799Vqeio"
+      },
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": "req_XpiwOyEsZQWqXO",
+    "idempotency_key": "3eab27ac-dc2c-4991-89dd-ad8e2de604b7"
+  },
+  "type": "payment_intent.created"
+}{
+  "id": "evt_1QJKWf08GrFUpp2bvuykz1HI",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731181253,
+  "data": {
+    "object": {
+      "id": "fee_1QJKWc06799Vqeio0xPCD0v1",
+      "object": "application_fee",
+      "account": "acct_1Q2p5h06799Vqeio",
+      "amount": 10000,
+      "amount_refunded": 0,
+      "application": "ca_QsXc0I9VNCyYODyffmd3xC7PlUuBTaIx",
+      "balance_transaction": "txn_1QJKWf08GrFUpp2bIZDGc931",
+      "charge": "py_1QJKWc06799VqeiopLTROKA8",
+      "created": 1731181250,
+      "currency": "php",
+      "fee_source": {
+        "charge": "py_1QJKWc06799VqeiopLTROKA8",
+        "type": "charge"
+      },
+      "livemode": false,
+      "originating_transaction": "ch_3QJKWc08GrFUpp2b196JdgNc",
+      "refunded": false,
+      "refunds": {
+        "object": "list",
+        "data": [
+
+        ],
+        "has_more": false,
+        "total_count": 0,
+        "url": "/v1/application_fees/fee_1QJKWc06799Vqeio0xPCD0v1/refunds"
+      }
+    },
+    "previous_attributes": {
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "application_fee.created"
 }

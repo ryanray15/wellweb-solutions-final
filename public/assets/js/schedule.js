@@ -129,33 +129,22 @@ function reloadScheduleCalendar() {
 // Function to load and render doctor's calendar in the schedule page
 function loadDoctorCalendar(
   doctorId,
-  consultationType = null,
-  specializationId = null,
-  patientId = null
+  consultationType,
+  specializationId,
+  patientId
 ) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    // Clear any existing calendar instance
-    if (calendarEl.fullCalendar) {
-      calendarEl.fullCalendar.destroy();
-    }
-
     console.log(
       `Doctor ID: ${doctorId}, Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
     );
-
-    // Fetch availability data and render the calendar
     fetch(
       `/api/get_availability.php?doctor_id=${doctorId}&consultation_type=${consultationType}&specialization_id=${specializationId}`
     )
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched events:", data);
-
-        // Assign event ID for each availability
-        data.events.forEach((event) => (event.id = event.availability_id));
-
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
