@@ -510,7 +510,8 @@ function fetchAppointments(patient_id) {
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.meeting_id) {
-                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                    // Corrected URL with both meeting_id and appointment_id parameters
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}&appointment_id=${appointment.appointment_id}`;
                   } else {
                     alert("Meeting ID not found or unauthorized.");
                   }
@@ -732,7 +733,7 @@ function fetchDoctorAppointments(doctor_id) {
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.meeting_id) {
-                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}&appointment_id=${appointment.appointment_id}`;
                   } else {
                     alert("Meeting ID not found or unauthorized.");
                   }
