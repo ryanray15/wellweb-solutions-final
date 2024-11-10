@@ -50,6 +50,21 @@ if ($action === 'start') {
 // Step 3: Execute the statement and handle response
 if ($stmt->execute()) {
     echo json_encode(['status' => true]);
+
+    // If the call has ended, send a message to WebSocket server
+    if ($action === 'end') {
+        $socketData = [
+            'type' => 'check_call_completion',
+            'meeting_id' => $meeting_id
+        ];
+
+        // Assuming WebSocket server is running locally on port 8080
+        $socket = stream_socket_client("tcp://localhost:8080");
+        if ($socket) {
+            fwrite($socket, json_encode($socketData));
+            fclose($socket);
+        }
+    }
 } else {
     echo json_encode(['status' => false, 'message' => $stmt->error]);
 }

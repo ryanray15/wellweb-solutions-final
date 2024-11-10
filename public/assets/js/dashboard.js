@@ -45,15 +45,18 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log("Connected to WebSocket server");
         };
 
+        // WebSocket message handler for both doctor and patient roles
         socket.onmessage = (event) => {
           const message = JSON.parse(event.data);
 
           if (message.type === "expired_availabilities") {
-            // Update the message type here
             console.log("Received expired_availabilities message:", message);
-
-            // Reload calendar in the dashboard
             reloadDashboardCalendar();
+          } else if (message.type === "check_call_completion") {
+            console.log("Received appointment completion update:", message);
+
+            // Replace 'userRole' and 'userId' with the actual role and ID variables in your script
+            updateAppointments(user_role, user_id); // Call function to update appointments based on role
           }
         };
 
@@ -129,6 +132,36 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           });
         }
+        // Initialize WebSocket for doctor
+        const socket = new WebSocket("ws://localhost:8080"); // Ensure this matches your WebSocket server address
+
+        // Handle WebSocket connection events
+        socket.onopen = () => {
+          console.log("Connected to WebSocket server");
+        };
+
+        // WebSocket message handler for both doctor and patient roles
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "expired_availabilities") {
+            console.log("Received expired_availabilities message:", message);
+            reloadDashboardCalendar();
+          } else if (message.type === "check_call_completion") {
+            console.log("Received appointment completion update:", message);
+
+            // Replace 'userRole' and 'userId' with the actual role and ID variables in your script
+            updateAppointments(user_role, user_id); // Call function to update appointments based on role
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        socket.onclose = () => {
+          console.log("Disconnected from WebSocket server");
+        };
       }
     }
   });
@@ -319,30 +352,30 @@ function loadPatientDashboard(patient_id) {
     fetchUpcomingAppointments(patient_id);
   }, 5 * 60 * 1000); // Check every 5 minutes
 
-  // Fetch appointments and update the dashboard
-  if (patient_id) {
-    fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.length > 0) {
-          document.getElementById("rescheduleMessage").textContent =
-            "You have scheduled appointments.";
-          // document.getElementById("cancelMessage").textContent =
-          //   "You have scheduled appointments.";
+  // // Fetch appointments and update the dashboard
+  // if (patient_id) {
+  //   fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.length > 0) {
+  //         document.getElementById("rescheduleMessage").textContent =
+  //           "You have scheduled appointments.";
+  //         // document.getElementById("cancelMessage").textContent =
+  //         //   "You have scheduled appointments.";
 
-          document
-            .getElementById("rescheduleButton")
-            .classList.remove("hidden");
-          // document.getElementById("cancelButton").classList.remove("hidden");
-        } else {
-          document.getElementById("rescheduleMessage").textContent =
-            "No appointments scheduled.";
-          // document.getElementById("cancelMessage").textContent =
-          //   "No appointments scheduled.";
-        }
-      })
-      .catch((error) => console.error("Error fetching appointments:", error));
-  }
+  //         document
+  //           .getElementById("rescheduleButton")
+  //           .classList.remove("hidden");
+  //         // document.getElementById("cancelButton").classList.remove("hidden");
+  //       } else {
+  //         document.getElementById("rescheduleMessage").textContent =
+  //           "No appointments scheduled.";
+  //         // document.getElementById("cancelMessage").textContent =
+  //         //   "No appointments scheduled.";
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching appointments:", error));
+  // }
 }
 
 // Function to load notifications
@@ -1106,4 +1139,15 @@ function loadVerificationTable() {
     .catch((error) =>
       console.error("Error fetching pending verifications:", error)
     );
+}
+
+// Function to reload appointments based on user role
+function updateAppointments(userRole, userId) {
+  if (userRole === "doctor") {
+    // Fetch and reload appointments for the doctor
+    fetchDoctorAppointments(userId);
+  } else if (userRole === "patient") {
+    // Fetch and reload appointments for the patient
+    fetchAppointments(userId);
+  }
 }

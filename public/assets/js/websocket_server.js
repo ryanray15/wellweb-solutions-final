@@ -58,8 +58,67 @@ const checkExpiredAvailabilities = () => {
   });
 };
 
+// Function to check for completed video calls and update appointments
+const checkCompletedVideoCalls = () => {
+  // Query to find completed video calls where both participants have left
+  const query = `
+    SELECT meeting_id, doctor_id, patient_id
+    FROM video_call_history
+    WHERE status = 'completed' AND end_time IS NOT NULL
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) throw err;
+
+    // If there are completed calls, update the related appointments
+    if (results.length > 0) {
+      results.forEach((call) => {
+        const { meeting_id, doctor_id, patient_id } = call;
+
+        // Update the appointment status to 'completed'
+        const updateQuery = `
+          UPDATE appointments
+          SET status = 'completed'
+          WHERE doctor_id = ? AND patient_id = ? AND meeting_id = ?
+        `;
+
+        db.query(
+          updateQuery,
+          [doctor_id, patient_id, meeting_id],
+          (updateErr) => {
+            if (updateErr) {
+              console.error("Error updating appointment status:", updateErr);
+            } else {
+              console.log(
+                `Appointment marked as completed for meeting_id: ${meeting_id}`
+              );
+
+              // Notify all connected clients about the completed appointment
+              wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                  client.send(
+                    JSON.stringify({
+                      type: "check_call_completion",
+                      meeting_id,
+                      doctor_id,
+                      patient_id,
+                    })
+                  );
+                }
+              });
+            }
+          }
+        );
+      });
+    }
+  });
+};
+
 // Periodically check for expired availabilities every minute
 setInterval(checkExpiredAvailabilities, 60000);
+
+// Periodically check for completed video calls every minute
+setInterval(checkCompletedVideoCalls, 60000);
 
 wss.on("connection", (ws) => {
   console.log("Client connected to WebSocket.");
