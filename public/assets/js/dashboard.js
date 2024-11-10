@@ -37,6 +37,36 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           console.log("Doctor type dropdown not found."); // Debugging line
         }
+        // Initialize WebSocket for doctor
+        const socket = new WebSocket("ws://localhost:8080"); // Ensure this matches your WebSocket server address
+
+        // Handle WebSocket connection events
+        socket.onopen = () => {
+          console.log("Connected to WebSocket server");
+        };
+
+        // WebSocket message handler for both doctor and patient roles
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "expired_availabilities") {
+            console.log("Received expired_availabilities message:", message);
+            reloadDashboardCalendar();
+          } else if (message.type === "check_call_completion") {
+            console.log("Received appointment completion update:", message);
+
+            // Replace 'userRole' and 'userId' with the actual role and ID variables in your script
+            updateAppointments(user_role, user_id); // Call function to update appointments based on role
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        socket.onclose = () => {
+          console.log("Disconnected from WebSocket server");
+        };
       } else if (user_role === "patient") {
         // Patient-specific setup
         loadPatientDashboard(user_id);
@@ -102,6 +132,36 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           });
         }
+        // Initialize WebSocket for doctor
+        const socket = new WebSocket("ws://localhost:8080"); // Ensure this matches your WebSocket server address
+
+        // Handle WebSocket connection events
+        socket.onopen = () => {
+          console.log("Connected to WebSocket server");
+        };
+
+        // WebSocket message handler for both doctor and patient roles
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "expired_availabilities") {
+            console.log("Received expired_availabilities message:", message);
+            reloadDashboardCalendar();
+          } else if (message.type === "check_call_completion") {
+            console.log("Received appointment completion update:", message);
+
+            // Replace 'userRole' and 'userId' with the actual role and ID variables in your script
+            updateAppointments(user_role, user_id); // Call function to update appointments based on role
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        socket.onclose = () => {
+          console.log("Disconnected from WebSocket server");
+        };
       }
     }
   });
@@ -292,30 +352,30 @@ function loadPatientDashboard(patient_id) {
     fetchUpcomingAppointments(patient_id);
   }, 5 * 60 * 1000); // Check every 5 minutes
 
-  // Fetch appointments and update the dashboard
-  if (patient_id) {
-    fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.length > 0) {
-          document.getElementById("rescheduleMessage").textContent =
-            "You have scheduled appointments.";
-          // document.getElementById("cancelMessage").textContent =
-          //   "You have scheduled appointments.";
+  // // Fetch appointments and update the dashboard
+  // if (patient_id) {
+  //   fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.length > 0) {
+  //         document.getElementById("rescheduleMessage").textContent =
+  //           "You have scheduled appointments.";
+  //         // document.getElementById("cancelMessage").textContent =
+  //         //   "You have scheduled appointments.";
 
-          document
-            .getElementById("rescheduleButton")
-            .classList.remove("hidden");
-          // document.getElementById("cancelButton").classList.remove("hidden");
-        } else {
-          document.getElementById("rescheduleMessage").textContent =
-            "No appointments scheduled.";
-          // document.getElementById("cancelMessage").textContent =
-          //   "No appointments scheduled.";
-        }
-      })
-      .catch((error) => console.error("Error fetching appointments:", error));
-  }
+  //         document
+  //           .getElementById("rescheduleButton")
+  //           .classList.remove("hidden");
+  //         // document.getElementById("cancelButton").classList.remove("hidden");
+  //       } else {
+  //         document.getElementById("rescheduleMessage").textContent =
+  //           "No appointments scheduled.";
+  //         // document.getElementById("cancelMessage").textContent =
+  //         //   "No appointments scheduled.";
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching appointments:", error));
+  // }
 }
 
 // Function to load notifications
@@ -386,13 +446,11 @@ document
 function fetchAppointments(patient_id) {
   // Get the selected type from the dropdown
   const type = document.getElementById("patientAppointmentType").value;
-  console.log("Fetching appointments for type:", type); // Debugging
 
-  // Pass the selected type as a query parameter to the backend
+  // Fetch appointments with selected type
   fetch(`/api/get_appointments.php?patient_id=${patient_id}&type=${type}`)
     .then((response) => response.json())
     .then((data) => {
-      console.log("Fetched appointments data:", data); // Debugging
       const appointmentsTable = document.getElementById("appointmentsTable");
       appointmentsTable.innerHTML = ""; // Clear previous appointments
 
@@ -417,7 +475,6 @@ function fetchAppointments(patient_id) {
         // Due In Cell
         const dueInCell = document.createElement("td");
         dueInCell.className = "border px-4 py-2";
-
         const daysDue = calculateDaysDue(appointment.date);
         let isOverdue = false;
 
@@ -434,56 +491,33 @@ function fetchAppointments(patient_id) {
 
         // Actions Cell for Join Room / Locate Clinic or Reschedule / Cancel
         const actionsCell = document.createElement("td");
-        actionsCell.className = "border px-4 py-2";
+        actionsCell.className =
+          "border px-4 py-2 flex justify-center items-center space-x-2";
 
         if (isOverdue) {
-          // Show Reschedule and Cancel buttons for overdue appointments
+          // Show Reschedule and Cancel buttons directly for overdue appointments
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
-          rescheduleButton.className =
-            "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2 mr-2";
           rescheduleButton.addEventListener("click", () => {
             window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
 
           const cancelButton = document.createElement("button");
           cancelButton.textContent = "Cancel";
-          cancelButton.className =
-            "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded";
-          cancelButton.addEventListener("click", () => {
-            if (confirm("Are you sure you want to cancel this appointment?")) {
-              fetch(`/api/cancel_appointment.php`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  appointment_id: appointment.appointment_id,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.status) {
-                    alert("Appointment canceled successfully.");
-                    fetchAppointments(patient_id); // Refresh the appointments
-                  } else {
-                    alert(
-                      data.message ||
-                        "Failed to cancel appointment. Please try again."
-                    );
-                  }
-                })
-                .catch((error) =>
-                  console.error("Error canceling appointment:", error)
-                );
-            }
-          });
+          cancelButton.className = "text-red-500 font-bold py-1 px-2";
+          cancelButton.addEventListener("click", () =>
+            handleCancel(appointment.appointment_id, patient_id)
+          );
 
           actionsCell.appendChild(rescheduleButton);
           actionsCell.appendChild(cancelButton);
         } else {
-          // If not overdue, show Join Room or Locate Clinic based on service_id
+          // Add Join Room / Locate Clinic button and kebab menu
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
+            // Online Consultation
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
@@ -509,7 +543,8 @@ function fetchAppointments(patient_id) {
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.meeting_id) {
-                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                    // Corrected URL with both meeting_id and appointment_id parameters
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}&appointment_id=${appointment.appointment_id}`;
                   } else {
                     alert("Meeting ID not found or unauthorized.");
                   }
@@ -519,6 +554,7 @@ function fetchAppointments(patient_id) {
                 );
             });
           } else {
+            // Physical Consultation
             actionButton.textContent = "Locate Clinic";
             actionButton.className =
               "bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded";
@@ -528,6 +564,37 @@ function fetchAppointments(patient_id) {
           }
 
           actionsCell.appendChild(actionButton);
+
+          // Kebab Menu
+          const kebabMenuContainer = document.createElement("div");
+          kebabMenuContainer.className = "relative";
+
+          const kebabButton = document.createElement("button");
+          kebabButton.className = "text-gray-500 focus:outline-none ml-2";
+          kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+          kebabMenuContainer.appendChild(kebabButton);
+
+          const kebabMenu = document.createElement("div");
+          kebabMenu.className =
+            "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+          kebabMenu.innerHTML = `
+            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+            <button class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100" onclick="handleCancel(${appointment.appointment_id}, ${patient_id})">Cancel</button>
+          `;
+          kebabMenuContainer.appendChild(kebabMenu);
+
+          // Toggle kebab menu visibility on click
+          kebabButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            kebabMenu.classList.toggle("hidden");
+          });
+
+          // Close the menu when clicking outside
+          document.addEventListener("click", () => {
+            kebabMenu.classList.add("hidden");
+          });
+
+          actionsCell.appendChild(kebabMenuContainer);
         }
 
         row.appendChild(doctorCell);
@@ -541,25 +608,39 @@ function fetchAppointments(patient_id) {
     .catch((error) => console.error("Error fetching appointments:", error));
 }
 
+// Function to handle appointment cancellation
+function handleCancel(appointment_id, patient_id) {
+  if (confirm("Are you sure you want to cancel this appointment?")) {
+    fetch(`/api/cancel_appointment.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ appointment_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status) {
+          alert("Appointment canceled successfully.");
+          fetchAppointments(patient_id); // Refresh the appointments
+        } else {
+          alert(
+            data.message || "Failed to cancel appointment. Please try again."
+          );
+        }
+      })
+      .catch((error) => console.error("Error canceling appointment:", error));
+  }
+}
+
 function fetchDoctorAppointments(doctor_id) {
   console.log("Doctor ID:", doctor_id);
+
   // Get the selected type from the dropdown
   const type = document.getElementById("doctorAppointmentType").value;
-  console.log("Fetching appointments for type:", type); // Debugging
-  console.log(
-    "Fetching appointments for doctor_id:",
-    doctor_id,
-    "with type:",
-    type
-  ); // Debugging line
+  console.log("Fetching appointments for type:", type);
 
   fetch(`/api/get_doctor_appointments.php?doctor_id=${doctor_id}&type=${type}`)
-    .then((response) => {
-      console.log("Response Status:", response.status); // Debugging
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      console.log("Data received:", data); // Debugging
       const appointmentsTable = document.getElementById(
         "doctorAppointmentsTable"
       );
@@ -568,7 +649,7 @@ function fetchDoctorAppointments(doctor_id) {
       data.forEach((appointment) => {
         const row = document.createElement("tr");
 
-        // Doctor's Name Cell
+        // Patient's Name Cell
         const patientCell = document.createElement("td");
         patientCell.className = "border px-4 py-2";
         patientCell.textContent = appointment.patient_name;
@@ -583,7 +664,7 @@ function fetchDoctorAppointments(doctor_id) {
         timeCell.className = "border px-4 py-2";
         timeCell.textContent = appointment.time;
 
-        // Appointment Time Cell
+        // Status Cell
         const statusCell = document.createElement("td");
         statusCell.className = "border px-4 py-2";
         statusCell.textContent = appointment.status;
@@ -606,67 +687,63 @@ function fetchDoctorAppointments(doctor_id) {
           }
         }
 
-        // Actions Cell for Join Room / Locate Clinic or Reschedule / Cancel
+        // Actions Cell
         const actionsCell = document.createElement("td");
-        actionsCell.className = "border px-4 py-2";
+        actionsCell.className =
+          "border px-4 py-2 flex justify-center items-center space-x-2";
 
-        if (isOverdue) {
-          // Show Reschedule and Cancel buttons for overdue appointments
+        // Logic for actions based on appointment status and type
+        if (appointment.status === "no show") {
+          // Show "Reschedule" button if the status is "no show"
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
-          rescheduleButton.className =
-            "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded mr-2";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
           rescheduleButton.addEventListener("click", () => {
-            // Redirect to reschedule page or open reschedule modal
             window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
           });
-
-          const cancelButton = document.createElement("button");
-          cancelButton.textContent = "Cancel";
-          cancelButton.className =
-            "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded";
-          cancelButton.addEventListener("click", () => {
-            // Confirm and call cancel_appointment.php endpoint
-            if (confirm("Are you sure you want to cancel this appointment?")) {
-              fetch(`/api/cancel_appointment.php`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  appointment_id: appointment.appointment_id,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.status) {
-                    alert("Appointment canceled successfully.");
-                    fetchDoctorAppointments(doctor_id); // Refresh the appointments
-                  } else {
-                    alert(
-                      data.message ||
-                        "Failed to cancel appointment. Please try again."
-                    );
-                  }
-                })
-                .catch((error) =>
-                  console.error("Error canceling appointment:", error)
-                );
-            }
-          });
-
           actionsCell.appendChild(rescheduleButton);
-          actionsCell.appendChild(cancelButton);
+        } else if (isOverdue && appointment.service_id === 2) {
+          // Show toggle buttons for "Completed" and "No Show" if it's an overdue physical consultation
+          const completedButton = document.createElement("button");
+          completedButton.textContent = "Completed";
+          completedButton.className = "text-blue-600 font-bold py-1 px-2";
+          completedButton.addEventListener("click", () =>
+            updateAppointmentStatus(
+              appointment.appointment_id,
+              "completed",
+              doctor_id
+            )
+          );
+          actionsCell.appendChild(completedButton);
+
+          const noShowButton = document.createElement("button");
+          noShowButton.textContent = "No Show";
+          noShowButton.className = "text-red-500 font-bold py-1 px-2";
+          noShowButton.addEventListener("click", () =>
+            updateAppointmentStatus(
+              appointment.appointment_id,
+              "no show",
+              doctor_id
+            )
+          );
+          actionsCell.appendChild(noShowButton);
+        } else if (appointment.service_id === 2) {
+          // For non-overdue physical consultations, show the Reschedule button only
+          const rescheduleButton = document.createElement("button");
+          rescheduleButton.textContent = "Reschedule";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
+          rescheduleButton.addEventListener("click", () => {
+            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+          });
+          actionsCell.appendChild(rescheduleButton);
         } else {
-          // If not overdue, show Join Room or Locate Clinic based on service_id
+          // Display Join Room or Locate Clinic button with kebab menu if needed
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
-            // Online Consultation
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            // Check if the appointment is today to enable the Join Room button
             const appointmentDate = new Date(appointment.date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -683,14 +760,13 @@ function fetchDoctorAppointments(doctor_id) {
             }
 
             actionButton.addEventListener("click", () => {
-              // Fetch the meeting_id and redirect to the video chat page
               fetch(
                 `/api/get_meeting_id.php?appointment_id=${appointment.appointment_id}&user_id=${doctor_id}`
               )
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.meeting_id) {
-                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}&appointment_id=${appointment.appointment_id}`;
                   } else {
                     alert("Meeting ID not found or unauthorized.");
                   }
@@ -702,6 +778,34 @@ function fetchDoctorAppointments(doctor_id) {
           }
 
           actionsCell.appendChild(actionButton);
+
+          // Kebab Menu for Reschedule option (non-overdue online appointments)
+          const kebabMenuContainer = document.createElement("div");
+          kebabMenuContainer.className = "relative inline-block";
+
+          const kebabButton = document.createElement("button");
+          kebabButton.className = "text-gray-500 focus:outline-none ml-2";
+          kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+          kebabMenuContainer.appendChild(kebabButton);
+
+          const kebabMenu = document.createElement("div");
+          kebabMenu.className =
+            "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+          kebabMenu.innerHTML = `
+            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+          `;
+          kebabMenuContainer.appendChild(kebabMenu);
+
+          kebabButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            kebabMenu.classList.toggle("hidden");
+          });
+
+          document.addEventListener("click", () => {
+            kebabMenu.classList.add("hidden");
+          });
+
+          actionsCell.appendChild(kebabMenuContainer);
         }
 
         row.appendChild(patientCell);
@@ -714,6 +818,27 @@ function fetchDoctorAppointments(doctor_id) {
       });
     })
     .catch((error) => console.error("Error fetching appointments:", error));
+}
+
+// Update appointment status function
+function updateAppointmentStatus(appointment_id, status, doctor_id) {
+  fetch(`/api/update_appointment_status.php`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ appointment_id, status }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert(`Appointment marked as ${status}.`);
+        fetchDoctorAppointments(doctor_id);
+      } else {
+        alert("Failed to update appointment status.");
+      }
+    })
+    .catch((error) =>
+      console.error("Error updating appointment status:", error)
+    );
 }
 
 // Helper function to calculate days due
@@ -731,37 +856,67 @@ function handleReschedule(appointmentId) {
   console.log("Reschedule appointment with ID:", appointmentId);
 }
 
-// Function to initialize and load the FullCalendar component for doctors
+// Function to reload the calendar for the dashboard
+function reloadDashboardCalendar() {
+  console.log("Reloading calendar due to WebSocket update"); // Debugging line
+  const doctorId = user_role === "doctor" ? user_id : null;
+  if (doctorId) {
+    loadDoctorCalendar(doctorId);
+  } else {
+    console.error("Doctor ID not found or user is not a doctor");
+  }
+}
+
+// Function to load and render doctor's calendar in the dashboard
 function loadDoctorCalendar(doctorId) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "timeGridWeek",
-      timeZone: "Asia/Manila", // Adjust to your local timezone
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      events: {
-        url: `/api/get_doctor_availability.php?doctor_id=${doctorId}`, // Adjust API endpoint as needed
-        method: "GET",
-        failure: function () {
-          alert("There was an error while fetching availability!");
-        },
-      },
-      eventClick: function (info) {
-        handleEventClick(info, doctorId, calendar); // Handle event click logic if required
-      },
-      // Optional: you can adjust the slot duration, view options, etc.
-      slotMinTime: "08:00:00", // Assuming the doctor's schedule starts at 8 AM
-      slotMaxTime: "18:00:00", // Assuming the doctor's schedule ends at 6 PM
-      eventColor: "green", // Default event color (overridden by individual event colors)
-      eventTextColor: "white", // Default text color
-    });
+    // Clear any existing calendar instance
+    if (calendarEl.fullCalendar) {
+      calendarEl.fullCalendar.destroy();
+    }
 
-    calendar.render();
+    console.log(`Loading calendar for Doctor ID: ${doctorId}`);
+
+    // Fetch availability data and render the calendar
+    fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if the data is an array or an object with events
+        const events = Array.isArray(data) ? data : data.events;
+
+        if (!events) {
+          console.warn("No events found in data:", data);
+          return;
+        }
+
+        console.log("Fetched events:", events);
+
+        // Assign event ID for each availability if not already set
+        events.forEach((event) => {
+          if (!event.id) event.id = event.availability_id;
+        });
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "timeGridWeek",
+          selectable: true,
+          timeZone: "Asia/Manila",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+          events: events,
+          eventClick: function (info) {
+            const event = info.event;
+            handleEventSelection(event, doctorId, null);
+          },
+        });
+
+        calendar.render();
+      })
+      .catch((error) => console.error("Error loading calendar:", error));
   } else {
     console.error("Calendar element not found");
   }
@@ -984,4 +1139,15 @@ function loadVerificationTable() {
     .catch((error) =>
       console.error("Error fetching pending verifications:", error)
     );
+}
+
+// Function to reload appointments based on user role
+function updateAppointments(userRole, userId) {
+  if (userRole === "doctor") {
+    // Fetch and reload appointments for the doctor
+    fetchDoctorAppointments(userId);
+  } else if (userRole === "patient") {
+    // Fetch and reload appointments for the patient
+    fetchAppointments(userId);
+  }
 }

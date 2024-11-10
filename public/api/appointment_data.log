@@ -278,3 +278,51 @@ Array
     [date] => 2024-11-09
     [time] => 08:00:00
 )
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-09
+    [time] => 08:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 2
+    [date] => 2024-11-10
+    [time] => 08:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-08
+    [time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-11
+    [time] => 08:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-10
+    [time] => 13:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-10
+    [time] => 08:00:00
+)
