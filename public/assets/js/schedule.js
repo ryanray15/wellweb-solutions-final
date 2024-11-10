@@ -117,7 +117,16 @@ function attachDoctorClickHandlers() {
   });
 }
 
-// Function to load doctor's availability and setup time slots (updated)
+// Function to reload the calendar for the schedule page
+function reloadScheduleCalendar() {
+  const doctorId = selectedDoctorId;
+  const consultationType = this.consultationType;
+  const specializationId = this.specializationId;
+  const patientId = patient_id;
+  loadDoctorCalendar(doctorId, consultationType, specializationId, patientId);
+}
+
+// Function to load and render doctor's calendar in the schedule page
 function loadDoctorCalendar(
   doctorId,
   consultationType,
@@ -391,6 +400,38 @@ function determineConsultationType(serviceId) {
 
 // Ensure the form submission and scheduling logic still works
 document.addEventListener("DOMContentLoaded", function () {
+  // WebSocket connection setup
+  const socket = new WebSocket("ws://localhost:8080"); // Replace with your WebSocket server address
+
+  socket.onopen = () => {
+    console.log("Connected to WebSocket server");
+  };
+
+  socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+
+    if (message.type === "expired_availabilities") {
+      console.log("Received expired_availabilities message:", message);
+
+      // Reload calendar when an availability expires
+      if (selectedDoctorId) {
+        loadDoctorCalendar(
+          selectedDoctorId,
+          consultationType,
+          specializationId,
+          patient_id
+        );
+      } else {
+        console.error("Doctor ID is missing, cannot reload calendar.");
+      }
+    }
+  };
+
+  socket.onclose = () => {
+    console.log("Disconnected from WebSocket server");
+  };
+
+  // Existing functionality
   fetchCurrentSession().then((patientId) => {
     if (patientId) {
       // Load services when the form is ready

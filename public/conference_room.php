@@ -1,5 +1,23 @@
 <?php
-// Ensure any necessary authentication here
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /login.html');
+    exit();
+}
+
+// Get user ID and role from session
+$user_id = $_SESSION['user_id'];
+$user_role = $_SESSION['role'];
+
+// Fetch user information from the database
+require_once '../config/database.php';
+$db = include '../config/database.php';
+$query = $db->prepare("SELECT first_name, middle_initial, last_name, email FROM users WHERE user_id = ?");
+$query->bind_param("i", $user_id);
+$query->execute();
+$userInfo = $query->get_result()->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -56,18 +74,64 @@
         let meeting = null;
         let isMicOn = true;
         let isWebCamOn = true;
+        let doctorId = null; // Define doctorId globally
+        let patientId = null; // Define patientId globally
         const videoContainer = document.getElementById("videoContainer");
 
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
             const meetingId = urlParams.get('meeting_id');
+            const appointmentId = urlParams.get('appointment_id');
 
-            if (meetingId) {
-                initializeMeeting(meetingId);
+            if (meetingId && appointmentId) {
+                fetch(`/api/get_appointment_details.php?appointment_id=${appointmentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Extract doctor_id and patient_id from the response
+                            const {
+                                doctor_id,
+                                patient_id
+                            } = data;
+
+                            // Assign them to global variables
+                            doctorId = doctor_id;
+                            patientId = patient_id;
+
+                            initializeMeeting(meetingId);
+                            logVideoCall(meetingId, 'start', doctor_id, patient_id); // Log start of the call
+                        } else {
+                            console.error("Failed to retrieve appointment details:", data.message);
+                        }
+                    });
             } else {
-                alert("Meeting ID is missing.");
+                alert("Meeting ID or Appointment ID is missing.");
             }
         });
+
+        function logVideoCall(meetingId, action, doctorId, patientId) {
+            fetch('api/log_video_call.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        meeting_id: meetingId,
+                        action: action,
+                        doctor_id: doctorId,
+                        patient_id: patientId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        console.log(`Video call ${action} recorded successfully.`);
+                    } else {
+                        console.error(`Failed to record video call ${action}: ${data.message}`);
+                    }
+                })
+                .catch(error => console.error('Error logging video call:', error));
+        }
 
         function initializeMeeting(meetingId) {
             if (typeof TOKEN === 'undefined' || !TOKEN) {
@@ -99,6 +163,9 @@
             });
 
             meeting.on("meeting-left", () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const meetingId = urlParams.get('meeting_id');
+                logVideoCall(meetingId, 'end', doctorId, patientId); // Log end of the call
                 videoContainer.innerHTML = "";
             });
 
@@ -146,6 +213,9 @@
             });
 
             document.getElementById("leaveBtn").addEventListener("click", () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const meetingId = urlParams.get('meeting_id');
+                logVideoCall(meetingId, 'end', doctorId, patientId); // Log end when leaving manually
                 meeting.leave();
                 window.location.href = "/dashboard.php";
             });

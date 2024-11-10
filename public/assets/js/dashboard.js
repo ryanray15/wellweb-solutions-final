@@ -37,6 +37,36 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           console.log("Doctor type dropdown not found."); // Debugging line
         }
+        // Initialize WebSocket for doctor
+        const socket = new WebSocket("ws://localhost:8080"); // Ensure this matches your WebSocket server address
+
+        // Handle WebSocket connection events
+        socket.onopen = () => {
+          console.log("Connected to WebSocket server");
+        };
+
+        // WebSocket message handler for both doctor and patient roles
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "expired_availabilities") {
+            console.log("Received expired_availabilities message:", message);
+            reloadDashboardCalendar();
+          } else if (message.type === "check_call_completion") {
+            console.log("Received appointment completion update:", message);
+
+            // Replace 'userRole' and 'userId' with the actual role and ID variables in your script
+            updateAppointments(user_role, user_id); // Call function to update appointments based on role
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        socket.onclose = () => {
+          console.log("Disconnected from WebSocket server");
+        };
       } else if (user_role === "patient") {
         // Patient-specific setup
         loadPatientDashboard(user_id);
@@ -102,6 +132,36 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           });
         }
+        // Initialize WebSocket for doctor
+        const socket = new WebSocket("ws://localhost:8080"); // Ensure this matches your WebSocket server address
+
+        // Handle WebSocket connection events
+        socket.onopen = () => {
+          console.log("Connected to WebSocket server");
+        };
+
+        // WebSocket message handler for both doctor and patient roles
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "expired_availabilities") {
+            console.log("Received expired_availabilities message:", message);
+            reloadDashboardCalendar();
+          } else if (message.type === "check_call_completion") {
+            console.log("Received appointment completion update:", message);
+
+            // Replace 'userRole' and 'userId' with the actual role and ID variables in your script
+            updateAppointments(user_role, user_id); // Call function to update appointments based on role
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        socket.onclose = () => {
+          console.log("Disconnected from WebSocket server");
+        };
       }
     }
   });
@@ -292,30 +352,30 @@ function loadPatientDashboard(patient_id) {
     fetchUpcomingAppointments(patient_id);
   }, 5 * 60 * 1000); // Check every 5 minutes
 
-  // Fetch appointments and update the dashboard
-  if (patient_id) {
-    fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.length > 0) {
-          document.getElementById("rescheduleMessage").textContent =
-            "You have scheduled appointments.";
-          // document.getElementById("cancelMessage").textContent =
-          //   "You have scheduled appointments.";
+  // // Fetch appointments and update the dashboard
+  // if (patient_id) {
+  //   fetch(`/api/get_appointments.php?patient_id=${patient_id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.length > 0) {
+  //         document.getElementById("rescheduleMessage").textContent =
+  //           "You have scheduled appointments.";
+  //         // document.getElementById("cancelMessage").textContent =
+  //         //   "You have scheduled appointments.";
 
-          document
-            .getElementById("rescheduleButton")
-            .classList.remove("hidden");
-          // document.getElementById("cancelButton").classList.remove("hidden");
-        } else {
-          document.getElementById("rescheduleMessage").textContent =
-            "No appointments scheduled.";
-          // document.getElementById("cancelMessage").textContent =
-          //   "No appointments scheduled.";
-        }
-      })
-      .catch((error) => console.error("Error fetching appointments:", error));
-  }
+  //         document
+  //           .getElementById("rescheduleButton")
+  //           .classList.remove("hidden");
+  //         // document.getElementById("cancelButton").classList.remove("hidden");
+  //       } else {
+  //         document.getElementById("rescheduleMessage").textContent =
+  //           "No appointments scheduled.";
+  //         // document.getElementById("cancelMessage").textContent =
+  //         //   "No appointments scheduled.";
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching appointments:", error));
+  // }
 }
 
 // Function to load notifications
@@ -483,7 +543,8 @@ function fetchAppointments(patient_id) {
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.meeting_id) {
-                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                    // Corrected URL with both meeting_id and appointment_id parameters
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}&appointment_id=${appointment.appointment_id}`;
                   } else {
                     alert("Meeting ID not found or unauthorized.");
                   }
@@ -705,7 +766,7 @@ function fetchDoctorAppointments(doctor_id) {
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.meeting_id) {
-                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}`;
+                    window.location.href = `/conference_room.php?meeting_id=${data.meeting_id}&appointment_id=${appointment.appointment_id}`;
                   } else {
                     alert("Meeting ID not found or unauthorized.");
                   }
@@ -795,37 +856,67 @@ function handleReschedule(appointmentId) {
   console.log("Reschedule appointment with ID:", appointmentId);
 }
 
-// Function to initialize and load the FullCalendar component for doctors
+// Function to reload the calendar for the dashboard
+function reloadDashboardCalendar() {
+  console.log("Reloading calendar due to WebSocket update"); // Debugging line
+  const doctorId = user_role === "doctor" ? user_id : null;
+  if (doctorId) {
+    loadDoctorCalendar(doctorId);
+  } else {
+    console.error("Doctor ID not found or user is not a doctor");
+  }
+}
+
+// Function to load and render doctor's calendar in the dashboard
 function loadDoctorCalendar(doctorId) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "timeGridWeek",
-      timeZone: "Asia/Manila", // Adjust to your local timezone
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      events: {
-        url: `/api/get_doctor_availability.php?doctor_id=${doctorId}`, // Adjust API endpoint as needed
-        method: "GET",
-        failure: function () {
-          alert("There was an error while fetching availability!");
-        },
-      },
-      eventClick: function (info) {
-        handleEventClick(info, doctorId, calendar); // Handle event click logic if required
-      },
-      // Optional: you can adjust the slot duration, view options, etc.
-      slotMinTime: "08:00:00", // Assuming the doctor's schedule starts at 8 AM
-      slotMaxTime: "18:00:00", // Assuming the doctor's schedule ends at 6 PM
-      eventColor: "green", // Default event color (overridden by individual event colors)
-      eventTextColor: "white", // Default text color
-    });
+    // Clear any existing calendar instance
+    if (calendarEl.fullCalendar) {
+      calendarEl.fullCalendar.destroy();
+    }
 
-    calendar.render();
+    console.log(`Loading calendar for Doctor ID: ${doctorId}`);
+
+    // Fetch availability data and render the calendar
+    fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if the data is an array or an object with events
+        const events = Array.isArray(data) ? data : data.events;
+
+        if (!events) {
+          console.warn("No events found in data:", data);
+          return;
+        }
+
+        console.log("Fetched events:", events);
+
+        // Assign event ID for each availability if not already set
+        events.forEach((event) => {
+          if (!event.id) event.id = event.availability_id;
+        });
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "timeGridWeek",
+          selectable: true,
+          timeZone: "Asia/Manila",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+          events: events,
+          eventClick: function (info) {
+            const event = info.event;
+            handleEventSelection(event, doctorId, null);
+          },
+        });
+
+        calendar.render();
+      })
+      .catch((error) => console.error("Error loading calendar:", error));
   } else {
     console.error("Calendar element not found");
   }
@@ -1048,4 +1139,15 @@ function loadVerificationTable() {
     .catch((error) =>
       console.error("Error fetching pending verifications:", error)
     );
+}
+
+// Function to reload appointments based on user role
+function updateAppointments(userRole, userId) {
+  if (userRole === "doctor") {
+    // Fetch and reload appointments for the doctor
+    fetchDoctorAppointments(userId);
+  } else if (userRole === "patient") {
+    // Fetch and reload appointments for the patient
+    fetchAppointments(userId);
+  }
 }
