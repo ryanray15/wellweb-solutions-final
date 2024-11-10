@@ -28,7 +28,7 @@ if ($user_role === 'doctor') {
     $specQuery->execute();
     $result = $specQuery->get_result();
     while ($row = $result->fetch_assoc()) {
-        $specializations[] = $row['specialization_id']; //ugytyty
+        $specializations[] = $row['specialization_id'];
     }
 }
 
