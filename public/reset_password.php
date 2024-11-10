@@ -13,6 +13,15 @@ $user_id = $_SESSION['user_id'];
 
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    .transparent-bg {
+        background-color: rgba(255, 255, 255, 0.7);
+        /* White with 70% opacity */
+        backdrop-filter: blur(10px);
+        /* Optional: adds a blur effect to the background */
+
+    }
+</style>l
 
 <head>
     <meta charset="UTF-8">
@@ -24,14 +33,14 @@ $user_id = $_SESSION['user_id'];
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-green-600 p-4">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-4 fixed top-0 left-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-white focus:outline-none">
+                <button id="profileDropdown" class="text-blue-600 focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -43,8 +52,8 @@ $user_id = $_SESSION['user_id'];
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto mt-10 max-w-md p-8 bg-white rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-green-600 mb-6 text-center">Reset Password</h1>
+    <div class="container mx-auto mt-28 max-w-md p-8 bg-white rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">Reset Password</h1>
 
         <form id="resetPasswordForm">
             <div class="mb-4">
@@ -55,7 +64,7 @@ $user_id = $_SESSION['user_id'];
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="confirm_password">Confirm Password</label>
                 <input type="password" id="confirm_password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
             </div>
-            <button type="submit" class="bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded w-full transition duration-200">Reset Password</button>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition duration-200">Reset Password</button>
         </form>
     </div>
 

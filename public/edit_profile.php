@@ -22,7 +22,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 
 // Fetch specializations if the user is a doctor
 $specializations = [];
-if ($_SESSION['role'] === 'doctor') {
+if ($user_role === 'doctor') {
     $specQuery = $db->prepare("SELECT specialization_id FROM doctor_specializations WHERE doctor_id = ?");
     $specQuery->bind_param("i", $user_id);
     $specQuery->execute();
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
     $contact_number = $_POST['contact_number'] ?? '';
     $address = $_POST['address'] ?? '';
-    $gender = $_POST['gender'] ?? ''; // Handle gender input
+    $gender = $_POST['gender'] ?? '';
     $new_specializations = $_POST['specialization_id'] ?? [];
 
     // Prepare and bind update statement
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($updateQuery->execute()) {
         // Update specializations if user is a doctor
-        if ($_SESSION['role'] === 'doctor') {
+        if ($user_role === 'doctor') {
             $deleteQuery = $db->prepare("DELETE FROM doctor_specializations WHERE doctor_id = ?");
             $deleteQuery->bind_param("i", $user_id);
             $deleteQuery->execute();
@@ -79,97 +79,198 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Profile</title>
     <link href="assets/css/tailwind.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('img/bg_doctor.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Two columns layout */
+            gap: 2rem;
+            /* Space between columns */
+        }
+
+        .full-width {
+            grid-column: span 2;
+            /* Elements spanning full width */
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            /* Default Tailwind border color */
+            transition: border-color 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #3182ce;
+            outline: none;
+        }
+
+        .label-text {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .form-element {
+            margin-bottom: 2rem;
+            /* Add space between form fields */
+        }
+
+        .form-button {
+            background-color: #48BB78;
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .form-button:hover {
+            background-color: #38A169;
+        }
+
+        .navbar {
+            background-color: #2D3748;
+            /* Dark background for navbar */
+            padding: 1rem;
+            color: white;
+        }
+
+        .navbar a {
+            color: white;
+            margin-right: 1rem;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .transparent-bg {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 flex flex-col">
     <!-- Navigation Bar -->
-    <nav class="bg-green-600 p-4">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-4 fixed top-0 left-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-white focus:outline-none">
+                <button id="profileDropdown" class="text-blue-600 focus:outline-none">
+                    <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+                    <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
                     <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
-                    <?php if ($user_role === 'doctor') : ?>
-                        <a href="onboarding.php" id="onboarding" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Stripe Connect</a>
-                    <?php endif; ?>
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container mx-auto mt-10 max-w-xl p-8 bg-white rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-green-600 mb-8 text-center">Edit Profile</h1>
+    <div class="container mx-auto mt-28 flex-grow">
+        <div class="form-container">
+            <h1 class="text-3xl font-bold mb-8 text-center text-blue-600">Edit Profile</h1>
 
-        <!-- Display message if available -->
-        <?php if (isset($message)) : ?>
-            <div class="mb-6 text-center text-green-700 font-semibold">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
-        <?php endif; ?>
-
-        <!-- Profile Edit Form -->
-        <form method="POST" action="">
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">First Name</label>
-                <input type="text" id="first_name" name="first_name" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['first_name']); ?>" required />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="middle_initial">Middle Initial</label>
-                <input type="text" id="middle_initial" name="middle_initial" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['middle_initial']); ?>" required />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">Last Name</label>
-                <input type="text" id="last_name" name="last_name" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['last_name']); ?>" required />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
-                <input type="email" id="email" name="email" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['email']); ?>" required />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="contact_number">Contact Number</label>
-                <input type="text" id="contact_number" name="contact_number" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['contact_number']); ?>" required />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address</label>
-                <input type="text" id="address" name="address" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="gender">Gender</label>
-                <select id="gender" name="gender" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" required>
-                    <option value="male" <?php echo $userInfo['gender'] === 'male' ? 'selected' : ''; ?>>Male</option>
-                    <option value="female" <?php echo $userInfo['gender'] === 'female' ? 'selected' : ''; ?>>Female</option>
-                    <option value="other" <?php echo $userInfo['gender'] === 'other' ? 'selected' : ''; ?>>Other</option>
-                </select>
-            </div>
-
-            <?php if ($_SESSION['role'] === 'doctor') : ?>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization_id">Specializations</label>
-                    <select multiple id="specialization_id" name="specialization_id[]" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
-                        <?php
-                        $specQuery = $db->query("SELECT id, name FROM specializations");
-                        while ($spec = $specQuery->fetch_assoc()) {
-                            $selected = in_array($spec['id'], $specializations) ? 'selected' : '';
-                            echo "<option value='" . $spec['id'] . "' $selected>" . htmlspecialchars($spec['name']) . "</option>";
-                        }
-                        ?>
-                    </select>
+            <!-- Display message if available -->
+            <?php if (isset($message)) : ?>
+                <div class="mb-6 text-center text-green-700 font-semibold">
+                    <?php echo htmlspecialchars($message); ?>
                 </div>
             <?php endif; ?>
 
-            <button type="submit" class="w-full bg-green-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                Update Profile
-            </button>
-        </form>
+            <!-- Profile Edit Form -->
+            <form method="POST" action="">
+                <div class="form-grid">
+                    <!-- Left Side: Profile Form -->
+                    <div class="left-column">
+                        <div class="form-element">
+                            <label for="first_name" class="label-text text-gray-700">First Name</label>
+                            <input type="text" id="first_name" name="first_name" class="input-field" value="<?php echo htmlspecialchars($userInfo['first_name']); ?>" required />
+                        </div>
+                        <div class="form-element">
+                            <label for="middle_initial" class="label-text text-gray-700">Middle Initial</label>
+                            <input type="text" id="middle_initial" name="middle_initial" class="input-field" value="<?php echo htmlspecialchars($userInfo['middle_initial']); ?>" maxlength="1" />
+                        </div>
+                        <div class="form-element">
+                            <label for="last_name" class="label-text text-gray-700">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" class="input-field" value="<?php echo htmlspecialchars($userInfo['last_name']); ?>" required />
+                        </div>
+                        <div class="form-element">
+                            <label for="contact_number" class="label-text text-gray-700">Contact Number</label>
+                            <input type="text" id="contact_number" name="contact_number" class="input-field" value="<?php echo htmlspecialchars($userInfo['contact_number']); ?>" required />
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Address to Gender -->
+                    <div class="right-column">
+                        <div class="form-element">
+                            <label for="address" class="label-text text-gray-700">Address</label>
+                            <input type="text" id="address" name="address" class="input-field" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
+                        </div>
+                        <div class="form-element">
+                            <label for="email" class="label-text text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" class="input-field" value="<?php echo htmlspecialchars($userInfo['email']); ?>" required />
+                        </div>
+                        <div class="form-element">
+                            <label for="gender" class="label-text text-gray-700">Gender</label>
+                            <select id="gender" name="gender" class="input-field" required>
+                                <option value="male" <?php echo $userInfo['gender'] === 'male' ? 'selected' : ''; ?>>Male</option>
+                                <option value="female" <?php echo $userInfo['gender'] === 'female' ? 'selected' : ''; ?>>Female</option>
+                                <option value="other" <?php echo $userInfo['gender'] === 'other' ? 'selected' : ''; ?>>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if ($user_role === 'doctor') : ?>
+                    <div class="form-element">
+                        <label for="specialization_id" class="label-text text-gray-700">Specializations</label>
+                        <select multiple id="specialization_id" name="specialization_id[]" class="input-field">
+                            <?php
+                            $specQuery = $db->query("SELECT id, name FROM specializations");
+                            while ($spec = $specQuery->fetch_assoc()) {
+                                $selected = in_array($spec['id'], $specializations) ? 'selected' : '';
+                                echo "<option value='" . $spec['id'] . "' $selected>" . htmlspecialchars($spec['name']) . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                <?php endif; ?>
+
+                <button type="submit" class="form-button w-full">
+                    Update Profile
+                </button>
+            </form>
+        </div>
     </div>
 
     <script src="assets/js/utils.js"></script>

@@ -96,16 +96,24 @@ $userInfo = $query->get_result()->fetch_assoc();
         .calendar-container {
             flex: 1;
         }
+
+        .transparent-bg {
+            background-color: rgba(255, 255, 255, 0.7);
+            /* White with 70% opacity */
+            backdrop-filter: blur(10px);
+            /* Optional: adds a blur effect to the background */
+            /* Optional: adds rounded corners */
+        }
     </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 mb-8 transparent-bg p-4 shadow-md">
-        <div class="flex justify-between items-center">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-4 fixed top-0 left-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class="text-blue-500 text-2xl font-bold ml-2">WELL WEB SOLUTIONS</span>
+                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-blue-600 focus:outline-none">
@@ -121,7 +129,7 @@ $userInfo = $query->get_result()->fetch_assoc();
         </div>
     </nav>
 
-    <div class="container mx-auto mb-8 p-8 bg-white rounded-lg shadow-lg">
+    <div class="container mx-auto mt-28 mb-8 p-8 bg-white rounded-lg shadow-lg">
         <div class="flex-container">
             <div class="form-container">
                 <form id="rescheduleForm" class="w-full mb-8">

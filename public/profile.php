@@ -51,7 +51,7 @@ if ($user_role === 'doctor') {
         .transparent-bg {
             background-color: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
+
         }
 
         .card {
@@ -124,11 +124,11 @@ if ($user_role === 'doctor') {
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 transparent-bg p-4 shadow-lg">
-        <div class="flex justify-between items-center">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-4 fixed top-0 left-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class="text-blue-500 text-2xl font-bold ml-2">WELL WEB SOLUTIONS</span>
+                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-blue-600 focus:outline-none">
@@ -146,7 +146,7 @@ if ($user_role === 'doctor') {
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto mt-10 px-6 py-8">
+    <div class="container mx-auto mt-24 py-8">
         <h1 class="text-4xl font-bold text-blue-600 mb-8">Profile</h1>
 
         <!-- User Profile Section -->

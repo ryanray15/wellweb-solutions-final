@@ -54,7 +54,7 @@ if ($loggedIn) {
 <body class="bg-white">
 
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 transparent-bg shadow-md p-4">
+    <nav class="container mx-auto mt-4 transparent-bg shadow-md p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">

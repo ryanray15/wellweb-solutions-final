@@ -50,7 +50,6 @@ $userInfo = $query->get_result()->fetch_assoc();
             /* White with 70% opacity */
             backdrop-filter: blur(10px);
             /* Optional: adds a blur effect to the background */
-            border-radius: 0.5rem;
             /* Optional: adds rounded corners */
         }
     </style>
@@ -58,11 +57,11 @@ $userInfo = $query->get_result()->fetch_assoc();
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 transparent-bg shadow-md p-4">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-4 fixed top-0 left-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
+                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-blue-500 focus:outline-none">
@@ -78,7 +77,7 @@ $userInfo = $query->get_result()->fetch_assoc();
         </div>
     </nav>
 
-    <div class="container mx-auto mt-10 w-full p-8 bg-white rounded-lg shadow-lg">
+    <div class="container mx-auto mt-28 w-full p-8 bg-white rounded-lg shadow-lg">
         <h1 class="text-3xl font-bold text-blue-600 mb-8 text-center">
             Schedule Appointment
         </h1>
