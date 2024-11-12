@@ -28,7 +28,7 @@ const CancelModule = (() => {
           .map(
             (appointment) =>
               `<option value="${appointment.appointment_id}">
-                                Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.time}
+                                Appointment with Dr. ${appointment.doctor_name} on ${appointment.date} at ${appointment.start_time}
                             </option>`
           )
           .join("");

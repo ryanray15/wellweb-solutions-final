@@ -11,7 +11,8 @@ class Appointment
     public $doctor_id;
     public $service_id;
     public $date;
-    public $time;
+    public $start_time;
+    public $end_time;
     public $status;
     public $meeting_id;
 
@@ -22,15 +23,15 @@ class Appointment
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, time, status, meeting_id) 
-                  VALUES (?, ?, ?, ?, ?, 'pending', ?)";
+        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, start_time, end_time, status, meeting_id) 
+                  VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)";
         $stmt = $this->conn->prepare($query);
         if (!$stmt) {
             error_log("SQL prepare failed: " . $this->conn->error);
             return false;
         }
 
-        $stmt->bind_param("iiisss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->time, $this->meeting_id);
+        $stmt->bind_param("iiissss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->start_time, $this->end_time, $this->meeting_id);
 
         if ($stmt->execute()) {
             error_log("Appointment created successfully.");
@@ -43,9 +44,9 @@ class Appointment
 
     public function reschedule()
     {
-        $query = "UPDATE " . $this->table . " SET date = ?, time = ?, status = 'rescheduled' WHERE appointment_id = ?";
+        $query = "UPDATE " . $this->table . " SET date = ?, start_time = ?, end_time = ?,status = 'rescheduled' WHERE appointment_id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ssi", $this->date, $this->time, $this->appointment_id);
+        $stmt->bind_param("sssi", $this->date, $this->start_time, $this->end_time, $this->appointment_id);
         return $stmt->execute();
     }
 

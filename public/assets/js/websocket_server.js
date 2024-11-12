@@ -61,10 +61,11 @@ const checkExpiredAvailabilities = () => {
 // Function to check for completed video calls and update appointments
 const checkCompletedVideoCalls = () => {
   // Query to find completed video calls where both participants have left
+  // and the entry hasn't been processed yet
   const query = `
     SELECT meeting_id, doctor_id, patient_id
     FROM video_call_history
-    WHERE status = 'completed' AND end_time IS NOT NULL
+    WHERE status = 'completed' AND end_time IS NOT NULL AND status_checked = FALSE
   `;
 
   db.query(query, (err, results) => {
@@ -93,19 +94,43 @@ const checkCompletedVideoCalls = () => {
                 `Appointment marked as completed for meeting_id: ${meeting_id}`
               );
 
-              // Notify all connected clients about the completed appointment
-              wss.clients.forEach((client) => {
-                if (client.readyState === WebSocket.OPEN) {
-                  client.send(
-                    JSON.stringify({
-                      type: "check_call_completion",
-                      meeting_id,
-                      doctor_id,
-                      patient_id,
-                    })
-                  );
+              // Mark the video call as processed in the video_call_history table
+              const markProcessedQuery = `
+                UPDATE video_call_history
+                SET status_checked = TRUE
+                WHERE meeting_id = ? AND doctor_id = ? AND patient_id = ?
+              `;
+
+              db.query(
+                markProcessedQuery,
+                [meeting_id, doctor_id, patient_id],
+                (markErr) => {
+                  if (markErr) {
+                    console.error(
+                      "Error marking video call as processed:",
+                      markErr
+                    );
+                  } else {
+                    console.log(
+                      `Video call marked as processed for meeting_id: ${meeting_id}`
+                    );
+
+                    // Notify all connected clients about the completed appointment
+                    wss.clients.forEach((client) => {
+                      if (client.readyState === WebSocket.OPEN) {
+                        client.send(
+                          JSON.stringify({
+                            type: "check_call_completion",
+                            meeting_id,
+                            doctor_id,
+                            patient_id,
+                          })
+                        );
+                      }
+                    });
+                  }
                 }
-              });
+              );
             }
           }
         );

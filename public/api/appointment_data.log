@@ -326,3 +326,93 @@ Array
     [date] => 2024-11-10
     [time] => 08:00:00
 )
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-13
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 2
+    [date] => 2024-11-13
+    [start_time] => 09:00:00
+    [end_time] => 10:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [date] => 2024-11-14
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 2
+    [date] => 2024-11-14
+    [start_time] => 13:00:00
+    [end_time] => 14:00:00
+)

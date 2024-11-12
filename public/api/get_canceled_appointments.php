@@ -9,7 +9,8 @@ $query = "
     SELECT 
         a.appointment_id, 
         a.date, 
-        a.time,
+        a.start_time,
+        a.end_time,
         a.service_id, 
         u.user_id AS doctor_id,
         CONCAT(u.first_name, ' ', u.middle_initial, ' ', u.last_name) AS doctor_name,

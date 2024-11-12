@@ -213,9 +213,15 @@ async function handleEventSelection(event, doctorId) {
       console.log("Raw time slot response:", text);
       try {
         const timeSlotData = JSON.parse(text);
-        if (timeSlotData && timeSlotData.data && timeSlotData.data.start_time) {
+        if (
+          timeSlotData &&
+          timeSlotData.data &&
+          timeSlotData.data.start_time &&
+          timeSlotData.data.end_time
+        ) {
           const selectedDate = timeSlotData.data.date;
-          const selectedTime = timeSlotData.data.start_time;
+          const selectedStartTime = timeSlotData.data.start_time;
+          const selectedEndTime = timeSlotData.data.end_time;
           const serviceId = document.getElementById("service_id").value;
 
           const requestData = {
@@ -223,14 +229,15 @@ async function handleEventSelection(event, doctorId) {
             doctor_id: doctorId,
             service_id: serviceId,
             date: selectedDate,
-            time: selectedTime,
+            start_time: selectedStartTime,
+            end_time: selectedEndTime,
             referrer: document.referrer,
           };
 
           console.log("Booking Request Data:", requestData);
 
           const confirmation = confirm(
-            `Do you want to book this time slot: ${event.title} - Available on ${selectedDate} at ${selectedTime}?`
+            `Do you want to book this time slot: ${event.title} - Available on ${selectedDate} at ${selectedStartTime} and ends at ${selectedEndTime}?`
           );
 
           if (confirmation) {
@@ -337,56 +344,61 @@ function disableUnavailableSlots(events) {
   });
 }
 
-// Function to handle form submission and scheduling
-function handleScheduleAppointment(patientId) {
-  const scheduleButton = document.querySelector('button[type="submit"]');
-  scheduleButton.addEventListener("click", function (e) {
-    e.preventDefault(); // Prevent form from submitting immediately
+// // Function to handle form submission and scheduling
+// function handleScheduleAppointment(patientId) {
+//   const scheduleButton = document.querySelector('button[type="submit"]');
+//   scheduleButton.addEventListener("click", function (e) {
+//     e.preventDefault(); // Prevent form from submitting immediately
 
-    const selectedDate = document.getElementById("date").value;
-    const selectedTime = document.getElementById("time").value;
-    const serviceId = document.getElementById("service_id").value;
+//     const selectedDate = document.getElementById("date").value;
+//     const selectedStartTime = document.getElementById("time").value;
+//     const serviceId = document.getElementById("service_id").value;
 
-    // Assume consultation_type is determined by service_id
-    const consultationType = determineConsultationType(serviceId);
+//     // Assume consultation_type is determined by service_id
+//     const consultationType = determineConsultationType(serviceId);
 
-    if (!selectedDate || !selectedTime || !selectedDoctorId || !serviceId) {
-      alert("Please fill in all fields");
-      return;
-    }
+//     if (
+//       !selectedDate ||
+//       !selectedStartTime ||
+//       !selectedDoctorId ||
+//       !serviceId
+//     ) {
+//       alert("Please fill in all fields");
+//       return;
+//     }
 
-    // Prepare the data to be sent to the server
-    const requestData = {
-      patient_id: patientId,
-      doctor_id: selectedDoctorId,
-      service_id: serviceId,
-      date: selectedDate,
-      time: selectedTime,
-      //consultation_type: consultationType, // Add consultation_type
-      referrer: document.referrer,
-    };
+//     // Prepare the data to be sent to the server
+//     const requestData = {
+//       patient_id: patientId,
+//       doctor_id: selectedDoctorId,
+//       service_id: serviceId,
+//       date: selectedDate,
+//       time: selectedTime,
+//       //consultation_type: consultationType, // Add consultation_type
+//       referrer: document.referrer,
+//     };
 
-    console.log("Request Data: ", requestData); // Debugging the data being sent
+//     console.log("Request Data: ", requestData); // Debugging the data being sent
 
-    // Make an API call to create the checkout session
-    fetch("/api/create_checkout_session.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          console.error("Error: ", data.error); // Handle error
-        } else {
-          window.location.href = data.checkout_url; // Redirect to Stripe
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  });
-}
+//     // Make an API call to create the checkout session
+//     fetch("/api/create_checkout_session.php", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(requestData),
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         if (data.error) {
+//           console.error("Error: ", data.error); // Handle error
+//         } else {
+//           window.location.href = data.checkout_url; // Redirect to Stripe
+//         }
+//       })
+//       .catch((error) => console.error("Error:", error));
+//   });
+// }
 
 // Function to map service_id to consultation_type
 function determineConsultationType(serviceId) {

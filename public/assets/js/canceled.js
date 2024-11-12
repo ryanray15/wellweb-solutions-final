@@ -22,7 +22,8 @@ const loadCanceledAppointments = (patientId) => {
         // Time Cell
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
-        timeCell.textContent = appointment.time;
+        timeCell.textContent =
+          appointment.start_time + " - " + appointment.end_time;
 
         // Refund Status Cell
         const refundStatusCell = document.createElement("td");

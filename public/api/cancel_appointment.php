@@ -42,7 +42,7 @@ if ($response['status']) {
   $doctorName = $doctorResult['name'];
 
   $query = "INSERT INTO notifications (patient_id, message, type) VALUES (?, ?, 'appointment')";
-  $message = "Your appointment with Dr. $doctorName on " . $appointment['date'] . " at " . $appointment['time'] . " has been canceled.";
+  $message = "Your appointment with Dr. $doctorName on " . $appointment['date'] . " at " . $appointment['start_time'] . " has been canceled.";
   $stmt = $db->prepare($query);
   $stmt->bind_param(
     "is",

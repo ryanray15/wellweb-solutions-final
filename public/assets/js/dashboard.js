@@ -470,7 +470,8 @@ function fetchAppointments(patient_id) {
         // Appointment Time Cell
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
-        timeCell.textContent = appointment.time;
+        timeCell.textContent =
+          appointment.start_time + " - " + appointment.end_time;
 
         // Due In Cell
         const dueInCell = document.createElement("td");
@@ -662,7 +663,8 @@ function fetchDoctorAppointments(doctor_id) {
         // Appointment Time Cell
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
-        timeCell.textContent = appointment.time;
+        timeCell.textContent =
+          appointment.start_time + " - " + appointment.end_time;
 
         // Status Cell
         const statusCell = document.createElement("td");
@@ -695,6 +697,15 @@ function fetchDoctorAppointments(doctor_id) {
         // Logic for actions based on appointment status and type
         if (appointment.status === "no show") {
           // Show "Reschedule" button if the status is "no show"
+          const rescheduleButton = document.createElement("button");
+          rescheduleButton.textContent = "Reschedule";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
+          rescheduleButton.addEventListener("click", () => {
+            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+          });
+          actionsCell.appendChild(rescheduleButton);
+        } else if (isOverdue && appointment.service_id === 1) {
+          // Directly show Reschedule button if it's an overdue online consultation
           const rescheduleButton = document.createElement("button");
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
@@ -737,7 +748,7 @@ function fetchDoctorAppointments(doctor_id) {
           });
           actionsCell.appendChild(rescheduleButton);
         } else {
-          // Display Join Room or Locate Clinic button with kebab menu if needed
+          // Display Join Room button with kebab menu for non-overdue online consultations
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
@@ -775,37 +786,39 @@ function fetchDoctorAppointments(doctor_id) {
                   console.error("Error fetching meeting ID:", error)
                 );
             });
+
+            actionsCell.appendChild(actionButton);
           }
 
-          actionsCell.appendChild(actionButton);
+          // Kebab Menu for non-overdue online appointments only
+          if (!isOverdue) {
+            const kebabMenuContainer = document.createElement("div");
+            kebabMenuContainer.className = "relative inline-block";
 
-          // Kebab Menu for Reschedule option (non-overdue online appointments)
-          const kebabMenuContainer = document.createElement("div");
-          kebabMenuContainer.className = "relative inline-block";
+            const kebabButton = document.createElement("button");
+            kebabButton.className = "text-gray-500 focus:outline-none ml-2";
+            kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+            kebabMenuContainer.appendChild(kebabButton);
 
-          const kebabButton = document.createElement("button");
-          kebabButton.className = "text-gray-500 focus:outline-none ml-2";
-          kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
-          kebabMenuContainer.appendChild(kebabButton);
+            const kebabMenu = document.createElement("div");
+            kebabMenu.className =
+              "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+            kebabMenu.innerHTML = `
+              <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+            `;
+            kebabMenuContainer.appendChild(kebabMenu);
 
-          const kebabMenu = document.createElement("div");
-          kebabMenu.className =
-            "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
-          kebabMenu.innerHTML = `
-            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
-          `;
-          kebabMenuContainer.appendChild(kebabMenu);
+            kebabButton.addEventListener("click", (e) => {
+              e.stopPropagation();
+              kebabMenu.classList.toggle("hidden");
+            });
 
-          kebabButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            kebabMenu.classList.toggle("hidden");
-          });
+            document.addEventListener("click", () => {
+              kebabMenu.classList.add("hidden");
+            });
 
-          document.addEventListener("click", () => {
-            kebabMenu.classList.add("hidden");
-          });
-
-          actionsCell.appendChild(kebabMenuContainer);
+            actionsCell.appendChild(kebabMenuContainer);
+          }
         }
 
         row.appendChild(patientCell);

@@ -48,7 +48,8 @@ switch ($event['type']) {
             'doctor_id' => $session->metadata['doctor_id'],
             'service_id' => $session->metadata['service_id'],
             'date' => $session->metadata['date'],
-            'time' => $session->metadata['time'],
+            'start_time' => $session->metadata['start_time'],
+            'end_time' => $session->metadata['end_time'],
         ];
 
         // Log the appointment data for debugging

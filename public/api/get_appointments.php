@@ -11,14 +11,15 @@ $query = "
     SELECT 
         a.appointment_id, 
         a.date, 
-        a.time,
+        a.start_time,
+        a.end_time,
         a.status, 
         a.service_id,   /* Include service_id in the selection */
         u.user_id as doctor_id,   /* Include doctor_id in the selection */
         CONCAT(u.first_name, ' ', u.middle_initial, ' ', u.last_name) as doctor_name
     FROM appointments a
     JOIN users u ON a.doctor_id = u.user_id
-    WHERE a.patient_id = ? AND a.status != 'canceled' AND a.status != 'completed';
+    WHERE a.patient_id = ? AND a.status != 'canceled' AND a.status != 'completed'
 ";
 
 // Modify the query based on the appointment type
@@ -27,6 +28,8 @@ if ($type === 'online') {
 } elseif ($type === 'physical') {
     $query .= " AND a.service_id = 2"; // Physical Consultation
 }
+
+$query .= ";"; // Add the semicolon here, at the end of the full query
 
 $stmt = $db->prepare($query);
 $stmt->bind_param("i", $patient_id);

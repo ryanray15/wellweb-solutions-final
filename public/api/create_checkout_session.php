@@ -32,7 +32,7 @@ function getNgrokPublicUrl()
 $ngrokPublicUrl = getNgrokPublicUrl();
 
 if ($ngrokPublicUrl === null) {
-    die("Error: Could not get ngrok public URL. Please ensure ngrok is running.");
+    //die("Error: Could not get ngrok public URL. Please ensure ngrok is running.");
 }
 
 // Capture the request payload
@@ -43,10 +43,11 @@ $patientId = $input['patient_id'] ?? null;
 $doctorId = $input['doctor_id'] ?? null;
 $serviceId = $input['service_id'] ?? null;
 $appointmentDate = $input['date'] ?? null;
-$appointmentTime = $input['time'] ?? null;
+$appointmentStartTime = $input['start_time'] ?? null;
+$appointmentEndTime = $input['end_time'] ?? null;
 $referrer = $input['referrer'] ?? null;
 
-if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointmentTime) {
+if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointmentStartTime || !$appointmentEndTime) {
     error_log("Invalid input data for creating checkout session");
     echo json_encode(['error' => 'Invalid input data']);
     exit();
@@ -108,12 +109,45 @@ try {
             'doctor_id' => $doctorId,
             'service_id' => $serviceId,
             'date' => $appointmentDate,
-            'time' => $appointmentTime,
+            'start_time' => $appointmentStartTime,
+            'end_time' => $appointmentEndTime,
         ],
         'mode' => 'payment',
         'success_url' => $ngrokPublicUrl . '/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => $referrer,
     ]);
+
+    // // Create a new Stripe Checkout session
+    // $checkout_session = \Stripe\Checkout\Session::create([
+    //     'payment_method_types' => ['card'],
+    //     'line_items' => [[
+    //         'price_data' => [
+    //             'currency' => 'php',
+    //             'product_data' => [
+    //                 'name' => $services[$serviceId]['name'],
+    //             ],
+    //             'unit_amount' => $services[$serviceId]['price'],
+    //         ],
+    //         'quantity' => 1,
+    //     ]],
+    //     'payment_intent_data' => [
+    //         'application_fee_amount' => 10000,  // Example platform fee (PHP 100)
+    //         'transfer_data' => [
+    //             'destination' => $stripeAccountId,
+    //         ],
+    //     ],
+    //     'metadata' => [
+    //         'patient_id' => $patientId,
+    //         'doctor_id' => $doctorId,
+    //         'service_id' => $serviceId,
+    //         'date' => $appointmentDate,
+    //         'start_time' => $appointmentStartTime,
+    //         'end_time' => $appointmentEndTime,
+    //     ],
+    //     'mode' => 'payment',
+    //     'success_url' => '/dashboard.php?session_id={CHECKOUT_SESSION_ID}',
+    //     'cancel_url' => $referrer,
+    // ]);
 
     // Return the checkout session URL as a JSON response
     echo json_encode(['checkout_url' => $checkout_session->url]);
