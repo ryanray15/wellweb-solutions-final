@@ -336,51 +336,21 @@ if ($user_role === 'admin') {
                                         <select id="consultation_type" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
                                             <option value="online">Online Consultation</option>
                                             <option value="physical">Physical Consultation</option>
-                                            <option value="both">Both</option>
                                         </select>
                                     </div>
                                     <div class="w-full ml-4">
                                         <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
-                                        <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
+                                        <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
                                             <option value="30">30 Minutes</option>
                                             <option value="60">1 Hour</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <div class="flex justify-between items-center mb-6">
-                                    <div class="w-full mr-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="availability_date">Choose Date</label>
-                                        <input type="date" id="availability_date" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
-                                    </div>
-                                    <div class="w-full mr-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
-                                        <input type="text" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
-                                    </div>
-                                    <div class="w-full ml-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
-                                        <input type="text" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
-                                    </div>
-                                    <button id="add_time_range" class="text-blue-600 text-6xl font-extrabold mt-2">+</button>
-                                </div>
-
-                                <div class="flex justify-evenly items-center mb-6">
-                                    <div class="mr-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
-                                        <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
-                                            <option value="Available">Available</option>
-                                            <option value="Not Available">Not Available</option>
-                                        </select>
-                                    </div>
-
-                                    <div id="time-ranges-container" class="w-full mr-4 text-gray-700 text-sm font-bold">
-                                        <h3>Selected Time Ranges:</h3>
-                                        <div id="time-ranges"></div>
-                                    </div>
-                                </div>
-
-                                <div class="w-full mt-4">
-                                    <button id="set_availability" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">Set Availability</button>
+                                <!-- Draggable Events for setting availability -->
+                                <div id="external-events" class="mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-700">Drag the Event to Set Availability</h3>
+                                    <div id="availability-event" class="fc-event bg-blue-500 text-white font-semibold px-3 py-2 rounded">Set Availability</div>
                                 </div>
 
                                 <!-- FullCalendar Display -->
