@@ -188,27 +188,24 @@ function loadAdminDashboard() {
 // Function to load doctor dashboard data
 function loadDoctorDashboard(doctorId) {
   fetchDoctorAppointments(doctorId);
-  // Ensure draggable events container exists
+
+  // Set up draggable event in the external events container
   const containerEl = document.getElementById("external-events");
+  const saveAvailabilityBtn = document.getElementById("save_availability"); // Button to save manually if needed
 
-  if (!containerEl) {
-    console.error("Missing required DOM element for draggable events.");
-    return;
-  }
-
-  // Function to create a draggable event based on consultation type and duration
-  function initializeDraggableEvent() {
-    containerEl.innerHTML = ""; // Clear any existing event
+  // Update draggable event dynamically based on dropdowns
+  function updateDraggableEvent() {
+    containerEl.innerHTML = ""; // Clear existing events
 
     const consultationType = document.getElementById("consultation_type").value;
-    const consultationDuration =
-      parseInt(document.getElementById("consultation_duration").value, 10) ||
-      30;
+    const consultationDuration = parseInt(
+      document.getElementById("consultation_duration").value,
+      10
+    );
     const color = consultationType === "online" ? "blue" : "green";
 
-    // Create the draggable event element
     const eventEl = document.createElement("div");
-    eventEl.className = "fc-event text-white px-3 py-2 rounded font-semibold";
+    eventEl.className = `fc-event text-white px-3 py-2 rounded font-semibold`;
     eventEl.innerText = `${
       consultationType.charAt(0).toUpperCase() + consultationType.slice(1)
     } - ${consultationDuration} mins`;
@@ -218,33 +215,31 @@ function loadDoctorDashboard(doctorId) {
 
     containerEl.appendChild(eventEl);
 
-    // Make this event draggable using FullCalendar's Draggable
+    // Initialize draggable event
     new FullCalendar.Draggable(containerEl, {
       itemSelector: ".fc-event",
       eventData: function (eventEl) {
         return {
           title: eventEl.innerText,
           duration: { minutes: consultationDuration },
-          backgroundColor: color,
+          backgroundColor: eventEl.style.backgroundColor,
           extendedProps: { type: consultationType },
         };
       },
     });
+    loadDoctorCalendar(doctorId);
   }
 
-  // Initialize the draggable event on dropdown change
+  // Update draggable event whenever the consultation type or duration changes
   document
     .getElementById("consultation_type")
-    .addEventListener("change", initializeDraggableEvent);
+    .addEventListener("change", updateDraggableEvent);
   document
     .getElementById("consultation_duration")
-    .addEventListener("change", initializeDraggableEvent);
+    .addEventListener("change", updateDraggableEvent);
 
-  // Initial call to set up the draggable event
-  initializeDraggableEvent();
-
-  // Call to load the calendar (rendered separately)
-  loadDoctorCalendar(doctorId);
+  // Initialize draggable event initially
+  updateDraggableEvent();
 }
 
 // Function to load admin dashboard data
@@ -804,7 +799,7 @@ function loadDoctorCalendar(doctorId) {
           return;
         }
 
-        // Initialize FullCalendar with deduplication logic
+        // Initialize FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           editable: true,
@@ -821,76 +816,51 @@ function loadDoctorCalendar(doctorId) {
             const consultationType =
               info.draggedEl.getAttribute("data-type") || "online";
             const consultationDuration =
-              parseInt(info.draggedEl.getAttribute("data-duration"), 10) || 30;
+              parseInt(
+                document.getElementById("consultation_duration").value,
+                10
+              ) || 30;
 
             const startDate = info.date;
             const endDate = new Date(
               startDate.getTime() + consultationDuration * 60000
             );
 
-            // Prepare data to save and add to calendar
-            const newEvent = {
-              title: `${
-                consultationType.charAt(0).toUpperCase() +
-                consultationType.slice(1)
-              } Consultation`,
-              start: startDate,
-              end: endDate,
-              backgroundColor: consultationType === "online" ? "blue" : "green",
-              extendedProps: {
-                type: consultationType,
-                duration: consultationDuration,
-              },
+            const eventData = {
+              doctor_id: doctorId,
+              time_ranges: [
+                {
+                  date: startDate.toISOString().split("T")[0],
+                  start_time: startDate,
+                  end_time: endDate,
+                  consultation_type: consultationType,
+                  consultation_duration: consultationDuration,
+                  status: "Available",
+                },
+              ],
             };
 
-            // Add event to the calendar UI and backend if not already present
-            if (
-              !calendar
-                .getEvents()
-                .some((e) => e.start.getTime() === startDate.getTime())
-            ) {
-              const createdEvent = calendar.addEvent(newEvent);
-
-              // Prepare data in the correct format for backend (time_ranges array)
-              const eventData = {
-                doctor_id: doctorId,
-                time_ranges: [
-                  {
-                    date: startDate.toISOString().split("T")[0],
-                    start_time: convertTo24Hour(startDate),
-                    end_time: convertTo24Hour(endDate),
-                    consultation_type: consultationType,
-                    consultation_duration: consultationDuration,
-                    status: "Available",
-                  },
-                ],
-              };
-
-              // Save availability to backend
-              fetch("/api/set_doctor_availability.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(eventData),
+            // Save availability to backend
+            fetch("/api/set_doctor_availability.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(eventData),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (!data.status) {
+                  alert("Failed to set availability. Please try again.");
+                } else {
+                  console.log("Availability saved successfully.");
+                  time_ranges = [];
+                  loadDoctorCalendar(doctorId); // Refresh the calendar after saving
+                }
               })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (!data.status) {
-                    alert("Failed to set availability. Please try again.");
-                    createdEvent.remove(); // Remove event if save fails
-                  } else {
-                    console.log("Availability saved successfully.");
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error saving availability:", error);
-                  createdEvent.remove(); // Remove event if an error occurs
-                });
-            } else {
-              alert("This time slot is already occupied.");
-            }
+              .catch((error) => {
+                console.error("Error saving availability:", error);
+              });
           },
 
-          // Handle event clicks to delete availability if needed
           eventClick: function (info) {
             if (confirm("Do you want to delete this availability?")) {
               fetch("/api/delete_doctor_availability.php", {
@@ -923,62 +893,39 @@ function loadDoctorCalendar(doctorId) {
   }
 }
 
-// // Function to convert a JavaScript Date object to 24-hour time format (HH:MM)
-// function convertTo24Hour(date) {
-//   const hours = date.getHours().toString().padStart(2, "0");
-//   const minutes = date.getMinutes().toString().padStart(2, "0");
-//   return `${hours}:${minutes}`;
+// Convert JavaScript Date object to 24-hour time format (HH:MM)
+function convertTo24Hour(date) {
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+// // Enhanced convertTo24Hour function that works with both Date objects and time strings
+// function convertTo24Hour(time) {
+//   if (time instanceof Date) {
+//     // For Date objects, extract hours and minutes directly
+//     const hours = time.getHours().toString().padStart(2, "0");
+//     const minutes = time.getMinutes().toString().padStart(2, "0");
+//     return `${hours}:${minutes}`;
+//   } else if (typeof time === "string") {
+//     // For time strings in the format "hh:mm AM/PM"
+//     const [timePart, modifier] = time.split(" ");
+//     let [hours, minutes] = timePart.split(":");
+
+//     // Ensure hours is treated as a string for padStart
+//     hours = hours.toString();
+
+//     if (hours === "12") {
+//       hours = "00";
+//     }
+//     if (modifier === "PM" && hours !== "12") {
+//       hours = (parseInt(hours, 10) + 12).toString();
+//     }
+
+//     return `${hours.padStart(2, "0")}:${minutes}`;
+//   }
+//   return time; // Return as-is if format is not recognized
 // }
-
-// Handle clicks on existing calendar events (e.g., to delete availability)
-function handleEventClick(info, doctorId, calendar) {
-  if (confirm("Do you want to delete this schedule?")) {
-    fetch("/api/delete_doctor_availability.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: info.event.id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        alert(data.message);
-        if (data.status) {
-          info.event.remove(); // Remove event from calendar view
-        }
-      })
-      .catch((error) => console.error("Error deleting event:", error));
-  }
-}
-
-// Enhanced convertTo24Hour function that works with both Date objects and time strings
-function convertTo24Hour(time) {
-  if (time instanceof Date) {
-    // For Date objects, extract hours and minutes directly
-    const hours = time.getHours().toString().padStart(2, "0");
-    const minutes = time.getMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes}`;
-  } else if (typeof time === "string") {
-    // For time strings in the format "hh:mm AM/PM"
-    const [timePart, modifier] = time.split(" ");
-    let [hours, minutes] = timePart.split(":");
-
-    // Ensure hours is treated as a string for padStart
-    hours = hours.toString();
-
-    if (hours === "12") {
-      hours = "00";
-    }
-    if (modifier === "PM" && hours !== "12") {
-      hours = (parseInt(hours, 10) + 12).toString();
-    }
-
-    return `${hours.padStart(2, "0")}:${minutes}`;
-  }
-  return time; // Return as-is if format is not recognized
-}
 
 // Function to load specializations and update the UI
 function loadSpecializations() {
