@@ -348,9 +348,15 @@ if ($user_role === 'admin') {
                                 </div>
 
                                 <!-- Draggable Events for setting availability -->
-                                <div id="external-events" class="mb-4">
-                                    <h3 class="text-lg font-semibold text-gray-700">Drag the Event to Set Availability</h3>
-                                    <div id="availability-event" class="fc-event bg-blue-500 text-white font-semibold px-3 py-2 rounded">Set Availability</div>
+                                <div class="mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Drag the Event to Set Availability</h3>
+                                    <p class="text-sm text-gray-500 mb-2">Drag this item to the calendar below to set your availability</p>
+                                    <div id="external-events" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                        <div id="availability-event"
+                                            class="fc-event bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-xl">
+                                            <span id="availability-text">Set Availability</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- FullCalendar Display -->

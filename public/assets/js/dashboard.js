@@ -802,7 +802,7 @@ function loadDoctorCalendar(doctorId) {
         // Initialize FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
-          editable: true,
+          editable: false,
           droppable: true,
           timeZone: "Asia/Manila",
           headerToolbar: {
@@ -811,6 +811,7 @@ function loadDoctorCalendar(doctorId) {
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
           events: events,
+          eventOverlap: false,
 
           drop: function (info) {
             const consultationType =
