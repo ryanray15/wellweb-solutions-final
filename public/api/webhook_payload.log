@@ -35492,4 +35492,84 @@
     "idempotency_key": null
   },
   "type": "account.application.authorized"
+}{
+  "id": "evt_1QLS0t06799Vqeio7n7VOlhK",
+  "object": "event",
+  "account": "acct_1Q2p5h06799Vqeio",
+  "api_version": "2024-06-20",
+  "created": 1731686691,
+  "data": {
+    "object": {
+      "object": "balance",
+      "available": [
+        {
+          "amount": 0,
+          "currency": "hkd",
+          "source_types": {
+            "card": 0
+          }
+        }
+      ],
+      "livemode": false,
+      "pending": [
+        {
+          "amount": 327469,
+          "currency": "hkd",
+          "source_types": {
+            "card": 327469
+          }
+        }
+      ]
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "balance.available"
+}amount": 0,
+          "currency": "usd",
+          "source_types": {
+            "card": 0
+          }
+        },
+        {
+          "amount": 15612,
+          "currency": "hkd",
+          "source_types": {
+            "card": 15612
+          }
+        }
+      ]
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 4,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "balance.available"
+}{
+  "id": "evt_1QLS2B1pgAWRcrkZFShA869T",
+  "object": "event",
+  "account": "acct_1QLS271pgAWRcrkZ",
+  "api_version": "2024-06-20",
+  "created": 1731686771,
+  "data": {
+    "object": {
+      "id": "ca_QsXc0I9VNCyYODyffmd3xC7PlUuBTaIx",
+      "object": "application",
+      "name": "WellWeb Solutions "
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.application.authorized"
 }
