@@ -423,19 +423,25 @@ function fetchAppointments(patient_id) {
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            const appointmentDate = new Date(appointment.date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            appointmentDate.setHours(0, 0, 0, 0);
+            // Get the scheduled start and end time for the appointment
+            const appointmentStartTime = new Date(
+              `${appointment.date}T${appointment.start_time}`
+            );
+            const appointmentEndTime = new Date(
+              `${appointment.date}T${appointment.end_time}`
+            );
+            const now = new Date();
 
-            if (today.getTime() === appointmentDate.getTime()) {
+            if (now >= appointmentStartTime && now <= appointmentEndTime) {
+              // Enable button only if current time is within the appointment time range
               actionButton.disabled = false;
               actionButton.classList.add("bg-blue-500", "hover:bg-blue-600");
             } else {
+              // Disable button if it's not within the appointment time
               actionButton.disabled = true;
               actionButton.classList.add("bg-gray-400", "cursor-not-allowed");
               actionButton.title =
-                "You can only join on the day of the appointment";
+                "You can only join at the scheduled appointment time";
             }
 
             actionButton.addEventListener("click", () => {
@@ -656,19 +662,25 @@ function fetchDoctorAppointments(doctor_id) {
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            const appointmentDate = new Date(appointment.date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            appointmentDate.setHours(0, 0, 0, 0);
+            // Get the scheduled appointment date and time
+            const appointmentStartTime = new Date(
+              `${appointment.date}T${appointment.start_time}`
+            );
+            const appointmentEndTime = new Date(
+              `${appointment.date}T${appointment.end_time}`
+            );
+            const now = new Date();
 
-            if (today.getTime() === appointmentDate.getTime()) {
+            if (now >= appointmentStartTime && now <= appointmentEndTime) {
+              // Enable button only if the current time is within the scheduled time range
               actionButton.disabled = false;
               actionButton.classList.add("bg-blue-500", "hover:bg-blue-600");
             } else {
+              // Disable button if it's not within the scheduled time
               actionButton.disabled = true;
               actionButton.classList.add("bg-gray-400", "cursor-not-allowed");
               actionButton.title =
-                "You can only join on the day of the appointment";
+                "You can only join during the scheduled appointment time";
             }
 
             actionButton.addEventListener("click", () => {
