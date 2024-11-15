@@ -49,9 +49,10 @@ class AppointmentController
         return ['status' => false, 'message' => 'Appointment rescheduling failed'];
     }
 
-    public function cancel($appointment_id)
+    public function cancel($appointment_id, $availability_id)
     {
         $this->appointment->appointment_id = $appointment_id;
+        $this->appointment->availability_id = $availability_id;
 
         if ($this->appointment->cancel()) {
             return ['status' => true, 'message' => 'Appointment canceled successfully'];

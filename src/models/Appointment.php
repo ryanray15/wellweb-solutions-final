@@ -53,10 +53,35 @@ class Appointment
 
     public function cancel()
     {
-        $query = "UPDATE " . $this->table . " SET status = 'canceled' WHERE appointment_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $this->appointment_id);
-        return $stmt->execute();
+        // Begin transaction to ensure both operations succeed
+        $this->conn->begin_transaction();
+
+        try {
+            // Step 1: Update the appointment status to 'canceled'
+            $query = "UPDATE " . $this->table . " SET status = 'canceled' WHERE appointment_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("i", $this->appointment_id);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update appointment status: " . $stmt->error);
+            }
+
+            // Step 2: Set the related availability slot status back to 'Available'
+            $availabilityQuery = "UPDATE doctor_availability SET status = 'Available' WHERE availability_id = ?";
+            $availabilityStmt = $this->conn->prepare($availabilityQuery);
+            $availabilityStmt->bind_param("i", $this->availability_id);
+            if (!$availabilityStmt->execute()) {
+                throw new Exception("Failed to update availability status: " . $availabilityStmt->error);
+            }
+
+            // Commit transaction if both updates succeed
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            // Rollback if any update fails
+            $this->conn->rollback();
+            error_log("Error in canceling appointment: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getAppointmentById($appointment_id)
