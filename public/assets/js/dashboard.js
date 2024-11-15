@@ -1044,7 +1044,7 @@ function loadUsersTable() {
               <td class="border-b border-gray-200 px-4 py-2">${user.email}</td>
               <td class="border-b border-gray-200 px-4 py-2">${user.role}</td>
               <td class="border-b border-gray-200 px-4 py-2">
-                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="deleteUser(${user.user_id})">Delete</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="disableUser(${user.user_id})">Disable</button>
               </td>
             </tr>`
         )
@@ -1077,22 +1077,39 @@ function verifyDoctor(doctorId, action) {
   }
 }
 
-// Function to delete user
-function deleteUser(userId) {
-  if (confirm("Are you sure you want to delete this user?")) {
-    fetch(`/api/admin_delete_user.php?user_id=${userId}`, {
-      method: "DELETE",
+// Function to disable user
+function disableUser(userId) {
+  if (confirm("Are you sure you want to disable this user?")) {
+    fetch(`/api/admin_disable_user.php?user_id=${userId}`, {
+      method: "PATCH", // Use PATCH for updates
     })
       .then((response) => response.json())
       .then((data) => {
         alert(data.message);
         if (data.status) {
-          loadUsersTable(); // Reload table after deletion
+          loadUsersTable(); // Reload table after disabling
         }
       })
-      .catch((error) => console.error("Error deleting user:", error));
+      .catch((error) => console.error("Error disabling user:", error));
   }
 }
+
+// Function to delete user. Deprecated!!!
+// function deleteUser(userId) {
+//   if (confirm("Are you sure you want to delete this user?")) {
+//     fetch(`/api/admin_delete_user.php?user_id=${userId}`, {
+//       method: "DELETE",
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         alert(data.message);
+//         if (data.status) {
+//           loadUsersTable(); // Reload table after deletion
+//         }
+//       })
+//       .catch((error) => console.error("Error deleting user:", error));
+//   }
+// }
 
 // Function to load verification table
 function loadVerificationTable() {
