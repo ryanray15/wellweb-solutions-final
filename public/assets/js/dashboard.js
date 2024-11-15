@@ -372,7 +372,9 @@ function fetchAppointments(patient_id) {
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
         timeCell.textContent =
-          appointment.start_time + " - " + appointment.end_time;
+          formatTimeTo12Hour(appointment.start_time) +
+          " - " +
+          formatTimeTo12Hour(appointment.end_time);
 
         // Due In Cell
         const dueInCell = document.createElement("td");
@@ -571,7 +573,9 @@ function fetchDoctorAppointments(doctor_id) {
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
         timeCell.textContent =
-          appointment.start_time + " - " + appointment.end_time;
+          formatTimeTo12Hour(appointment.start_time) +
+          " - " +
+          formatTimeTo12Hour(appointment.end_time);
 
         // Status Cell
         const statusCell = document.createElement("td");
@@ -1128,4 +1132,13 @@ function updateAppointments(userRole, userId) {
     // Fetch and reload appointments for the patient
     fetchAppointments(userId);
   }
+}
+
+// Helper function to convert time from 24-hour format to 12-hour format
+function formatTimeTo12Hour(timeString) {
+  const [hour, minute, second] = timeString.split(":");
+  const hourInt = parseInt(hour, 10);
+  const ampm = hourInt >= 12 ? "PM" : "AM";
+  const formattedHour = hourInt % 12 || 12; // Convert '0' hour to '12' for 12-hour format
+  return `${formattedHour}:${minute} ${ampm}`;
 }
