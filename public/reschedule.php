@@ -48,14 +48,11 @@ $userInfo = $query->get_result()->fetch_assoc();
         .form-label {
             font-weight: 600;
             color: #4A5568;
-            /* Gray-700 */
         }
 
         .form-input {
             border: 1px solid #CBD5E0;
-            /* Gray-300 */
             border-radius: 0.375rem;
-            /* Rounded */
             padding: 0.5rem 0.75rem;
             width: 100%;
             transition: border-color 0.2s;
@@ -63,22 +60,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 
         .form-input:focus {
             border-color: #48BB78;
-            /* Green-500 */
             outline: none;
-        }
-
-        .btn-primary {
-            background-color: #48BB78;
-            /* Green-500 */
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #F56565;
-            /* Red-500 */
         }
 
         .flex-container {
@@ -90,19 +72,23 @@ $userInfo = $query->get_result()->fetch_assoc();
         .form-container {
             flex: 1;
             margin-right: 20px;
-            /* Space between form and calendar */
         }
 
         .calendar-container {
             flex: 1;
         }
 
-        .transparent-bg {
-            background-color: rgba(255, 255, 255, 0.7);
-            /* White with 70% opacity */
-            backdrop-filter: blur(10px);
-            /* Optional: adds a blur effect to the background */
-            /* Optional: adds rounded corners */
+        #appointments-container .appointment-slot {
+            background-color: #4F46E5;
+            color: white;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: block;
+            width: 100%;
+            text-align: center;
         }
     </style>
 </head>
@@ -131,38 +117,45 @@ $userInfo = $query->get_result()->fetch_assoc();
 
     <div class="container mx-auto mt-28 mb-8 p-8 bg-white rounded-lg shadow-lg">
         <div class="flex-container">
+            <!-- Doctor and Consultation Type Selection -->
             <div class="form-container">
-                <form id="rescheduleForm" class="w-full mb-8">
-                    <div class="mb-6">
-                        <label class="block form-label mb-2" for="appointment_id">Select Appointment</label>
-                        <select class="form-input" id="appointment_id">
-                            <!-- Populate this with options using JavaScript -->
-                        </select>
-                    </div>
-                    <div class="flex justify-between mb-6">
-                        <div class="w-full mr-2">
-                            <label class="block form-label mb-2" for="date">New Date</label>
-                            <input class="form-input" id="date" type="date" />
-                        </div>
-                        <div class="w-full ml-2">
-                            <label class="block form-label mb-2" for="time">New Time</label>
-                            <input class="form-input" id="time" type="time" />
-                        </div>
-                    </div>
-                    <button class="btn-primary w-full" type="submit">Reschedule</button>
-                </form>
-            </div>
-            <div class="calendar-container flex items-center justify-center">
+                <!-- Choose Doctor -->
+                <div id="choose-doctor-container" class="mb-6">
+                    <label class="block form-label mb-2" for="doctor_id">Choose Doctor</label>
+                    <select class="form-input" id="doctor_id">
+                        <!-- Populate with options dynamically -->
+                    </select>
+                </div>
 
-                <div id="calendar" class="mt-8"></div>
+                <!-- Consultation Type -->
+                <div class="mb-6">
+                    <label class="block form-label mb-2" for="consultation_type">Consultation Type</label>
+                    <select class="form-input" id="consultation_type">
+                        <option value="online">Online Consultation</option>
+                        <option value="physical">Physical Consultation</option>
+                    </select>
+                </div>
+
+                <!-- Draggable Events for Appointments -->
+                <div id="external-events" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-700">Drag Appointment to Reschedule</h3>
+                    <div id="appointments-container">
+                        <!-- Populate with draggable appointments dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Display -->
+            <div class="calendar-container flex items-center justify-center">
+                <div id="calendar" class="mt-8 w-full"></div>
             </div>
         </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-        <script src="assets/js/utils.js"></script>
-        <script src="assets/js/common.js"></script>
-        <script src="assets/js/reschedule.js"></script>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/reschedule.js"></script>
 </body>
 
 </html>
