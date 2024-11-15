@@ -554,8 +554,8 @@ if ($user_role === 'admin') {
                     <div class="tab-pane hidden" id="reschedule">
                         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-8 text-blue-500">Reschedule Appointment</h2>
-                            <p id="rescheduleMessage" class="text-gray-700 mb-6">No appointments scheduled.</p>
-                            <a href="reschedule.php" id="rescheduleButton" class="bg-blue-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
+                            <!-- <p id="rescheduleMessage" class="text-gray-700 mb-6">No appointments scheduled.</p> -->
+                            <a href="reschedule.php" id="rescheduleButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">Reschedule Appointment</a>
                         </div>
                     </div>
 
@@ -564,7 +564,7 @@ if ($user_role === 'admin') {
                         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-4 text-blue-500">Canceled Appointment</h2>
                             <p id="cancelMessage" class="text-gray-700 mb-3">Request a refund here.</p>
-                            <a href="canceled.php" id="cancelButton" class="bg-blue-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">View</a>
+                            <a href="canceled.php" id="cancelButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">View</a>
                         </div>
                     </div>
                 </div>
