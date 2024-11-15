@@ -252,6 +252,10 @@ if ($user_role === 'admin') {
                     <?php if ($user_role === 'doctor') : ?>
                         <a href="onboarding.php" id="onboarding" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Stripe Connect</a>
                     <?php endif; ?>
+                    <?php if ($user_role === 'doctor' && $documents_submitted && !$is_verified) : ?>
+                        <a href="upload_documents.php" id="upload" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Upload Documents</a>
+                    <?php endif; ?>
+
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
             </div>
@@ -272,7 +276,7 @@ if ($user_role === 'admin') {
                 <!-- Case 2: Documents submitted, but not yet verified -->
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
                     <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
-                    <p class="mt-4 text-gray-700">Your account is currently pending verification. You will be notified once your account has been verified.</p>
+                    <p class="mt-4 text-gray-700">Your account is currently pending verification. Or, you can re-upload your documents <a href="upload_documents.php" id="upload" class="text-blue-500 hover:bg-gray-100">here</a>.</p>
                 </div>
             <?php elseif ($is_verified) : ?>
                 <!-- Case 3: Verified doctor -->

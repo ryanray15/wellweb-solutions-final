@@ -77,13 +77,26 @@ const RescheduleModule = (() => {
     )
       .then((response) => response.json())
       .then((data) => {
-        container.innerHTML = data
-          .map(
-            (appointment) => `
-                        <div class="appointment-slot fc-event draggable-event">
-                            ${appointment.consultation_type} on ${appointment.date} from ${appointment.start_time} to ${appointment.end_time}
-                        </div>`
-          )
+        container.innerHTML = data.data
+          .map((appointment) => {
+            // Extract details from the appointment object as needed
+            const details = appointment.details || "";
+            const [consultationType, datePart, timePart] =
+              details.split(" on ");
+            const [date, timeRange] = (datePart || "").split(" from ");
+            const [startTime, endTime] = (timeRange || "").split(" to ");
+
+            // Set color based on consultation type
+            const color =
+              consultationType === "Physical Consultation" ? "green" : "blue";
+
+            return `
+            <div class="appointment-slot fc-event draggable-event" style="background-color: ${color}; color: white;">
+              ${consultationType || "Consultation"} on ${date || "N/A"} from ${
+              startTime || "N/A"
+            } to ${endTime || "N/A"}
+            </div>`;
+          })
           .join("");
 
         // Make the appointment slots draggable
@@ -104,6 +117,16 @@ const RescheduleModule = (() => {
   };
 })();
 
+const setupConsultationTypeChange = () => {
+  const consultationTypeSelect = document.getElementById("consultation_type");
+  consultationTypeSelect.addEventListener("change", function () {
+    const consultationType = this.value;
+    if (selectedDoctorId) {
+      updateAppointmentsContainer(selectedDoctorId, consultationType);
+    }
+  });
+};
+
 // Calendar Module
 const CalendarModule = (() => {
   const loadCalendar = (doctorId) => {
@@ -116,7 +139,7 @@ const CalendarModule = (() => {
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "timeGridWeek",
       selectable: true,
-      editable: true,
+      editable: false,
       droppable: true,
       timeZone: "Asia/Manila",
       headerToolbar: {
@@ -132,6 +155,9 @@ const CalendarModule = (() => {
         },
         failure: function () {
           alert("There was an error while fetching availability!");
+        },
+        success: function (data) {
+          console.log("Fetched events:", data);
         },
       },
       eventReceive: function (info) {
