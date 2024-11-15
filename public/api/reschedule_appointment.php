@@ -65,7 +65,7 @@ $db->begin_transaction();
 
 try {
     // Reschedule the appointment
-    $response = $appointmentController->reschedule($appointment_id, $new_date, $new_time);
+    $response = $appointmentController->reschedule($appointment_id, $new_date, $new_start_time, $new_end_time);
     if (!$response['status']) {
         throw new Exception('Appointment rescheduling failed');
     }

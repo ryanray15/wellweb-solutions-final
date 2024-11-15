@@ -286,17 +286,17 @@ if ($user_role === 'admin') {
                     <!-- Tab Navigation -->
                     <ul class="flex border-b mb-6">
                         <li class="mr-1">
-                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="appointments">Your Appointments</button>
+                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Your Appointments</button>
                         </li>
                         <li>
-                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Set Your Availability</button>
+                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="appointments">Set Your Availability</button>
                         </li>
                     </ul>
 
                     <!-- Tab Content -->
                     <div class="tab-content">
                         <!-- Your Appointments Section -->
-                        <div class="tab-pane" id="appointments">
+                        <div class="tab-pane hidden" id="availability">
                             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                                 <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
                                 <div class="flex items-center mb-4">
@@ -326,7 +326,7 @@ if ($user_role === 'admin') {
                         </div>
 
                         <!-- Set Your Availability Section -->
-                        <div class="tab-pane hidden" id="availability">
+                        <div class="tab-pane" id="appointments">
                             <div class="p-6 bg-white rounded-lg shadow-md">
                                 <h2 class="text-2xl font-bold mb-4 text-blue-600">Set Your Availability</h2>
 
