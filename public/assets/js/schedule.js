@@ -228,6 +228,7 @@ async function handleEventSelection(event, doctorId) {
             patient_id: patientId, // Ensure this is directly assigned
             doctor_id: doctorId,
             service_id: serviceId,
+            availability_id: event.id,
             date: selectedDate,
             start_time: selectedStartTime,
             end_time: selectedEndTime,

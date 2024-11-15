@@ -461,3 +461,43 @@ Array
     [start_time] => 08:00:00
     [end_time] => 09:00:00
 )
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 
+    [date] => 2024-11-16
+    [start_time] => 08:00:00
+    [end_time] => 09:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 
+    [date] => 2024-11-16
+    [start_time] => 08:00:00
+    [end_time] => 09:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 
+    [date] => 2024-11-16
+    [start_time] => 08:00:00
+    [end_time] => 09:00:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 80
+    [date] => 2024-11-16
+    [start_time] => 08:00:00
+    [end_time] => 09:00:00
+)

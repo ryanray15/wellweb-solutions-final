@@ -10,6 +10,7 @@ class Appointment
     public $patient_id;
     public $doctor_id;
     public $service_id;
+    public $availability_id;
     public $date;
     public $start_time;
     public $end_time;
@@ -23,15 +24,15 @@ class Appointment
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, date, start_time, end_time, status, meeting_id) 
-                  VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)";
+        $query = "INSERT INTO " . $this->table . " (patient_id, doctor_id, service_id, availability_id, date, start_time, end_time, status, meeting_id) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)";
         $stmt = $this->conn->prepare($query);
         if (!$stmt) {
             error_log("SQL prepare failed: " . $this->conn->error);
             return false;
         }
 
-        $stmt->bind_param("iiissss", $this->patient_id, $this->doctor_id, $this->service_id, $this->date, $this->start_time, $this->end_time, $this->meeting_id);
+        $stmt->bind_param("iiiissss", $this->patient_id, $this->doctor_id, $this->service_id, $this->availability_id, $this->date, $this->start_time, $this->end_time, $this->meeting_id);
 
         if ($stmt->execute()) {
             error_log("Appointment created successfully.");
