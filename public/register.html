@@ -184,6 +184,8 @@
                   name="contact_number"
                   class="input-field"
                   required
+                  pattern="^09\d{9}$"
+                  title="Contact number must be 11 digits and start with 09."
                 />
               </div>
               <div class="form-element">
@@ -266,6 +268,8 @@
                   name="password"
                   class="input-field"
                   required
+                  pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$"
+                  title="Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one digit, and one special character."
                 />
               </div>
 

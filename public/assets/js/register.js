@@ -67,9 +67,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirm_password").value;
+      const contactNumber = document.getElementById("contact_number").value;
 
+      // Validate passwords match
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
+        return; // Exit the function without submitting the form
+      }
+
+      // Validate contact number format
+      const contactNumberRegex = /^09\d{9}$/;
+      if (!contactNumberRegex.test(contactNumber)) {
+        alert(
+          "Invalid contact number. It must start with 09 and be 11 digits long."
+        );
+        return; // Exit the function without submitting the form
+      }
+
+      // Validate password format
+      const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        alert(
+          "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one digit, and one special character."
+        );
         return; // Exit the function without submitting the form
       }
 
@@ -82,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
         password: formData.get("password"),
         role: formData.get("role"),
         gender: formData.get("gender"),
-        contact_number: formData.get("contact_number"),
+        contact_number: contactNumber,
         address: formData.get("address"),
         specializations: Array.from(specializationSelect.selectedOptions).map(
           (option) => option.value
