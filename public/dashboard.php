@@ -252,6 +252,10 @@ if ($user_role === 'admin') {
                     <?php if ($user_role === 'doctor') : ?>
                         <a href="onboarding.php" id="onboarding" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Stripe Connect</a>
                     <?php endif; ?>
+                    <?php if ($user_role === 'doctor' && $documents_submitted && !$is_verified) : ?>
+                        <a href="upload_documents.php" id="upload" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Upload Documents</a>
+                    <?php endif; ?>
+
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
             </div>
@@ -272,7 +276,7 @@ if ($user_role === 'admin') {
                 <!-- Case 2: Documents submitted, but not yet verified -->
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
                     <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
-                    <p class="mt-4 text-gray-700">Your account is currently pending verification. You will be notified once your account has been verified.</p>
+                    <p class="mt-4 text-gray-700">Your account is currently pending verification. Or, you can re-upload your documents <a href="upload_documents.php" id="upload" class="text-blue-500 hover:bg-gray-100">here</a>.</p>
                 </div>
             <?php elseif ($is_verified) : ?>
                 <!-- Case 3: Verified doctor -->
@@ -286,17 +290,17 @@ if ($user_role === 'admin') {
                     <!-- Tab Navigation -->
                     <ul class="flex border-b mb-6">
                         <li class="mr-1">
-                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="appointments">Your Appointments</button>
+                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Your Appointments</button>
                         </li>
                         <li>
-                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Set Your Availability</button>
+                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="appointments">Set Your Availability</button>
                         </li>
                     </ul>
 
                     <!-- Tab Content -->
                     <div class="tab-content">
                         <!-- Your Appointments Section -->
-                        <div class="tab-pane" id="appointments">
+                        <div class="tab-pane hidden" id="availability">
                             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                                 <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
                                 <div class="flex items-center mb-4">
@@ -326,7 +330,7 @@ if ($user_role === 'admin') {
                         </div>
 
                         <!-- Set Your Availability Section -->
-                        <div class="tab-pane hidden" id="availability">
+                        <div class="tab-pane" id="appointments">
                             <div class="p-6 bg-white rounded-lg shadow-md">
                                 <h2 class="text-2xl font-bold mb-4 text-blue-600">Set Your Availability</h2>
 
@@ -336,51 +340,27 @@ if ($user_role === 'admin') {
                                         <select id="consultation_type" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
                                             <option value="online">Online Consultation</option>
                                             <option value="physical">Physical Consultation</option>
-                                            <option value="both">Both</option>
                                         </select>
                                     </div>
                                     <div class="w-full ml-4">
                                         <label class="block text-gray-700 text-sm font-bold mb-2" for="consultation_duration">Consultation Duration</label>
-                                        <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500 timepicker">
+                                        <select id="consultation_duration" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500">
                                             <option value="30">30 Minutes</option>
                                             <option value="60">1 Hour</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <div class="flex justify-between items-center mb-6">
-                                    <div class="w-full mr-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="availability_date">Choose Date</label>
-                                        <input type="date" id="availability_date" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
+                                <!-- Draggable Events for setting availability -->
+                                <div class="mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Drag the Event to Set Availability</h3>
+                                    <p class="text-sm text-gray-500 mb-2">Drag this item to the calendar below to set your availability</p>
+                                    <div id="external-events" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                        <div id="availability-event"
+                                            class="fc-event bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-xl">
+                                            <span id="availability-text">Set Availability</span>
+                                        </div>
                                     </div>
-                                    <div class="w-full mr-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">Start Time</label>
-                                        <input type="text" id="start_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
-                                    </div>
-                                    <div class="w-full ml-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="end_time">End Time</label>
-                                        <input type="text" id="end_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500 timepicker">
-                                    </div>
-                                    <button id="add_time_range" class="text-blue-600 text-6xl font-extrabold mt-2">+</button>
-                                </div>
-
-                                <div class="flex justify-evenly items-center mb-6">
-                                    <div class="mr-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Availability Status</label>
-                                        <select id="status" class="shadow border rounded-lg w-fit py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500">
-                                            <option value="Available">Available</option>
-                                            <option value="Not Available">Not Available</option>
-                                        </select>
-                                    </div>
-
-                                    <div id="time-ranges-container" class="w-full mr-4 text-gray-700 text-sm font-bold">
-                                        <h3>Selected Time Ranges:</h3>
-                                        <div id="time-ranges"></div>
-                                    </div>
-                                </div>
-
-                                <div class="w-full mt-4">
-                                    <button id="set_availability" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">Set Availability</button>
                                 </div>
 
                                 <!-- FullCalendar Display -->
@@ -578,8 +558,8 @@ if ($user_role === 'admin') {
                     <div class="tab-pane hidden" id="reschedule">
                         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-8 text-blue-500">Reschedule Appointment</h2>
-                            <p id="rescheduleMessage" class="text-gray-700 mb-6">No appointments scheduled.</p>
-                            <a href="reschedule.php" id="rescheduleButton" class="bg-blue-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200 hidden">Reschedule Appointment</a>
+                            <!-- <p id="rescheduleMessage" class="text-gray-700 mb-6">No appointments scheduled.</p> -->
+                            <a href="reschedule.php" id="rescheduleButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">Reschedule Appointment</a>
                         </div>
                     </div>
 
@@ -588,7 +568,7 @@ if ($user_role === 'admin') {
                         <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-4 text-blue-500">Canceled Appointment</h2>
                             <p id="cancelMessage" class="text-gray-700 mb-3">Request a refund here.</p>
-                            <a href="canceled.php" id="cancelButton" class="bg-blue-600 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">View</a>
+                            <a href="canceled.php" id="cancelButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">View</a>
                         </div>
                     </div>
                 </div>

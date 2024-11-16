@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="assets/css/tailwind.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <title>Register</title>
     <style>
       body {
@@ -222,6 +227,8 @@
                 />
               </div>
 
+              <div id="map" style="height: 300px; margin-top: 10px"></div>
+
               <!-- Email -->
               <div class="form-element">
                 <label for="email" class="block label-text text-gray-700"
@@ -300,5 +307,6 @@
     </div>
 
     <script src="assets/js/register.js"></script>
+    <script src="assets/js/register_address.js"></script>
   </body>
 </html>

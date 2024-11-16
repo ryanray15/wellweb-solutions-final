@@ -81,6 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="assets/css/tailwind.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
         body {
             background-image: url('img/bg_doctor.jpg');
@@ -228,6 +232,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="contact_number" class="label-text text-gray-700">Contact Number</label>
                             <input type="text" id="contact_number" name="contact_number" class="input-field" value="<?php echo htmlspecialchars($userInfo['contact_number']); ?>" required />
                         </div>
+                        <div class="form-element">
+                            <label for="email" class="label-text text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" class="input-field" value="<?php echo htmlspecialchars($userInfo['email']); ?>" required />
+                        </div>
                     </div>
 
                     <!-- Right Side: Address to Gender -->
@@ -236,10 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="address" class="label-text text-gray-700">Address</label>
                             <input type="text" id="address" name="address" class="input-field" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
                         </div>
-                        <div class="form-element">
-                            <label for="email" class="label-text text-gray-700">Email</label>
-                            <input type="email" id="email" name="email" class="input-field" value="<?php echo htmlspecialchars($userInfo['email']); ?>" required />
-                        </div>
+                        <div id="map" style="height: 300px; margin-top: 10px"></div>
                         <div class="form-element">
                             <label for="gender" class="label-text text-gray-700">Gender</label>
                             <select id="gender" name="gender" class="input-field" required>
@@ -275,6 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>
+    <script src="assets/js/register_address.js"></script>
 </body>
 
 </html>

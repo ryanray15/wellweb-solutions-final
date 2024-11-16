@@ -20,7 +20,8 @@ $query->execute();
 $result = $query->get_result();
 $user = $result->fetch_assoc();
 
-if ($user && password_verify($password, $user['password'])) {
+// Check if the user exists, if the password matches, and if the account is active
+if ($user && password_verify($password, $user['password']) && $user['active_status'] === 'active') {
     $_SESSION['user_id'] = $user['user_id'];
     $_SESSION['role'] = $user['role'];
     error_log("User logged in with ID: " . $_SESSION['user_id']);
@@ -45,5 +46,5 @@ if ($user && password_verify($password, $user['password'])) {
     ]);
 } else {
     // Return an error response
-    echo json_encode(['status' => false, 'message' => 'Invalid email or password']);
+    echo json_encode(['status' => false, 'message' => 'Invalid email, password, or account inactive']);
 }

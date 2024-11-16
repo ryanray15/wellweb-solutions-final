@@ -47,6 +47,7 @@ switch ($event['type']) {
             'patient_id' => $session->metadata['patient_id'],
             'doctor_id' => $session->metadata['doctor_id'],
             'service_id' => $session->metadata['service_id'],
+            'availability_id' => $session->metadata['availability_id'],
             'date' => $session->metadata['date'],
             'start_time' => $session->metadata['start_time'],
             'end_time' => $session->metadata['end_time'],

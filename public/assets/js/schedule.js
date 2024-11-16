@@ -228,6 +228,7 @@ async function handleEventSelection(event, doctorId) {
             patient_id: patientId, // Ensure this is directly assigned
             doctor_id: doctorId,
             service_id: serviceId,
+            availability_id: event.id,
             date: selectedDate,
             start_time: selectedStartTime,
             end_time: selectedEndTime,
@@ -343,62 +344,6 @@ function disableUnavailableSlots(events) {
     }
   });
 }
-
-// // Function to handle form submission and scheduling
-// function handleScheduleAppointment(patientId) {
-//   const scheduleButton = document.querySelector('button[type="submit"]');
-//   scheduleButton.addEventListener("click", function (e) {
-//     e.preventDefault(); // Prevent form from submitting immediately
-
-//     const selectedDate = document.getElementById("date").value;
-//     const selectedStartTime = document.getElementById("time").value;
-//     const serviceId = document.getElementById("service_id").value;
-
-//     // Assume consultation_type is determined by service_id
-//     const consultationType = determineConsultationType(serviceId);
-
-//     if (
-//       !selectedDate ||
-//       !selectedStartTime ||
-//       !selectedDoctorId ||
-//       !serviceId
-//     ) {
-//       alert("Please fill in all fields");
-//       return;
-//     }
-
-//     // Prepare the data to be sent to the server
-//     const requestData = {
-//       patient_id: patientId,
-//       doctor_id: selectedDoctorId,
-//       service_id: serviceId,
-//       date: selectedDate,
-//       time: selectedTime,
-//       //consultation_type: consultationType, // Add consultation_type
-//       referrer: document.referrer,
-//     };
-
-//     console.log("Request Data: ", requestData); // Debugging the data being sent
-
-//     // Make an API call to create the checkout session
-//     fetch("/api/create_checkout_session.php", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(requestData),
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         if (data.error) {
-//           console.error("Error: ", data.error); // Handle error
-//         } else {
-//           window.location.href = data.checkout_url; // Redirect to Stripe
-//         }
-//       })
-//       .catch((error) => console.error("Error:", error));
-//   });
-// }
 
 // Function to map service_id to consultation_type
 function determineConsultationType(serviceId) {
