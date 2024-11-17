@@ -35592,4 +35592,142 @@
     "idempotency_key": null
   },
   "type": "account.application.authorized"
+}{
+  "id": "evt_1QLy6f08GrFUpp2bocUiHopB",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731810057,
+  "data": {
+    "object": {
+      "id": "po_1QLy1k08GrFUpp2bDLJDadMt",
+      "object": "payout",
+      "amount": 1673,
+      "application_fee": null,
+      "application_fee_amount": null,
+      "arrival_date": 1731888000,
+      "automatic": true,
+      "balance_transaction": "txn_1QLy1n08GrFUpp2bWangJvxa",
+      "created": 1731809752,
+      "currency": "hkd",
+      "description": "STRIPE PAYOUT",
+      "destination": "ba_1Q0mno08GrFUpp2banXzu0Dl",
+      "failure_balance_transaction": null,
+      "failure_code": null,
+      "failure_message": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "method": "standard",
+      "original_payout": null,
+      "reconciliation_status": "completed",
+      "reversed_by": null,
+      "source_type": "card",
+      "statement_descriptor": null,
+      "status": "in_transit",
+      "trace_id": {
+        "status": "pending",
+        "value": null
+      },
+      "type": "bank_account"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "payout.reconciliation_completed"
+}{
+  "id": "evt_1QLy6g08GrFUpp2bpPqiuO6Y",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731810058,
+  "data": {
+    "object": {
+      "id": "po_1QLy1k08GrFUpp2bDLJDadMt",
+      "object": "payout",
+      "amount": 1673,
+      "application_fee": null,
+      "application_fee_amount": null,
+      "arrival_date": 1731888000,
+      "automatic": true,
+      "balance_transaction": "txn_1QLy1n08GrFUpp2bWangJvxa",
+      "created": 1731809752,
+      "currency": "hkd",
+      "description": "STRIPE PAYOUT",
+      "destination": "ba_1Q0mno08GrFUpp2banXzu0Dl",
+      "failure_balance_transaction": null,
+      "failure_code": null,
+      "failure_message": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "method": "standard",
+      "original_payout": null,
+      "reconciliation_status": "completed",
+      "reversed_by": null,
+      "source_type": "card",
+      "statement_descriptor": null,
+      "status": "paid",
+      "trace_id": {
+        "status": "pending",
+        "value": null
+      },
+      "type": "bank_account"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "payout.paid"
+}{
+  "id": "evt_1QLy6e08GrFUpp2bel6bxlQh",
+  "object": "event",
+  "api_version": "2024-06-20",
+  "created": 1731810056,
+  "data": {
+    "object": {
+      "id": "po_1QLy1k08GrFUpp2bDLJDadMt",
+      "object": "payout",
+      "amount": 1673,
+      "application_fee": null,
+      "application_fee_amount": null,
+      "arrival_date": 1731888000,
+      "automatic": true,
+      "balance_transaction": "txn_1QLy1n08GrFUpp2bWangJvxa",
+      "created": 1731809752,
+      "currency": "hkd",
+      "description": "STRIPE PAYOUT",
+      "destination": "ba_1Q0mno08GrFUpp2banXzu0Dl",
+      "failure_balance_transaction": null,
+      "failure_code": null,
+      "failure_message": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "method": "standard",
+      "original_payout": null,
+      "reconciliation_status": "in_progress",
+      "reversed_by": null,
+      "source_type": "card",
+      "statement_descriptor": null,
+      "status": "in_transit",
+      "trace_id": {
+        "status": "pending",
+        "value": null
+      },
+      "type": "bank_account"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "payout.created"
 }

@@ -63,11 +63,14 @@ if ($loggedIn) {
             <div>
                 <?php if ($loggedIn) : ?>
                     <!-- Show profile dropdown for logged-in users -->
+
                     <div class="relative">
-                        <button id="profileDropdown" class="text-white focus:outline-none">
+
+
+                        <button id="profileDropdown" class="text-gray-700 py-2 px-4 rounded hover:border-2 border-blue-400 hover:text-blue-500 transition duration-300 ">
                             <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
-                            <i class="fas fa-user-circle fa-2x"></i>
                         </button>
+
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                             <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
                             <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
@@ -92,9 +95,11 @@ if ($loggedIn) {
             <h1 class="text-4xl font-bold text-blue-500 mb-5">Welcome to Well Web Solutions</h1>
             <p class="text-lg text-gray-700 mb-8">Your convenient way to schedule medical appointments with ease.</p>
 
+
             <!-- Call to Action -->
             <div class="flex space-x-4">
                 <a href="schedule.php" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
+                <a href="doctors_nearby.html" class="bg-blue-500 text-white hover:bg-white hover:text-black font-bold py-2 px-6 rounded-lg transition duration-300">Doctors Nearby You</a>
                 <a href="learn-more.html" class="bg-white text-blue-500 font-bold py-2 px-6 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300 border-2 border-blue-500">Learn More</a>
             </div>
         </div>
@@ -130,7 +135,7 @@ if ($loggedIn) {
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <i class="fas fa-hospital-user fa-3x  mb-4" style="color: #3b82f6"></i>
                     <h3 class="text-xl font-bold mb-2">Locate & Book</h3>
-                    <p class="text-gray-700">Access real-time hospital locations and easily book appointments through our system.</p>
+                    <p class="text-gray-700">Access real-time clinic locations and easily book appointments through our system.</p>
                 </div>
 
                 <!-- Feature 2 -->
@@ -142,9 +147,9 @@ if ($loggedIn) {
 
                 <!-- Feature 3 -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <i class="fas fa-home fa-3x  mb-4" style="color: #3b82f6"></i>
-                    <h3 class="text-xl font-bold mb-2">Physical Consultation</h3>
-                    <p class="text-gray-700">Experience the convenience of our Home Service</p>
+                    <i class="fas fa-envelope-open-text fa-3x  mb-4" style="color: #3b82f6"></i>
+                    <h3 class="text-xl font-bold mb-2">Connect</h3>
+                    <p class="text-gray-700">Connect with your healthcare providers effortlessly, ensuring you receive the support and guidance you need for your well-being.</p>
                 </div>
             </div>
         </div>
