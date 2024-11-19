@@ -521,3 +521,33 @@ Array
     [start_time] => 07:30:00
     [end_time] => 08:00:00
 )
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 139
+    [date] => 2024-11-21
+    [start_time] => 09:00:00
+    [end_time] => 09:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 149
+    [date] => 2024-11-22
+    [start_time] => 08:00:00
+    [end_time] => 08:30:00
+)
+Array
+(
+    [patient_id] => 5
+    [doctor_id] => 29
+    [service_id] => 1
+    [availability_id] => 151
+    [date] => 2024-11-22
+    [start_time] => 09:00:00
+    [end_time] => 09:30:00
+)
