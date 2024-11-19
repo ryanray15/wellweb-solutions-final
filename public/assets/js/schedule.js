@@ -8,7 +8,7 @@ function fetchServicesDropdown() {
     .then((response) => response.json())
     .then((data) => {
       const serviceSelect = document.getElementById("service_id");
-      serviceSelect.innerHTML = '<optgroup label="Services"></optgroup>'; // Default option
+      serviceSelect.innerHTML = '<option value=""></option>'; // Default option
 
       if (data.length > 0) {
         data.forEach((service) => {
@@ -32,7 +32,7 @@ function fetchSpecializationsDropdown(serviceId) {
     .then((data) => {
       const specializationSelect = document.getElementById("specialization_id");
       specializationSelect.innerHTML =
-        '<optgroup label="Specializations"></optgroup>'; // Default option
+        '<option value="Specializations"></optgroup>'; // Default option
 
       if (data.length > 0) {
         data.forEach((specialization) => {
