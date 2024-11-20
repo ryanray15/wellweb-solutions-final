@@ -202,7 +202,7 @@ if ($user_role === 'admin') {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
+                <a href="index.php"><span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
@@ -297,14 +297,16 @@ if ($user_role === 'admin') {
                         <!-- Your Appointments Section -->
                         <div class="tab-pane hidden" id="availability">
                             <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                                <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
-                                <div class="flex items-center mb-4">
-                                    <label for="doctorAppointmentType" class="mr-2 font-semibold">Filter by Type:</label>
-                                    <select id="doctorAppointmentType" class="px-2 py-1 border rounded">
-                                        <option value="all">All</option>
-                                        <option value="online">Online Consultation</option>
-                                        <option value="physical">Physical Consultation</option>
-                                    </select>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-2xl font-bold text-blue-500">Your Appointments</h2>
+                                    <div class="flex items-center">
+                                        <label for="doctorAppointmentType" class="mr-2 font-semibold">Filter by Type:</label>
+                                        <select id="doctorAppointmentType" class="px-2 py-1 border rounded">
+                                            <option value="all">All</option>
+                                            <option value="online">Online Consultation</option>
+                                            <option value="physical">Physical Consultation</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <table class="min-w-full bg-white">
                                     <thead class="bg-gray-200">
@@ -515,14 +517,16 @@ if ($user_role === 'admin') {
                 <!-- Your Appointments Section -->
                 <div class="tab-pane" id="appointments">
                     <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
-                        <h2 class="text-2xl font-bold mb-4 text-blue-500">Your Appointments</h2>
-                        <div class="flex items-center">
-                            <label for="patientAppointmentType" class="mr-2 mb-2 font-semibold">Filter by Type:</label>
-                            <select id="patientAppointmentType" class="px-2 mb-2 py-1 border rounded">
-                                <option value="all">All</option>
-                                <option value="online">Online Consultation</option>
-                                <option value="physical">Physical Consultation</option>
-                            </select>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-blue-500">Your Appointments</h2>
+                            <div class="flex items-center">
+                                <label for="patientAppointmentType" class="mr-2 font-semibold">Filter by Type:</label>
+                                <select id="patientAppointmentType" class="px-2 py-1 border rounded">
+                                    <option value="all">All</option>
+                                    <option value="online">Online Consultation</option>
+                                    <option value="physical">Physical Consultation</option>
+                                </select>
+                            </div>
                         </div>
                         <table class="min-w-full bg-white">
                             <thead class="bg-gray-200">

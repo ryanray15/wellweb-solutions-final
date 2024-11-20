@@ -48,6 +48,38 @@ if ($loggedIn) {
             border-radius: 0.5rem;
             /* Optional: adds rounded corners */
         }
+
+        /* Notification Dropdown Styles */
+        #dropdownMenu {
+            max-width: 300px;
+            /* Set a max-width that fits your design */
+            white-space: normal;
+            /* Allows text to wrap */
+            word-wrap: break-word;
+            /* Ensures long words break and wrap to the next line */
+            padding: 10px;
+            /* Add some padding for a better look */
+        }
+
+        #dropdownMenu a {
+            padding: 8px 12px;
+            /* Adjust padding inside each notification */
+            display: block;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            /* Optional: Add a border between notifications */
+        }
+
+        #dropdownMenu a:last-child {
+            border-bottom: none;
+            /* Remove border from the last notification */
+        }
+
+        #dropdownMenu a:hover {
+            background-color: #f0f0f0;
+            /* Highlight the notification on hover */
+        }
     </style>
 </head>
 
@@ -58,7 +90,7 @@ if ($loggedIn) {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
+                <a href="index.php"><span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <div>
                 <?php if ($loggedIn) : ?>
@@ -67,7 +99,7 @@ if ($loggedIn) {
                     <div class="relative">
 
 
-                        <button id="profileDropdown" class="text-gray-700 py-2 px-4 rounded hover:border-2 border-blue-400 hover:text-blue-500 transition duration-300 ">
+                        <button id="profileDropdown" class="text-gray-700 py-2 px-4 rounded-full hover:border-2 border-blue-400 hover:text-blue-500 transition duration-300 ">
                             <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's name -->
                         </button>
 
