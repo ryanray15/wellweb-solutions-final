@@ -246,7 +246,8 @@ session_start();
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
     </script>
-
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
 </body>
 
 </html>

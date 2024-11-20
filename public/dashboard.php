@@ -224,7 +224,7 @@ if ($user_role === 'admin') {
                 </div>
             <?php endif; ?>
             <div class="relative">
-                <?php if ($user_role === 'doctor') : ?>
+                <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
                     <!-- Wallet Button -->
                     <button id="messageButton" class="text-blue-500 mr-3 focus:outline-none">
                         <i class="fas fa-envelope fa-2x"></i>
