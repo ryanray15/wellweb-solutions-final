@@ -4,7 +4,7 @@ require_once '../../config/database.php';
 
 $db = include '../../config/database.php';
 
-$query = $db->prepare("SELECT user_id, CONCAT(first_name, ' ', last_name) AS name FROM users WHERE user_id != ?  AND role = 'doctor';");
+$query = $db->prepare("SELECT user_id, CONCAT(first_name, ' ', last_name) AS name FROM users WHERE user_id != ?  AND role = 'patient';");
 $query->bind_param("i", $_SESSION['user_id']);
 $query->execute();
 $result = $query->get_result();

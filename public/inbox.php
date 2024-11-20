@@ -1,5 +1,23 @@
 <?php
 session_start();
+
+// Restrict access to logged-in users only
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.html'); // Redirect to login page if not logged in
+    exit();
+}
+
+// Get user ID and role from session
+$user_id = $_SESSION['user_id'];
+$user_role = $_SESSION['role'];
+
+// Fetch user information from the database
+require_once '../config/database.php';
+$db = include '../config/database.php';
+$query = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+$query->bind_param("i", $user_id);
+$query->execute();
+$userInfo = $query->get_result()->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -53,7 +71,7 @@ session_start();
                 <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-white focus:outline-none">
+                <button id="profileDropdown" class="text-blue-500 focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
@@ -68,13 +86,24 @@ session_start();
     <!-- Main Content -->
     <div class="container mx-auto mt-28 px-6 py-8">
         <div class="grid grid-cols-3 gap-4">
-            <!-- User Dropdown -->
-            <div class="col-span-1 bg-white p-4 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 text-blue-700">Select User</h2>
-                <select id="userDropdown" class="w-full border rounded-lg p-2">
-                    <option value="">Select a user...</option>
-                </select>
-            </div>
+            <?php if ($user_role === 'patient') : ?>
+                <!-- User Dropdown -->
+                <div class="col-span-1 bg-white p-4 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-blue-700">Select Doctor</h2>
+                    <select id="userDropdown" class="w-full border rounded-lg p-2">
+                        <option value="">Select a doctor...</option>
+                    </select>
+                </div>
+            <?php endif; ?>
+            <?php if ($user_role === 'doctor') : ?>
+                <!-- User Dropdown -->
+                <div class="col-span-1 bg-white p-4 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-blue-700">Select Patient</h2>
+                    <select id="userDropdown" class="w-full border rounded-lg p-2">
+                        <option value="">Select a patient...</option>
+                    </select>
+                </div>
+            <?php endif; ?>
 
             <!-- Messaging Section -->
             <div class="col-span-2 bg-white p-4 rounded-lg shadow-lg">
@@ -172,20 +201,38 @@ session_start();
         }
 
         function fetchUsers() {
-            fetch("/api/get_users.php")
-                .then((response) => response.json())
-                .then((data) => {
-                    const userDropdown = document.getElementById("userDropdown");
-                    userDropdown.innerHTML = '<option value="">Select a user...</option>';
+            <?php if ($user_role === 'patient') : ?>
+                fetch("/api/get_users.php")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const userDropdown = document.getElementById("userDropdown");
+                        userDropdown.innerHTML = '<option value="">Select a doctor...</option>';
 
-                    data.users.forEach((user) => {
-                        const option = document.createElement("option");
-                        option.value = user.user_id;
-                        option.textContent = user.name;
-                        userDropdown.appendChild(option);
-                    });
-                })
-                .catch((error) => console.error("Error fetching users:", error));
+                        data.users.forEach((user) => {
+                            const option = document.createElement("option");
+                            option.value = user.user_id;
+                            option.textContent = user.name;
+                            userDropdown.appendChild(option);
+                        });
+                    })
+                    .catch((error) => console.error("Error fetching users:", error));
+            <?php endif; ?>
+            <?php if ($user_role === 'doctor') : ?>
+                fetch("/api/get_users_for_doctor.php")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const userDropdown = document.getElementById("userDropdown");
+                        userDropdown.innerHTML = '<option value="">Select a patient...</option>';
+
+                        data.users.forEach((user) => {
+                            const option = document.createElement("option");
+                            option.value = user.user_id;
+                            option.textContent = user.name;
+                            userDropdown.appendChild(option);
+                        });
+                    })
+                    .catch((error) => console.error("Error fetching users:", error));
+            <?php endif; ?>
         }
 
         function fetchMessages(userId) {
