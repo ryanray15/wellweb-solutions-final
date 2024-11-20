@@ -18,7 +18,7 @@ if (!isset($_SERVER['HTTP_STRIPE_SIGNATURE'])) {
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 
 // The webhook secret (from the Stripe dashboard)
-$endpoint_secret = 'whsec_9b3a4d7331b3c23633a41051a138023172d70a9fdbb34bde4277fc499ebe28c9';
+$endpoint_secret = 'whsec_pLtl0ALs32GdaIqWeRPXbp7pau63aXOR';
 
 try {
     // Verify the event came from Stripe
