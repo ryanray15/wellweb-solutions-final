@@ -138,7 +138,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 
                 <!-- Draggable Events for Appointments -->
                 <div id="external-events" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                    <h3 class="text-lg font-semibold text-gray-700">Drag Appointment to Reschedule</h3>
+                    <h3 class="text-lg font-semibold text-gray-700">Appointments</h3>
                     <div id="appointments-container">
                         <!-- Populate with draggable appointments dynamically -->
                     </div>

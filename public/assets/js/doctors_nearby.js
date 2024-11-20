@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
           geocodeAddress(doctor.address, (lat, lon) => {
             const marker = L.marker([lat, lon]).addTo(map);
             marker.bindPopup(
-              `<strong>Dr. ${doctor.name}</strong><br>${doctor.address}<br><button onclick="startRoute(${lat}, ${lon})">Get Directions</button>`
+              `<strong>Dr. ${doctor.name}</strong><br>${doctor.address}<br><button onclick="startRoute(${lat}, ${lon})" class="underline">Get Directions</button>`
             );
           });
         });
