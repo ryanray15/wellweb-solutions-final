@@ -399,7 +399,7 @@ if ($user_role === 'admin') {
             <div class="mb-8">
                 <ul class="flex space-x-4 border-b">
                     <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="specializations">Manage Specializations</button></li>
-                    <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="users">Manage Users</button></li>
+                    <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="appointments">Manage Users</button></li>
                     <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="verification">Doctor Verification</button></li>
                 </ul>
             </div>
@@ -432,7 +432,7 @@ if ($user_role === 'admin') {
                 </div>
 
                 <!-- Manage Users Section -->
-                <div class="tab-pane hidden" id="users">
+                <div class="tab-pane hidden" id="appointments">
                     <div class="p-6 bg-white rounded-lg shadow-md">
                         <h2 class="text-2xl font-bold mb-4 text-blue-700">Manage Users</h2>
                         <table class="w-full text-left">
