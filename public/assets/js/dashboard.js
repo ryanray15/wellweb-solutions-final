@@ -404,7 +404,7 @@ function fetchAppointments(patient_id) {
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2 mr-2";
           rescheduleButton.addEventListener("click", () => {
-            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+            window.location.href = `/reschedule.php`;
           });
 
           const cancelButton = document.createElement("button");
@@ -488,7 +488,7 @@ function fetchAppointments(patient_id) {
           kebabMenu.className =
             "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
           kebabMenu.innerHTML = `
-            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php'">Reschedule</button>
             <button class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100" onclick="handleCancel(${appointment.appointment_id}, ${patient_id})">Cancel</button>
           `;
           kebabMenuContainer.appendChild(kebabMenu);

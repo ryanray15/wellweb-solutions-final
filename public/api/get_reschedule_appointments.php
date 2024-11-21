@@ -16,7 +16,7 @@ $queryString = "
     JOIN services s ON a.service_id = s.service_id
     WHERE a.doctor_id = ? 
       AND a.patient_id = ? 
-      AND a.status IN ('pending', 'no show')
+      AND a.status IN ('pending', 'no show', 'rescheduled')
 ";
 
 // Map consultation type to service name
