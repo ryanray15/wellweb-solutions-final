@@ -58,6 +58,7 @@ function fetchDoctors(specializationIdValue, consultationTypeValue) {
   console.log(
     `Consultation Type: ${consultationType}, Specialization ID: ${specializationId}`
   );
+
   fetch(
     `/api/get_doctors.php?specialization_id=${specializationId}&consultation_type=${consultationType}`
   )
@@ -82,6 +83,9 @@ function fetchDoctors(specializationIdValue, consultationTypeValue) {
                       <p class="text-center text-gray-600">${
                         doctor.specialization
                       }</p>
+                      <p class="text-center text-blue-600 font-semibold">₱${(
+                        doctor.consultation_rate / 100
+                      ).toFixed(2)}</p> <!-- Consultation rate -->
                       <p class="text-center text-gray-600">${doctor.address}</p>
                   </div>
               `
