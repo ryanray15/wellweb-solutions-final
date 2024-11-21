@@ -2,6 +2,8 @@
 require_once '../../vendor/autoload.php';
 require_once '../../config/database.php';
 
+$db = include '../../config/database.php';
+
 // Set your secret key from Stripe dashboard
 \Stripe\Stripe::setApiKey('sk_test_51Q0mWz08GrFUpp2baKJ76Qx92QtXyK8Yd0WCgvmKgONsI81AV0zrbACPouftbwP9uRUyDJZ6qwOViw1yUT1ZpNhq00IoE3Zn2L');
 
@@ -76,6 +78,31 @@ switch ($event['type']) {
             error_log('Appointment scheduled successfully.');
         } else {
             error_log('Failed to schedule appointment. HTTP code: ' . $httpcode);
+        }
+        break;
+
+    case 'account.updated':
+        $account = $event['data']['object'];
+
+        // Check if the account is fully onboarded
+        if ($account->charges_enabled && $account->payouts_enabled) {
+            $stripeAccountId = $account->id;
+
+            // Update the doctor's onboarding success in the database
+            $query = $db->prepare("
+            UPDATE doctor_verifications dv
+            JOIN users u ON dv.doctor_id = u.user_id
+            SET dv.onboarding_success = 1
+            WHERE u.stripe_account_id = ?
+        ");
+            $query->bind_param("s", $stripeAccountId);
+            $query->execute();
+
+            if ($query->affected_rows > 0) {
+                error_log("Onboarding success updated for Stripe account: $stripeAccountId");
+            } else {
+                error_log("Failed to update onboarding success for Stripe account: $stripeAccountId");
+            }
         }
         break;
 

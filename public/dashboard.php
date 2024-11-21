@@ -34,26 +34,6 @@ if ($user_role === 'doctor') {
     }
 }
 
-// // Function to fetch appointments for doctors
-// function fetchDoctorAppointments($db, $user_id)
-// {
-//     $query = $db->prepare(
-//         "SELECT a.*, p.first_name, p.middle_initial, p.last_name 
-//          FROM appointments a
-//          JOIN users p ON a.patient_id = p.user_id
-//          WHERE a.doctor_id = ? AND a.status != 'canceled'"
-//     );
-//     $query->bind_param("i", $user_id);
-//     $query->execute();
-//     return $query->get_result()->fetch_all(MYSQLI_ASSOC);
-// }
-
-// // Fetch doctor appointments if the user is a doctor
-// $appointments = [];
-// if ($user_role === 'doctor' && $is_verified) {
-//     $appointments = fetchDoctorAppointments($db, $user_id);
-// }
-
 // Initialize the $verifications variable
 $verifications = [];
 
@@ -68,6 +48,19 @@ if ($user_role === 'admin') {
 
     while ($row = $query->fetch_assoc()) {
         $verifications[] = $row;
+    }
+}
+
+$onboarding_success = false;
+
+if ($user_role === 'doctor') {
+    $query = $db->prepare("SELECT onboarding_success FROM doctor_verifications WHERE doctor_id = ?");
+    $query->bind_param("i", $user_id);
+    $query->execute();
+    $result = $query->get_result()->fetch_assoc();
+
+    if ($result && $result['onboarding_success'] === 1) {
+        $onboarding_success = true;
     }
 }
 ?>
@@ -265,15 +258,21 @@ if ($user_role === 'admin') {
                 <!-- Case 1: Documents not submitted -->
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
                     <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
-                    <p class="mt-4 text-gray-700">Please <a href="upload_documents.php" class="text-green-600 hover:underline">submit your documents</a> for verification.</p>
+                    <p class="mt-4 text-gray-700">Please <a href="upload_documents.php" class="text-blue-500 hover:underline">submit your documents</a> for verification.</p>
                 </div>
             <?php elseif ($documents_submitted && !$is_verified) : ?>
                 <!-- Case 2: Documents submitted, but not yet verified -->
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
                     <h1 class="text-3xl font-bold text-red-600">Restricted Access</h1>
-                    <p class="mt-4 text-gray-700">Your account is currently pending verification. Or, you can re-upload your documents <a href="upload_documents.php" id="upload" class="text-blue-500 hover:bg-gray-100">here</a>.</p>
+                    <p class="mt-4 text-gray-700">Your account is currently pending verification. Or, you can re-upload your documents <a href="upload_documents.php" id="upload" class="text-blue-500 hover:bg-gray-100 underline">here</a>.</p>
                 </div>
-            <?php elseif ($is_verified) : ?>
+            <?php elseif ($documents_submitted && $is_verified && !$onboarding_success) : ?>
+                <!-- Case 2: Documents submitted, but not yet verified -->
+                <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-blue-600">You are one step closer to enabling your account.</h1>
+                    <p class="mt-4 text-gray-700">Please set-up your <a href="onboarding.php" id="upload" class="text-blue-500 hover:bg-gray-100 underline">Stripe</a> account to receive payments.</p>
+                </div>
+            <?php elseif ($is_verified && $onboarding_success) : ?>
                 <!-- Case 3: Verified doctor -->
                 <h1 class="text-3xl font-bold text-blue-600 mb-8">Doctor Dashboard</h1>
                 <!-- Include full dashboard functionalities for doctors here -->
