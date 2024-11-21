@@ -108,10 +108,10 @@ function attachDoctorClickHandlers() {
   doctorCards.forEach((card) => {
     card.addEventListener("click", function () {
       // Remove the highlight from all cards
-      doctorCards.forEach((c) => c.classList.remove("border-green-500"));
+      doctorCards.forEach((c) => c.classList.remove("border-blue-500"));
 
       // Highlight the selected card
-      this.classList.add("border-green-500");
+      this.classList.add("border-blue-500");
 
       // Store the selected doctor ID
       selectedDoctorId = this.getAttribute("data-doctor-id");
