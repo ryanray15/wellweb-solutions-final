@@ -35,7 +35,22 @@ try {
         $updateQuery->bind_param("ss", $email, $otp);
         $updateQuery->execute();
 
-        echo json_encode(['status' => 200, 'message' => 'OTP verified successfully']);
+        // Update or Insert into user_verifications table
+        $verificationQuery = $db->prepare("
+            INSERT INTO user_verifications (email, is_otp_verified, created_at, updated_at)
+            VALUES (?, 1, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE 
+                is_otp_verified = 1,
+                updated_at = NOW()
+        ");
+        $verificationQuery->bind_param("s", $email);
+        $verificationQuery->execute();
+
+        if ($verificationQuery->affected_rows > 0) {
+            echo json_encode(['status' => 200, 'message' => 'OTP verified successfully']);
+        } else {
+            throw new Exception("Failed to update verification status.");
+        }
     } else {
         echo json_encode(['status' => 400, 'message' => 'Invalid or expired OTP']);
     }

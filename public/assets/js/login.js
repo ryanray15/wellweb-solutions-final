@@ -20,13 +20,17 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => response.json())
         .then((result) => {
           alert(result.message); // Ensure the alert is shown
+
           if (result.status) {
             // Store user data in session
             sessionStorage.setItem("user_id", result.user_id);
             sessionStorage.setItem("role", result.role);
 
             // Redirect to dashboard or home page after successful login
-            window.location.href = "/dashboard.php"; // Assuming a dashboard page
+            window.location.href = result.redirect || "/dashboard.php"; // Redirect to provided URL
+          } else if (result.redirect) {
+            // Redirect to email verification page if specified
+            window.location.href = result.redirect;
           }
         })
         .catch((error) => {
