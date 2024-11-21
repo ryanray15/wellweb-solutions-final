@@ -105,7 +105,7 @@ if ($user_role === 'doctor') {
             width: 350px;
             /* Match width with search results for consistency */
             padding: 10px;
-            border-radius: 8px;
+
         }
 
         #searchResults div {
@@ -174,24 +174,82 @@ if ($user_role === 'doctor') {
         /* Hide all tab content by default */
         .tab-content .tab-pane {
             display: none;
+            /* Hide by default */
+            opacity: 0;
+            /* Start with opacity 0 */
+            transform: scale(0.95);
+            /* Start slightly scaled down */
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            /* Smooth transition for opacity and scale */
         }
 
         /* Show active tab content */
         .tab-content .tab-pane.active {
             display: block;
+            /* Show active content */
+            opacity: 1;
+            /* Fade in */
+            transform: scale(1);
+            /* Scale to normal size */
         }
 
         /* Style for active tab link */
+        .tab-link {
+            position: relative;
+            /* Position relative for the pseudo-element */
+            padding-bottom: 5px;
+            /* Add some padding to the bottom */
+            transition: color 0.3s ease;
+            /* Smooth transition for color */
+        }
+
+        /* Active tab link with border */
         .tab-link.active {
-            border-bottom: 2px solid #3b82f6;
             color: #3b82f6;
+            /* Active color */
+        }
+
+        /* Pseudo-element for the border */
+        .tab-link.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* Position at the bottom */
+            height: 2px;
+            /* Height of the border */
+            background-color: #3b82f6;
+            /* Border color */
+            transition: width 0.3s ease, left 0.3s ease;
+            /* Smooth transition for width and position */
+            width: 100%;
+            /* Full width when active */
+        }
+
+        /* Non-active tab link */
+        .tab-link:not(.active)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* Position at the bottom */
+            height: 2px;
+            /* Height of the border */
+            background-color: transparent;
+            /* No border color */
+            transition: width 0.3s ease, left 0.3s ease;
+            /* Smooth transition for width and position */
+            width: 0;
+            /* No width when not active */
         }
     </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="w-full mt-0 transparent-bg shadow-md p-2 fixed top-0 left-0 z-50">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-1 fixed top-0 left-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
@@ -200,7 +258,7 @@ if ($user_role === 'doctor') {
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
                     <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
-                        class="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full p-2 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
                 </div>
             <?php endif; ?>
@@ -301,8 +359,8 @@ if ($user_role === 'doctor') {
 
 
                     <!-- Tab Navigation -->
-                    <ul class="flex border-b mb-6">
-                        <li class="mr-1">
+                    <ul class="flex space-x-4 mb-6">
+                        <li>
                             <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Your Appointments</button>
                         </li>
                         <li>
@@ -414,8 +472,8 @@ if ($user_role === 'doctor') {
             </div>
 
             <!-- Tab Navigation -->
-            <div class="mb-8">
-                <ul class="flex space-x-4 border-b">
+            <div class="mb-6">
+                <ul class="flex space-x-4 mb-6">
                     <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="specializations">Manage Specializations</button></li>
                     <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="appointments">Manage Users</button></li>
                     <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="verification">Doctor Verification</button></li>
@@ -612,14 +670,18 @@ if ($user_role === 'doctor') {
             <script type="module" src="dist/bundle.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
         <?php endif; ?>
-        <!-- Footer -->
-        <footer class="footer mt-10 p-4 bg-gray-100 flex justify-end">
-            <div class="text-right">
-                <p class="text-gray-600">© <?php echo date("Y"); ?> WELL WEB SOLUTIONS. All rights reserved.</p>
-                <p class="text-gray-600 mb-8">Contact us: <a href="mailto:support@wellwebsolutions.com" class="text-blue-500">support@wellwebsolutions.com</a></p>
-            </div>
-        </footer>
+
     </div>
+    <!-- Footer -->
+    <footer class="footer p-6 flex justify-end">
+        <div class="text-right">
+            <p class="text-gray-600 text-sm">© <?php echo date("Y"); ?> WELL WEB SOLUTIONS. All rights reserved.</p>
+            <p class="text-gray-600 mb-2 text-sm">Contact us:
+                <a href="mailto:support@wellwebsolutions.com" class="text-blue-500 hover:underline">support@wellwebsolutions.com</a>
+            </p>
+        </div>
+    </footer>
+
 </body>
 
 </html>

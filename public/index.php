@@ -29,6 +29,7 @@ if ($loggedIn) {
     <title>Home - Wellweb</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -90,7 +91,7 @@ if ($loggedIn) {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <a href="index.php"><span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
+                <a href="index.php"><span class="text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span></a>
             </div>
             <div>
                 <?php if ($loggedIn) : ?>
@@ -114,8 +115,8 @@ if ($loggedIn) {
                     </div>
                 <?php else : ?>
                     <!-- Show login/register buttons for guests -->
-                    <button onclick="window.location.href='login.html'" class=" text-gray-700 py-2 px-4 rounded hover:bg-blue-600 hover:text-white transition duration-300">Login</button>
-                    <button onclick="window.location.href='register.html'" class=" text-gray-700 py-2 px-4 rounded hover:bg-blue-600 hover:text-white transition duration-300">Register</button>
+                    <button onclick="window.location.href='login.html'" class=" text-gray-700 py-2 px-4 rounded-full hover:bg-blue-600 hover:text-white transition duration-300">Login</button>
+                    <button onclick="window.location.href='register.html'" class=" text-gray-700 py-2 px-4 rounded-full hover:bg-blue-600 hover:text-white transition duration-300">Register</button>
                 <?php endif; ?>
             </div>
         </div>
