@@ -349,25 +349,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="text" id="address" name="address" class="input-field" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
                         </div>
                         <div id="map" style="height: 300px; margin-top: 10px"></div>
+                        <?php if ($user_role === 'doctor') : ?>
+                            <!-- Consultation Rate Field -->
+                            <div class="form-element">
+                                <label for="consultation_rate" class="label-text text-gray-700">Consultation Rate</label>
+                                <input type="number" id="consultation_rate" name="consultation_rate" class="input-field"
+                                    value="<?php echo htmlspecialchars($consultationRate); ?>" required />
+                            </div>
 
-                        <!-- Consultation Rate Field -->
-                        <div class="form-element">
-                            <label for="consultation_rate" class="label-text text-gray-700">Consultation Rate</label>
-                            <input type="number" id="consultation_rate" name="consultation_rate" class="input-field"
-                                value="<?php echo htmlspecialchars($consultationRate); ?>" required />
-                        </div>
-
-                        <!-- Clinic Hours Fields -->
-                        <div class="form-element">
-                            <label for="clinic_open_time" class="label-text text-gray-700">Clinic Opening Time</label>
-                            <input type="time" id="clinic_open_time" name="clinic_open_time" class="input-field"
-                                value="<?php echo htmlspecialchars($clinicHours['clinic_open_time']); ?>" required />
-                        </div>
-                        <div class="form-element">
-                            <label for="clinic_close_time" class="label-text text-gray-700">Clinic Closing Time</label>
-                            <input type="time" id="clinic_close_time" name="clinic_close_time" class="input-field"
-                                value="<?php echo htmlspecialchars($clinicHours['clinic_close_time']); ?>" required />
-                        </div>
+                            <!-- Clinic Hours Fields -->
+                            <div class="form-element">
+                                <label for="clinic_open_time" class="label-text text-gray-700">Clinic Opening Time</label>
+                                <input type="time" id="clinic_open_time" name="clinic_open_time" class="input-field"
+                                    value="<?php echo htmlspecialchars($clinicHours['clinic_open_time']); ?>" required />
+                            </div>
+                            <div class="form-element">
+                                <label for="clinic_close_time" class="label-text text-gray-700">Clinic Closing Time</label>
+                                <input type="time" id="clinic_close_time" name="clinic_close_time" class="input-field"
+                                    value="<?php echo htmlspecialchars($clinicHours['clinic_close_time']); ?>" required />
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
