@@ -30,6 +30,28 @@ if ($user_role === 'doctor') {
         $specializations[] = $row['name'];
     }
 }
+
+// Fetch consultation rate for the doctor
+$consultationRate = null;
+if ($user_role === 'doctor') {
+    $rateQuery = $db->prepare("SELECT consultation_rate FROM doctor_rates WHERE doctor_id = ?");
+    $rateQuery->bind_param("i", $user_id);
+    $rateQuery->execute();
+    $rateResult = $rateQuery->get_result()->fetch_assoc();
+    $consultationRate = $rateResult ? $rateResult['consultation_rate'] / 100 : null; // Convert back to pesos
+}
+
+// Fetch clinic hours for the doctor
+$clinicHours = null;
+if ($user_role === 'doctor') {
+    $hoursQuery = $db->prepare("SELECT clinic_open_time, clinic_close_time FROM doctor_clinic_hours WHERE doctor_id = ?");
+    $hoursQuery->bind_param("i", $user_id);
+    $hoursQuery->execute();
+    $hoursResult = $hoursQuery->get_result()->fetch_assoc();
+    if ($hoursResult) {
+        $clinicHours = date("g:i A", strtotime($hoursResult['clinic_open_time'])) . ' - ' . date("g:i A", strtotime($hoursResult['clinic_close_time']));
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -204,6 +226,17 @@ if ($user_role === 'doctor') {
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['address']); ?></p>
                     <p class="label"><i class="fas fa-venus-mars icon"></i> Gender:</p>
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p>
+                    <?php if ($user_role === 'doctor') : ?>
+                        <?php if ($consultationRate !== null) : ?>
+                            <p class="label"><i class="fas fa-money-bill-wave icon"></i> Consultation Rate:</p>
+                            <p class="text-gray-700 mb-3">₱<?php echo number_format($consultationRate, 2); ?></p>
+                        <?php endif; ?>
+
+                        <?php if ($clinicHours !== null) : ?>
+                            <p class="label"><i class="fas fa-clock icon"></i> Clinic Hours:</p>
+                            <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($clinicHours); ?></p>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 

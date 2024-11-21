@@ -267,13 +267,32 @@ if ($user_role === 'doctor') {
                     <p class="mt-4 text-gray-700">Your account is currently pending verification. Or, you can re-upload your documents <a href="upload_documents.php" id="upload" class="text-blue-500 hover:bg-gray-100 underline">here</a>.</p>
                 </div>
             <?php elseif ($documents_submitted && $is_verified && !$onboarding_success) : ?>
-                <!-- Case 2: Documents submitted, but not yet verified -->
+                <!-- Case 3: Documents submitted, but not yet verified -->
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
                     <h1 class="text-3xl font-bold text-blue-600">You are one step closer to enabling your account.</h1>
                     <p class="mt-4 text-gray-700">Please set-up your <a href="onboarding.php" id="upload" class="text-blue-500 hover:bg-gray-100 underline">Stripe</a> account to receive payments.</p>
                 </div>
+                <div class="bg-white p-6 mt-4 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-blue-600 mb-4">Set Your Consultation Details</h2>
+                    <form id="consultation-details-form">
+                        <div class="mb-4">
+                            <label for="consultation_rate" class="block text-sm font-bold text-gray-700">Consultation Rate (PHP):</label>
+                            <input type="number" id="consultation_rate" name="consultation_rate" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" placeholder="Enter your rate" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="clinic_open_time" class="block text-sm font-bold text-gray-700">Clinic Opening Time:</label>
+                            <input type="time" id="clinic_open_time" name="clinic_open_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="clinic_close_time" class="block text-sm font-bold text-gray-700">Clinic Closing Time:</label>
+                            <input type="time" id="clinic_close_time" name="clinic_close_time" class="shadow border rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-green-500" required>
+                        </div>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Save Details</button>
+                    </form>
+                </div>
+                <script src="assets/js/doctor_set_rate.js"></script>
             <?php elseif ($is_verified && $onboarding_success) : ?>
-                <!-- Case 3: Verified doctor -->
+                <!-- Case 4: Verified doctor -->
                 <h1 class="text-3xl font-bold text-blue-600 mb-8">Doctor Dashboard</h1>
                 <!-- Include full dashboard functionalities for doctors here -->
 
