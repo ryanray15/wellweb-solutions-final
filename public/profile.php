@@ -63,10 +63,6 @@ if ($user_role === 'doctor') {
             transition: transform 0.2s;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
 
         .card-header {
             border-bottom: 2px solid #3b82f6;
@@ -156,7 +152,7 @@ if ($user_role === 'doctor') {
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="w-full mt-0 transparent-bg shadow-md p-2 fixed top-0 left-0 z-50">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-1 fixed top-0 left-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
