@@ -10,7 +10,6 @@ use PHPMailer\PHPMailer\Exception;
 $input = json_decode(file_get_contents('php://input'), true);
 $email = $input['email'] ?? null;
 
-
 if (!$email) {
     echo json_encode(['status' => 400, 'message' => 'Email is required']);
     exit();
@@ -53,6 +52,10 @@ try {
     $insertQuery->bind_param("sss", $email, $otp, $expiresAt);
     $insertQuery->execute();
 
+    if ($insertQuery->affected_rows === 0) {
+        throw new Exception("Failed to insert OTP into the database.");
+    }
+
     // Send OTP email using PHPMailer
     $mail = new PHPMailer(true);
     $mail->isSMTP();
@@ -63,19 +66,21 @@ try {
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
 
-    $mail->setFrom('wellwebsolutions.dev@gmail.com', 'Your App Name');
+    $mail->setFrom('wellwebsolutions.dev@gmail.com', 'WellWeb Solutions');
     $mail->addAddress($email);
 
     $mail->isHTML(true);
     $mail->Subject = 'Your OTP Code';
     $mail->Body = "Your OTP code is <b>$otp</b>. It expires in 5 minutes.";
 
-    $mail->send();
+    if (!$mail->send()) {
+        throw new Exception("Failed to send OTP email. Mailer Error: {$mail->ErrorInfo}");
+    }
 
     echo json_encode(['status' => 200, 'message' => 'OTP sent successfully']);
 } catch (Exception $e) {
-    error_log("Error sending OTP: " . $e->getMessage());
-    echo json_encode(['status' => 500, 'message' => 'Failed to send OTP']);
+    error_log("Error: " . $e->getMessage());
+    echo json_encode(['status' => 500, 'message' => $e->getMessage()]);
 } catch (Throwable $t) {
     error_log("Unexpected error: " . $t->getMessage());
     echo json_encode(['status' => 500, 'message' => 'Internal server error']);
