@@ -218,6 +218,10 @@ if ($user_role === 'doctor') {
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['last_name']); ?></p>
                     <p class="label"><i class="fas fa-envelope icon"></i> Email:</p>
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['email']); ?></p>
+                    <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
+                        <p class="label"><i class="fas fa-stethoscope icon"></i> Specializations:</p>
+                        <p class="text-gray-700 mb-3"><?php echo implode(', ', $specializations); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div>
                     <p class="label"><i class="fas fa-phone icon"></i> Contact Number:</p>
@@ -239,11 +243,6 @@ if ($user_role === 'doctor') {
                     <?php endif; ?>
                 </div>
             </div>
-
-            <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
-                <p class="label"><i class="fas fa-stethoscope icon"></i> Specializations:</p>
-                <p class="text-gray-700 mb-3"><?php echo implode(', ', $specializations); ?></p>
-            <?php endif; ?>
 
             <div class="flex space-x-4 mt-4">
                 <a href="edit_profile.php" class="btn">Edit Profile</a>

@@ -32,8 +32,35 @@ if ($user_role === 'doctor') {
     }
 }
 
+// Fetch consultation rate for the doctor
+$consultationRate = null;
+if ($user_role === 'doctor') {
+    $rateQuery = $db->prepare("SELECT consultation_rate FROM doctor_rates WHERE doctor_id = ?");
+    $rateQuery->bind_param("i", $user_id);
+    $rateQuery->execute();
+    $rateResult = $rateQuery->get_result()->fetch_assoc();
+    $consultationRate = $rateResult ? $rateResult['consultation_rate'] / 100 : null; // Convert back from cents
+}
+
+// Fetch clinic hours for the doctor
+$clinicHours = [
+    'clinic_open_time' => null,
+    'clinic_close_time' => null,
+];
+if ($user_role === 'doctor') {
+    $hoursQuery = $db->prepare("SELECT clinic_open_time, clinic_close_time FROM doctor_clinic_hours WHERE doctor_id = ?");
+    $hoursQuery->bind_param("i", $user_id);
+    $hoursQuery->execute();
+    $hoursResult = $hoursQuery->get_result()->fetch_assoc();
+    if ($hoursResult) {
+        $clinicHours['clinic_open_time'] = $hoursResult['clinic_open_time'];
+        $clinicHours['clinic_close_time'] = $hoursResult['clinic_close_time'];
+    }
+}
+
 // Handle form submission for profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Collect form data
     $first_name = $_POST['first_name'] ?? '';
     $middle_initial = $_POST['middle_initial'] ?? '';
     $last_name = $_POST['last_name'] ?? '';
@@ -43,13 +70,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gender = $_POST['gender'] ?? '';
     $new_specializations = $_POST['specialization_id'] ?? [];
 
-    // Prepare and bind update statement
-    $updateQuery = $db->prepare("UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, contact_number = ?, address = ?, gender = ? WHERE user_id = ?");
-    $updateQuery->bind_param("sssssssi", $first_name, $middle_initial, $last_name, $email, $contact_number, $address, $gender, $user_id);
+    // Update basic user information
+    $updateQuery = $db->prepare("
+        UPDATE users
+        SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, 
+            contact_number = ?, address = ?, gender = ?
+        WHERE user_id = ?
+    ");
+    $updateQuery->bind_param(
+        "sssssssi",
+        $first_name,
+        $middle_initial,
+        $last_name,
+        $email,
+        $contact_number,
+        $address,
+        $gender,
+        $user_id
+    );
 
     if ($updateQuery->execute()) {
-        // Update specializations if user is a doctor
+        // Update specializations for doctors
         if ($user_role === 'doctor') {
+            // Update consultation rate
+            $consultation_rate = $_POST['consultation_rate'] ? floatval($_POST['consultation_rate']) * 100 : null; // Convert to cents
+            $rateQuery = $db->prepare("
+                INSERT INTO doctor_rates (doctor_id, consultation_rate)
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE consultation_rate = ?
+            ");
+            $rateQuery->bind_param("iii", $user_id, $consultation_rate, $consultation_rate);
+            $rateQuery->execute();
+
+            // Update clinic hours
+            $clinic_open_time = $_POST['clinic_open_time'] ?? null;
+            $clinic_close_time = $_POST['clinic_close_time'] ?? null;
+            $hoursQuery = $db->prepare("
+                INSERT INTO doctor_clinic_hours (doctor_id, clinic_open_time, clinic_close_time)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE clinic_open_time = ?, clinic_close_time = ?
+            ");
+            $hoursQuery->bind_param("issss", $user_id, $clinic_open_time, $clinic_close_time, $clinic_open_time, $clinic_close_time);
+            $hoursQuery->execute();
+
+            // Update specializations
             $deleteQuery = $db->prepare("DELETE FROM doctor_specializations WHERE doctor_id = ?");
             $deleteQuery->bind_param("i", $user_id);
             $deleteQuery->execute();
@@ -62,9 +126,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $message = "Profile updated successfully!";
-        // Refresh user info after update
-        $query->execute();
-        $userInfo = $query->get_result()->fetch_assoc();
+        // Redirect to refresh data
+        header("Location: edit_profile.php");
+        exit();
     } else {
         $message = "Failed to update profile.";
     }
@@ -268,6 +332,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="email" class="label-text text-gray-700">Email</label>
                             <input type="email" id="email" name="email" class="input-field" value="<?php echo htmlspecialchars($userInfo['email']); ?>" required />
                         </div>
+                        <div class="form-element">
+                            <label for="gender" class="label-text text-gray-700">Gender</label>
+                            <select id="gender" name="gender" class="input-field" required>
+                                <option value="Male" <?php echo $userInfo['gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
+                                <option value="Female" <?php echo $userInfo['gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
+                                <option value="Other" <?php echo $userInfo['gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Right Side: Address to Gender -->
@@ -277,13 +349,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="text" id="address" name="address" class="input-field" value="<?php echo htmlspecialchars($userInfo['address']); ?>" required />
                         </div>
                         <div id="map" style="height: 300px; margin-top: 10px"></div>
+
+                        <!-- Consultation Rate Field -->
                         <div class="form-element">
-                            <label for="gender" class="label-text text-gray-700">Gender</label>
-                            <select id="gender" name="gender" class="input-field" required>
-                                <option value="male" <?php echo $userInfo['gender'] === 'male' ? 'selected' : ''; ?>>Male</option>
-                                <option value="female" <?php echo $userInfo['gender'] === 'female' ? 'selected' : ''; ?>>Female</option>
-                                <option value="other" <?php echo $userInfo['gender'] === 'other' ? 'selected' : ''; ?>>Other</option>
-                            </select>
+                            <label for="consultation_rate" class="label-text text-gray-700">Consultation Rate</label>
+                            <input type="number" id="consultation_rate" name="consultation_rate" class="input-field"
+                                value="<?php echo htmlspecialchars($consultationRate); ?>" required />
+                        </div>
+
+                        <!-- Clinic Hours Fields -->
+                        <div class="form-element">
+                            <label for="clinic_open_time" class="label-text text-gray-700">Clinic Opening Time</label>
+                            <input type="time" id="clinic_open_time" name="clinic_open_time" class="input-field"
+                                value="<?php echo htmlspecialchars($clinicHours['clinic_open_time']); ?>" required />
+                        </div>
+                        <div class="form-element">
+                            <label for="clinic_close_time" class="label-text text-gray-700">Clinic Closing Time</label>
+                            <input type="time" id="clinic_close_time" name="clinic_close_time" class="input-field"
+                                value="<?php echo htmlspecialchars($clinicHours['clinic_close_time']); ?>" required />
                         </div>
                     </div>
                 </div>
