@@ -10,10 +10,7 @@ $doctor_id = $_GET['doctor_id'] ?? null;
 if ($doctor_id) {
     // Fetch all availability for the selected doctor, including consultation types and statuses
     $query = $db->prepare("
-        SELECT da.availability_id AS id, da.date, da.start_time, da.end_time, da.status, da.consultation_type,
-               MIN(start_time) OVER() AS min_start_time,
-               MAX(end_time) OVER() AS max_end_time,
-               MAX(consultation_duration) OVER() AS consultation_duration
+        SELECT da.availability_id AS id, da.date, da.start_time, da.end_time, da.status, da.consultation_type
         FROM doctor_availability da
         WHERE da.doctor_id = ?
     ");
@@ -22,9 +19,6 @@ if ($doctor_id) {
     $result = $query->get_result();
 
     $events = [];
-    $minStartTime = null;
-    $maxEndTime = null;
-    $consultationDuration = null;
 
     while ($row = $result->fetch_assoc()) {
         // Set event color based on consultation type and status
@@ -40,11 +34,6 @@ if ($doctor_id) {
             'textColor' => 'white'
         ];
         $events[] = $event;
-
-        // Capture the overall start and end time, and consultation duration
-        $minStartTime = $row['min_start_time'];
-        $maxEndTime = $row['max_end_time'];
-        $consultationDuration = $row['consultation_duration'];
     }
 
     echo json_encode($events); // Output all events (Available, Booked, Not Available)
