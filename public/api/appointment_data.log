@@ -621,3 +621,23 @@ Array
     [start_time] => 08:30:00
     [end_time] => 09:00:00
 )
+Array
+(
+    [patient_id] => 2
+    [doctor_id] => 4
+    [service_id] => 1
+    [availability_id] => 11
+    [date] => 2024-11-22
+    [start_time] => 16:30:00
+    [end_time] => 17:00:00
+)
+Array
+(
+    [patient_id] => 2
+    [doctor_id] => 4
+    [service_id] => 1
+    [availability_id] => 17
+    [date] => 2024-11-23
+    [start_time] => 16:30:00
+    [end_time] => 17:00:00
+)

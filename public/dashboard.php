@@ -281,6 +281,10 @@ if ($user_role === 'doctor') {
                         <i class="fas fa-envelope fa-2x"></i>
                     </button>
 
+                    <button id="openExpressDashboard" class="text-blue-400 mr-3 focus:outline-none">
+                        <i class="fas fa-wallet fa-2x"></i>
+                    </button>
+
                     <!-- TODO -->
                     <script>
                         document.getElementById('messageButton').addEventListener('click', () => {
@@ -659,6 +663,7 @@ if ($user_role === 'doctor') {
         <script src="assets/js/utils.js"></script>
         <script src="assets/js/common.js"></script>
         <script src="assets/js/dashboard.js"></script>
+        <script src="assets/js/express_dashboard.js"></script>
         <!-- for tabs -->
         <script src="assets/js/tabswitch.js"></script>
 
