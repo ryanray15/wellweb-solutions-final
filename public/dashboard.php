@@ -253,18 +253,18 @@ if ($user_role === 'doctor') {
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <a href="index.php"><span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
+                <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative w-1/3 mx-auto"> <!-- Adjust width and center the search bar -->
                     <input type="text" id="doctorSearchBar" placeholder="Search for doctors..."
-                        class="w-full p-2 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        class="w-full p-2 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-400">
                     <div id="searchResults" class="absolute bg-white w-full shadow-lg rounded-lg mt-2 hidden"></div>
                 </div>
             <?php endif; ?>
             <?php if ($user_role === 'patient') : ?>
                 <div class="relative">
-                    <button id="notificationDropdown" class="text-blue-500 focus:outline-none">
+                    <button id="notificationDropdown" class="text-blue-400 focus:outline-none">
                         <i class="fas fa-bell fa-2x mr-4"></i>
                     </button>
                     <div id="notificationMenu" class="hidden absolute right-0 mt-2 py-2 w-64 bg-white rounded-lg shadow-xl z-20">
@@ -277,7 +277,7 @@ if ($user_role === 'doctor') {
             <div class="relative">
                 <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
                     <!-- Wallet Button -->
-                    <button id="messageButton" class="text-blue-500 mr-3 focus:outline-none">
+                    <button id="messageButton" class="text-blue-400 mr-3 focus:outline-none">
                         <i class="fas fa-envelope fa-2x"></i>
                     </button>
 
@@ -289,7 +289,7 @@ if ($user_role === 'doctor') {
                     </script>
                 <?php endif; ?>
 
-                <button id="profileDropdown" class="text-blue-500 focus:outline-none">
+                <button id="profileDropdown" class="text-blue-400 focus:outline-none">
                     <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
@@ -361,10 +361,10 @@ if ($user_role === 'doctor') {
                     <!-- Tab Navigation -->
                     <ul class="flex space-x-4 mb-6">
                         <li>
-                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Your Appointments</button>
+                            <button class="tab-link text-blue-400 hover:text-rose-300 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="availability">Your Appointments</button>
                         </li>
                         <li>
-                            <button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="appointments">Set Your Availability</button>
+                            <button class="tab-link text-blue-400 hover:text-rose-300 font-bold py-2 px-4 rounded-t-lg focus:outline-none" data-tab="appointments">Set Your Availability</button>
                         </li>
                     </ul>
 
@@ -447,7 +447,7 @@ if ($user_role === 'doctor') {
 
         <!-- Admin Dashboard -->
         <?php if ($user_role === 'admin') : ?>
-            <h1 class="text-3xl font-bold text-blue-600 mb-8">Admin Dashboard</h1>
+            <h1 class="text-3xl font-bold text-blue-400 mb-8">Admin Dashboard</h1>
 
             <!-- Quick Stats Section -->
             <div class="flex flex-wrap -mx-4 mb-8">
@@ -576,15 +576,15 @@ if ($user_role === 'doctor') {
         <!-- Patient Dashboard -->
         <?php if ($user_role === 'patient') : ?>
 
-            <h1 class="text-3xl font-bold text-blue-600 mb-8">Patient Dashboard</h1>
+            <h1 class="text-3xl font-bold text-blue-400 mb-8">Patient Dashboard</h1>
 
             <!-- Tab Navigation -->
             <div class="mb-6">
                 <ul class="flex space-x-4">
-                    <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="appointments">Your Appointments</button></li>
-                    <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="schedule">Schedule Appointment</button></li>
-                    <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="reschedule">Reschedule Appointment</button></li>
-                    <li><button class="tab-link text-blue-500 hover:text-gray-500 font-bold py-2 px-4" data-tab="cancel">Canceled Appointment</button></li>
+                    <li><button class="tab-link text-blue-400 hover:text-rose-300 font-bold py-2 px-4" data-tab="appointments">Your Appointments</button></li>
+                    <li><button class="tab-link text-blue-400 hover:text-rose-300 font-bold py-2 px-4" data-tab="schedule">Schedule Appointment</button></li>
+                    <li><button class="tab-link text-blue-400 hover:text-rose-300 font-bold py-2 px-4" data-tab="reschedule">Reschedule Appointment</button></li>
+                    <li><button class="tab-link text-blue-400 hover:text-rose-300 font-bold py-2 px-4" data-tab="cancel">Canceled Appointment</button></li>
                 </ul>
             </div>
 

@@ -123,7 +123,7 @@ $userInfo = $query->get_result()->fetch_assoc();
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span>
+                <span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-blue-600 focus:outline-none">

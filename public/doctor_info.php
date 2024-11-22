@@ -87,7 +87,7 @@ if ($doctor_id) {
                 <div class="container mx-auto flex justify-between items-center">
                     <div class="flex items-center">
                         <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                        <a href="index.php"><span class="text-blue-500 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
+                        <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
                     </div>
                     <div class="relative">
                         <button id="profileDropdown" class="text-white focus:outline-none">
