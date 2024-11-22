@@ -126,105 +126,121 @@ const CalendarModule = (() => {
       return;
     }
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "timeGridWeek",
-      selectable: true,
-      editable: false,
-      timeZone: "Asia/Manila",
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      events: {
-        url: `/api/get_doctor_full_availability.php`,
-        method: "GET",
-        extraParams: {
-          doctor_id: doctorId,
-          consultation_type: consultationType,
-        },
-        failure: function () {
-          alert("There was an error while fetching availability!");
-        },
-      },
-      eventClick: function (info) {
-        const clickedEvent = info.event;
+    // Fetch slot times from the backend
+    fetch(
+      `/api/get_doctor_full_availability.php?doctor_id=${doctorId}&consultation_type=${consultationType}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const slotMinTime = data.slotTimes?.slotMinTime || "00:00:00";
+        const slotMaxTime = data.slotTimes?.slotMaxTime || "24:00:00";
 
-        const selectedAppointmentId =
-          RescheduleModule.getSelectedAppointmentId();
-        if (!selectedAppointmentId) {
-          alert(
-            "Please select an appointment from the list before rescheduling."
-          );
-          return;
-        }
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "timeGridWeek",
+          selectable: true,
+          editable: false,
+          timeZone: "Asia/Manila",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+          slotMinTime: slotMinTime, // Set slotMinTime
+          slotMaxTime: slotMaxTime, // Set slotMaxTime
+          events: {
+            url: `/api/get_doctor_full_availability.php`,
+            method: "GET",
+            extraParams: {
+              doctor_id: doctorId,
+              consultation_type: consultationType,
+            },
+            failure: function () {
+              alert("There was an error while fetching availability!");
+            },
+          },
+          eventClick: function (info) {
+            const clickedEvent = info.event;
 
-        const availabilityId = clickedEvent.id;
-
-        fetch(
-          `/api/get_time_slot.php?doctor_id=${doctorId}&availability_id=${availabilityId}`
-        )
-          .then((response) => response.json())
-          .then((timeSlotData) => {
-            if (
-              timeSlotData &&
-              timeSlotData.data &&
-              timeSlotData.data.start_time &&
-              timeSlotData.data.end_time
-            ) {
-              const selectedDate = timeSlotData.data.date;
-              const selectedStartTime = timeSlotData.data.start_time;
-              const selectedEndTime = timeSlotData.data.end_time;
-
-              const rescheduleConfirmation = confirm(
-                `Do you want to reschedule your appointment to ${selectedDate} at ${selectedStartTime} and ends at ${selectedEndTime}?`
+            const selectedAppointmentId =
+              RescheduleModule.getSelectedAppointmentId();
+            if (!selectedAppointmentId) {
+              alert(
+                "Please select an appointment from the list before rescheduling."
               );
-
-              if (rescheduleConfirmation) {
-                const requestData = {
-                  appointment_id: selectedAppointmentId,
-                  availability_id: availabilityId,
-                  date: selectedDate,
-                  start_time: selectedStartTime,
-                  end_time: selectedEndTime,
-                };
-
-                fetch("/api/reschedule_appointment.php", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(requestData),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.status) {
-                      alert("Appointment rescheduled successfully!");
-                      calendar.refetchEvents(); // Refresh the calendar events
-                    } else {
-                      alert("Failed to reschedule appointment.");
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error rescheduling appointment:", error);
-                  });
-              }
-            } else {
-              console.error(
-                "Time slot data is missing or invalid",
-                timeSlotData
-              );
-              alert("Failed to fetch time slot details. Please try again.");
+              return;
             }
-          })
-          .catch((error) => {
-            console.error("Error fetching time slot details:", error);
-            alert("Error fetching time slot details. Please try again.");
-          });
-      },
-    });
 
-    calendar.render();
+            const availabilityId = clickedEvent.id;
+
+            fetch(
+              `/api/get_time_slot.php?doctor_id=${doctorId}&availability_id=${availabilityId}`
+            )
+              .then((response) => response.json())
+              .then((timeSlotData) => {
+                if (
+                  timeSlotData &&
+                  timeSlotData.data &&
+                  timeSlotData.data.start_time &&
+                  timeSlotData.data.end_time
+                ) {
+                  const selectedDate = timeSlotData.data.date;
+                  const selectedStartTime = timeSlotData.data.start_time;
+                  const selectedEndTime = timeSlotData.data.end_time;
+
+                  const rescheduleConfirmation = confirm(
+                    `Do you want to reschedule your appointment to ${selectedDate} at ${selectedStartTime} and ends at ${selectedEndTime}?`
+                  );
+
+                  if (rescheduleConfirmation) {
+                    const requestData = {
+                      appointment_id: selectedAppointmentId,
+                      availability_id: availabilityId,
+                      date: selectedDate,
+                      start_time: selectedStartTime,
+                      end_time: selectedEndTime,
+                    };
+
+                    fetch("/api/reschedule_appointment.php", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify(requestData),
+                    })
+                      .then((response) => response.json())
+                      .then((data) => {
+                        if (data.status) {
+                          alert("Appointment rescheduled successfully!");
+                          calendar.refetchEvents(); // Refresh the calendar events
+                        } else {
+                          alert("Failed to reschedule appointment.");
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error rescheduling appointment:", error);
+                      });
+                  }
+                } else {
+                  console.error(
+                    "Time slot data is missing or invalid",
+                    timeSlotData
+                  );
+                  alert("Failed to fetch time slot details. Please try again.");
+                }
+              })
+              .catch((error) => {
+                console.error("Error fetching time slot details:", error);
+                alert("Error fetching time slot details. Please try again.");
+              });
+          },
+        });
+
+        calendar.render();
+      })
+      .catch((error) => {
+        console.error("Error fetching slot times:", error);
+        alert("Error loading calendar. Please try again.");
+      });
   };
 
   return {
