@@ -42495,4 +42495,1662 @@
     "idempotency_key": null
   },
   "type": "account.updated"
+}{
+  "id": "evt_1QNyKB08HXNDrvIrX4IVohXe",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287551,
+  "data": {
+    "object": {
+      "id": "acct_1QNbux08HXNDrvIr",
+      "object": "account",
+      "business_profile": {
+        "annual_revenue": null,
+        "estimated_worker_count": null,
+        "mcc": "8699",
+        "name": null,
+        "support_address": null,
+        "support_email": null,
+        "support_phone": null,
+        "support_url": null,
+        "url": null
+      },
+      "capabilities": {
+        "bancontact_payments": "active",
+        "card_payments": "active",
+        "transfers": "active"
+      },
+      "charges_enabled": true,
+      "controller": {
+        "type": "application",
+        "fees": {
+          "payer": "application"
+        },
+        "is_controller": true,
+        "losses": {
+          "payments": "application"
+        },
+        "requirement_collection": "stripe",
+        "stripe_dashboard": {
+          "type": "express"
+        }
+      },
+      "country": "HK",
+      "default_currency": "hkd",
+      "details_submitted": true,
+      "email": null,
+      "payouts_enabled": true,
+      "settings": {
+        "bacs_debit_payments": {
+          "display_name": null,
+          "service_user_number": null
+        },
+        "branding": {
+          "icon": null,
+          "logo": null,
+          "primary_color": "#e0e5eb",
+          "secondary_color": "#16a14b"
+        },
+        "card_issuing": {
+          "tos_acceptance": {
+            "date": null,
+            "ip": null
+          }
+        },
+        "card_payments": {
+          "statement_descriptor_prefix": null,
+          "statement_descriptor_prefix_kanji": null,
+          "statement_descriptor_prefix_kana": null,
+          "decline_on": {
+            "avs_failure": false,
+            "cvc_failure": false
+          }
+        },
+        "dashboard": {
+          "display_name": null,
+          "timezone": "Etc/UTC"
+        },
+        "invoices": {
+          "default_account_tax_ids": null
+        },
+        "payments": {
+          "statement_descriptor": null,
+          "statement_descriptor_kana": null,
+          "statement_descriptor_kanji": null
+        },
+        "sepa_debit_payments": {
+        },
+        "payouts": {
+          "debit_negative_balances": true,
+          "schedule": {
+            "delay_days": 7,
+            "interval": "daily"
+          },
+          "statement_descriptor": null
+        }
+      },
+      "type": "none",
+      "created": 1732201421,
+      "external_accounts": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ba_1QNc0v08HXNDrvIrmwS3jBIj",
+            "object": "bank_account",
+            "account": "acct_1QNbux08HXNDrvIr",
+            "account_holder_name": "Jenny Rosen",
+            "account_holder_type": null,
+            "account_type": null,
+            "available_payout_methods": [
+              "standard"
+            ],
+            "bank_name": "STRIPE TEST BANK",
+            "country": "HK",
+            "currency": "hkd",
+            "default_for_currency": true,
+            "fingerprint": "0uka7ScA4fa0pPQZ",
+            "future_requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "last4": "-456",
+            "metadata": {
+            },
+            "requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "routing_number": "110-000",
+            "status": "new"
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/external_accounts"
+      },
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "login_links": {
+        "object": "list",
+        "total_count": 0,
+        "has_more": false,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/login_links",
+        "data": [
+
+        ]
+      },
+      "metadata": {
+      },
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "tos_acceptance": {
+        "date": 1732201811
+      }
+    },
+    "previous_attributes": {
+      "capabilities": {
+        "bancontact_payments": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.updated"
+}{
+  "id": "evt_1QNyKC08HXNDrvIrcOvPgYiy",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287552,
+  "data": {
+    "object": {
+      "id": "bancontact_payments",
+      "object": "capability",
+      "account": "acct_1QNbux08HXNDrvIr",
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "requested": true,
+      "requested_at": 1732287546,
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "status": "active"
+    },
+    "previous_attributes": {
+      "requested": false,
+      "requested_at": null,
+      "status": "unrequested"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "capability.updated"
+}{
+  "id": "evt_1QNyKJ08HXNDrvIr1u1AE00K",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287559,
+  "data": {
+    "object": {
+      "id": "acct_1QNbux08HXNDrvIr",
+      "object": "account",
+      "business_profile": {
+        "annual_revenue": null,
+        "estimated_worker_count": null,
+        "mcc": "8699",
+        "name": null,
+        "support_address": null,
+        "support_email": null,
+        "support_phone": null,
+        "support_url": null,
+        "url": null
+      },
+      "capabilities": {
+        "bancontact_payments": "active",
+        "card_payments": "active",
+        "eps_payments": "active",
+        "transfers": "active"
+      },
+      "charges_enabled": true,
+      "controller": {
+        "type": "application",
+        "fees": {
+          "payer": "application"
+        },
+        "is_controller": true,
+        "losses": {
+          "payments": "application"
+        },
+        "requirement_collection": "stripe",
+        "stripe_dashboard": {
+          "type": "express"
+        }
+      },
+      "country": "HK",
+      "default_currency": "hkd",
+      "details_submitted": true,
+      "email": null,
+      "payouts_enabled": true,
+      "settings": {
+        "bacs_debit_payments": {
+          "display_name": null,
+          "service_user_number": null
+        },
+        "branding": {
+          "icon": null,
+          "logo": null,
+          "primary_color": "#e0e5eb",
+          "secondary_color": "#16a14b"
+        },
+        "card_issuing": {
+          "tos_acceptance": {
+            "date": null,
+            "ip": null
+          }
+        },
+        "card_payments": {
+          "statement_descriptor_prefix": null,
+          "statement_descriptor_prefix_kanji": null,
+          "statement_descriptor_prefix_kana": null,
+          "decline_on": {
+            "avs_failure": false,
+            "cvc_failure": false
+          }
+        },
+        "dashboard": {
+          "display_name": null,
+          "timezone": "Etc/UTC"
+        },
+        "invoices": {
+          "default_account_tax_ids": null
+        },
+        "payments": {
+          "statement_descriptor": null,
+          "statement_descriptor_kana": null,
+          "statement_descriptor_kanji": null
+        },
+        "sepa_debit_payments": {
+        },
+        "payouts": {
+          "debit_negative_balances": true,
+          "schedule": {
+            "delay_days": 7,
+            "interval": "daily"
+          },
+          "statement_descriptor": null
+        }
+      },
+      "type": "none",
+      "created": 1732201421,
+      "external_accounts": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ba_1QNc0v08HXNDrvIrmwS3jBIj",
+            "object": "bank_account",
+            "account": "acct_1QNbux08HXNDrvIr",
+            "account_holder_name": "Jenny Rosen",
+            "account_holder_type": null,
+            "account_type": null,
+            "available_payout_methods": [
+              "standard"
+            ],
+            "bank_name": "STRIPE TEST BANK",
+            "country": "HK",
+            "currency": "hkd",
+            "default_for_currency": true,
+            "fingerprint": "0uka7ScA4fa0pPQZ",
+            "future_requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "last4": "-456",
+            "metadata": {
+            },
+            "requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "routing_number": "110-000",
+            "status": "new"
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/external_accounts"
+      },
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "login_links": {
+        "object": "list",
+        "total_count": 0,
+        "has_more": false,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/login_links",
+        "data": [
+
+        ]
+      },
+      "metadata": {
+      },
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "tos_acceptance": {
+        "date": 1732201811
+      }
+    },
+    "previous_attributes": {
+      "capabilities": {
+        "eps_payments": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.updated"
+}{
+  "id": "evt_1QNyKJ08HXNDrvIr4JKjviDH",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287559,
+  "data": {
+    "object": {
+      "id": "eps_payments",
+      "object": "capability",
+      "account": "acct_1QNbux08HXNDrvIr",
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "requested": true,
+      "requested_at": 1732287553,
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "status": "active"
+    },
+    "previous_attributes": {
+      "requested": false,
+      "requested_at": null,
+      "status": "unrequested"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "capability.updated"
+}{
+  "id": "evt_1QNyKP08HXNDrvIrFWJNeBQg",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287565,
+  "data": {
+    "object": {
+      "id": "acct_1QNbux08HXNDrvIr",
+      "object": "account",
+      "business_profile": {
+        "annual_revenue": null,
+        "estimated_worker_count": null,
+        "mcc": "8699",
+        "name": null,
+        "support_address": null,
+        "support_email": null,
+        "support_phone": null,
+        "support_url": null,
+        "url": null
+      },
+      "capabilities": {
+        "bancontact_payments": "active",
+        "card_payments": "active",
+        "eps_payments": "active",
+        "giropay_payments": "inactive",
+        "transfers": "active"
+      },
+      "charges_enabled": true,
+      "controller": {
+        "type": "application",
+        "fees": {
+          "payer": "application"
+        },
+        "is_controller": true,
+        "losses": {
+          "payments": "application"
+        },
+        "requirement_collection": "stripe",
+        "stripe_dashboard": {
+          "type": "express"
+        }
+      },
+      "country": "HK",
+      "default_currency": "hkd",
+      "details_submitted": true,
+      "email": null,
+      "payouts_enabled": true,
+      "settings": {
+        "bacs_debit_payments": {
+          "display_name": null,
+          "service_user_number": null
+        },
+        "branding": {
+          "icon": null,
+          "logo": null,
+          "primary_color": "#e0e5eb",
+          "secondary_color": "#16a14b"
+        },
+        "card_issuing": {
+          "tos_acceptance": {
+            "date": null,
+            "ip": null
+          }
+        },
+        "card_payments": {
+          "statement_descriptor_prefix": null,
+          "statement_descriptor_prefix_kanji": null,
+          "statement_descriptor_prefix_kana": null,
+          "decline_on": {
+            "avs_failure": false,
+            "cvc_failure": false
+          }
+        },
+        "dashboard": {
+          "display_name": null,
+          "timezone": "Etc/UTC"
+        },
+        "invoices": {
+          "default_account_tax_ids": null
+        },
+        "payments": {
+          "statement_descriptor": null,
+          "statement_descriptor_kana": null,
+          "statement_descriptor_kanji": null
+        },
+        "sepa_debit_payments": {
+        },
+        "payouts": {
+          "debit_negative_balances": true,
+          "schedule": {
+            "delay_days": 7,
+            "interval": "daily"
+          },
+          "statement_descriptor": null
+        }
+      },
+      "type": "none",
+      "created": 1732201421,
+      "external_accounts": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ba_1QNc0v08HXNDrvIrmwS3jBIj",
+            "object": "bank_account",
+            "account": "acct_1QNbux08HXNDrvIr",
+            "account_holder_name": "Jenny Rosen",
+            "account_holder_type": null,
+            "account_type": null,
+            "available_payout_methods": [
+              "standard"
+            ],
+            "bank_name": "STRIPE TEST BANK",
+            "country": "HK",
+            "currency": "hkd",
+            "default_for_currency": true,
+            "fingerprint": "0uka7ScA4fa0pPQZ",
+            "future_requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "last4": "-456",
+            "metadata": {
+            },
+            "requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "routing_number": "110-000",
+            "status": "new"
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/external_accounts"
+      },
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "login_links": {
+        "object": "list",
+        "total_count": 0,
+        "has_more": false,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/login_links",
+        "data": [
+
+        ]
+      },
+      "metadata": {
+      },
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "tos_acceptance": {
+        "date": 1732201811
+      }
+    },
+    "previous_attributes": {
+      "capabilities": {
+        "giropay_payments": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.updated"
+}{
+  "id": "evt_1QNyKQ08HXNDrvIrYiqGp02Z",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287566,
+  "data": {
+    "object": {
+      "id": "acct_1QNbux08HXNDrvIr",
+      "object": "account",
+      "business_profile": {
+        "annual_revenue": null,
+        "estimated_worker_count": null,
+        "mcc": "8699",
+        "name": null,
+        "support_address": null,
+        "support_email": null,
+        "support_phone": null,
+        "support_url": null,
+        "url": null
+      },
+      "capabilities": {
+        "bancontact_payments": "active",
+        "card_payments": "active",
+        "eps_payments": "active",
+        "giropay_payments": "pending",
+        "transfers": "active"
+      },
+      "charges_enabled": true,
+      "controller": {
+        "type": "application",
+        "fees": {
+          "payer": "application"
+        },
+        "is_controller": true,
+        "losses": {
+          "payments": "application"
+        },
+        "requirement_collection": "stripe",
+        "stripe_dashboard": {
+          "type": "express"
+        }
+      },
+      "country": "HK",
+      "default_currency": "hkd",
+      "details_submitted": true,
+      "email": null,
+      "payouts_enabled": true,
+      "settings": {
+        "bacs_debit_payments": {
+          "display_name": null,
+          "service_user_number": null
+        },
+        "branding": {
+          "icon": null,
+          "logo": null,
+          "primary_color": "#e0e5eb",
+          "secondary_color": "#16a14b"
+        },
+        "card_issuing": {
+          "tos_acceptance": {
+            "date": null,
+            "ip": null
+          }
+        },
+        "card_payments": {
+          "statement_descriptor_prefix": null,
+          "statement_descriptor_prefix_kanji": null,
+          "statement_descriptor_prefix_kana": null,
+          "decline_on": {
+            "avs_failure": false,
+            "cvc_failure": false
+          }
+        },
+        "dashboard": {
+          "display_name": null,
+          "timezone": "Etc/UTC"
+        },
+        "invoices": {
+          "default_account_tax_ids": null
+        },
+        "payments": {
+          "statement_descriptor": null,
+          "statement_descriptor_kana": null,
+          "statement_descriptor_kanji": null
+        },
+        "sepa_debit_payments": {
+        },
+        "payouts": {
+          "debit_negative_balances": true,
+          "schedule": {
+            "delay_days": 7,
+            "interval": "daily"
+          },
+          "statement_descriptor": null
+        }
+      },
+      "type": "none",
+      "created": 1732201421,
+      "external_accounts": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ba_1QNc0v08HXNDrvIrmwS3jBIj",
+            "object": "bank_account",
+            "account": "acct_1QNbux08HXNDrvIr",
+            "account_holder_name": "Jenny Rosen",
+            "account_holder_type": null,
+            "account_type": null,
+            "available_payout_methods": [
+              "standard"
+            ],
+            "bank_name": "STRIPE TEST BANK",
+            "country": "HK",
+            "currency": "hkd",
+            "default_for_currency": true,
+            "fingerprint": "0uka7ScA4fa0pPQZ",
+            "future_requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "last4": "-456",
+            "metadata": {
+            },
+            "requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "routing_number": "110-000",
+            "status": "new"
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/external_accounts"
+      },
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "login_links": {
+        "object": "list",
+        "total_count": 0,
+        "has_more": false,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/login_links",
+        "data": [
+
+        ]
+      },
+      "metadata": {
+      },
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "tos_acceptance": {
+        "date": 1732201811
+      }
+    },
+    "previous_attributes": {
+      "capabilities": {
+        "giropay_payments": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.updated"
+}{
+  "id": "evt_1QNyKR08HXNDrvIrUDwFfVV7",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287567,
+  "data": {
+    "object": {
+      "id": "giropay_payments",
+      "object": "capability",
+      "account": "acct_1QNbux08HXNDrvIr",
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "requested": true,
+      "requested_at": 1732287561,
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": "pending.onboarding",
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "status": "pending"
+    },
+    "previous_attributes": {
+      "requested": false,
+      "requested_at": null,
+      "requirements": {
+        "disabled_reason": null
+      },
+      "status": "unrequested"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "capability.updated"
+}{
+  "id": "evt_1QNyKV08HXNDrvIr8uE93GJQ",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287571,
+  "data": {
+    "object": {
+      "id": "acct_1QNbux08HXNDrvIr",
+      "object": "account",
+      "business_profile": {
+        "annual_revenue": null,
+        "estimated_worker_count": null,
+        "mcc": "8699",
+        "name": null,
+        "support_address": null,
+        "support_email": null,
+        "support_phone": null,
+        "support_url": null,
+        "url": null
+      },
+      "capabilities": {
+        "bancontact_payments": "active",
+        "card_payments": "active",
+        "eps_payments": "active",
+        "giropay_payments": "pending",
+        "ideal_payments": "inactive",
+        "transfers": "active"
+      },
+      "charges_enabled": true,
+      "controller": {
+        "type": "application",
+        "fees": {
+          "payer": "application"
+        },
+        "is_controller": true,
+        "losses": {
+          "payments": "application"
+        },
+        "requirement_collection": "stripe",
+        "stripe_dashboard": {
+          "type": "express"
+        }
+      },
+      "country": "HK",
+      "default_currency": "hkd",
+      "details_submitted": true,
+      "email": null,
+      "payouts_enabled": true,
+      "settings": {
+        "bacs_debit_payments": {
+          "display_name": null,
+          "service_user_number": null
+        },
+        "branding": {
+          "icon": null,
+          "logo": null,
+          "primary_color": "#e0e5eb",
+          "secondary_color": "#16a14b"
+        },
+        "card_issuing": {
+          "tos_acceptance": {
+            "date": null,
+            "ip": null
+          }
+        },
+        "card_payments": {
+          "statement_descriptor_prefix": null,
+          "statement_descriptor_prefix_kanji": null,
+          "statement_descriptor_prefix_kana": null,
+          "decline_on": {
+            "avs_failure": false,
+            "cvc_failure": false
+          }
+        },
+        "dashboard": {
+          "display_name": null,
+          "timezone": "Etc/UTC"
+        },
+        "invoices": {
+          "default_account_tax_ids": null
+        },
+        "payments": {
+          "statement_descriptor": null,
+          "statement_descriptor_kana": null,
+          "statement_descriptor_kanji": null
+        },
+        "sepa_debit_payments": {
+        },
+        "payouts": {
+          "debit_negative_balances": true,
+          "schedule": {
+            "delay_days": 7,
+            "interval": "daily"
+          },
+          "statement_descriptor": null
+        }
+      },
+      "type": "none",
+      "created": 1732201421,
+      "external_accounts": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ba_1QNc0v08HXNDrvIrmwS3jBIj",
+            "object": "bank_account",
+            "account": "acct_1QNbux08HXNDrvIr",
+            "account_holder_name": "Jenny Rosen",
+            "account_holder_type": null,
+            "account_type": null,
+            "available_payout_methods": [
+              "standard"
+            ],
+            "bank_name": "STRIPE TEST BANK",
+            "country": "HK",
+            "currency": "hkd",
+            "default_for_currency": true,
+            "fingerprint": "0uka7ScA4fa0pPQZ",
+            "future_requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "last4": "-456",
+            "metadata": {
+            },
+            "requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "routing_number": "110-000",
+            "status": "new"
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/external_accounts"
+      },
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "login_links": {
+        "object": "list",
+        "total_count": 0,
+        "has_more": false,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/login_links",
+        "data": [
+
+        ]
+      },
+      "metadata": {
+      },
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "tos_acceptance": {
+        "date": 1732201811
+      }
+    },
+    "previous_attributes": {
+      "capabilities": {
+        "ideal_payments": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.updated"
+}{
+  "id": "evt_1QNyKY08HXNDrvIrNzL9c6v3",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287574,
+  "data": {
+    "object": {
+      "id": "acct_1QNbux08HXNDrvIr",
+      "object": "account",
+      "business_profile": {
+        "annual_revenue": null,
+        "estimated_worker_count": null,
+        "mcc": "8699",
+        "name": null,
+        "support_address": null,
+        "support_email": null,
+        "support_phone": null,
+        "support_url": null,
+        "url": null
+      },
+      "capabilities": {
+        "bancontact_payments": "active",
+        "card_payments": "active",
+        "eps_payments": "active",
+        "giropay_payments": "pending",
+        "ideal_payments": "active",
+        "transfers": "active"
+      },
+      "charges_enabled": true,
+      "controller": {
+        "type": "application",
+        "fees": {
+          "payer": "application"
+        },
+        "is_controller": true,
+        "losses": {
+          "payments": "application"
+        },
+        "requirement_collection": "stripe",
+        "stripe_dashboard": {
+          "type": "express"
+        }
+      },
+      "country": "HK",
+      "default_currency": "hkd",
+      "details_submitted": true,
+      "email": null,
+      "payouts_enabled": true,
+      "settings": {
+        "bacs_debit_payments": {
+          "display_name": null,
+          "service_user_number": null
+        },
+        "branding": {
+          "icon": null,
+          "logo": null,
+          "primary_color": "#e0e5eb",
+          "secondary_color": "#16a14b"
+        },
+        "card_issuing": {
+          "tos_acceptance": {
+            "date": null,
+            "ip": null
+          }
+        },
+        "card_payments": {
+          "statement_descriptor_prefix": null,
+          "statement_descriptor_prefix_kanji": null,
+          "statement_descriptor_prefix_kana": null,
+          "decline_on": {
+            "avs_failure": false,
+            "cvc_failure": false
+          }
+        },
+        "dashboard": {
+          "display_name": null,
+          "timezone": "Etc/UTC"
+        },
+        "invoices": {
+          "default_account_tax_ids": null
+        },
+        "payments": {
+          "statement_descriptor": null,
+          "statement_descriptor_kana": null,
+          "statement_descriptor_kanji": null
+        },
+        "sepa_debit_payments": {
+        },
+        "payouts": {
+          "debit_negative_balances": true,
+          "schedule": {
+            "delay_days": 7,
+            "interval": "daily"
+          },
+          "statement_descriptor": null
+        }
+      },
+      "type": "none",
+      "created": 1732201421,
+      "external_accounts": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ba_1QNc0v08HXNDrvIrmwS3jBIj",
+            "object": "bank_account",
+            "account": "acct_1QNbux08HXNDrvIr",
+            "account_holder_name": "Jenny Rosen",
+            "account_holder_type": null,
+            "account_type": null,
+            "available_payout_methods": [
+              "standard"
+            ],
+            "bank_name": "STRIPE TEST BANK",
+            "country": "HK",
+            "currency": "hkd",
+            "default_for_currency": true,
+            "fingerprint": "0uka7ScA4fa0pPQZ",
+            "future_requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "last4": "-456",
+            "metadata": {
+            },
+            "requirements": {
+              "currently_due": [
+
+              ],
+              "errors": [
+
+              ],
+              "past_due": [
+
+              ],
+              "pending_verification": [
+
+              ]
+            },
+            "routing_number": "110-000",
+            "status": "new"
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/external_accounts"
+      },
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "login_links": {
+        "object": "list",
+        "total_count": 0,
+        "has_more": false,
+        "url": "/v1/accounts/acct_1QNbux08HXNDrvIr/login_links",
+        "data": [
+
+        ]
+      },
+      "metadata": {
+      },
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "tos_acceptance": {
+        "date": 1732201811
+      }
+    },
+    "previous_attributes": {
+      "capabilities": {
+        "ideal_payments": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "account.updated"
+}{
+  "id": "evt_1QNyKY08HXNDrvIrA8PrFVko",
+  "object": "event",
+  "account": "acct_1QNbux08HXNDrvIr",
+  "api_version": "2024-06-20",
+  "created": 1732287574,
+  "data": {
+    "object": {
+      "id": "ideal_payments",
+      "object": "capability",
+      "account": "acct_1QNbux08HXNDrvIr",
+      "future_requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "requested": true,
+      "requested_at": 1732287569,
+      "requirements": {
+        "alternatives": [
+
+        ],
+        "current_deadline": null,
+        "currently_due": [
+
+        ],
+        "disabled_reason": null,
+        "errors": [
+
+        ],
+        "eventually_due": [
+
+        ],
+        "past_due": [
+
+        ],
+        "pending_verification": [
+
+        ]
+      },
+      "status": "active"
+    },
+    "previous_attributes": {
+      "requested": false,
+      "requested_at": null,
+      "status": "unrequested"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "capability.updated"
 }
