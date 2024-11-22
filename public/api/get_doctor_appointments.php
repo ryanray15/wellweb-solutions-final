@@ -10,7 +10,8 @@ $query = "
     SELECT 
         a.appointment_id, 
         a.date, 
-        a.time,
+        a.start_time,
+        a.end_time,
         a.status, 
         a.service_id,   /* Include service_id in the selection */
         u.user_id as patient_id,   /* Include patient_id in the selection */

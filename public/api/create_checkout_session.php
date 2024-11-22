@@ -32,7 +32,7 @@ function getNgrokPublicUrl()
 $ngrokPublicUrl = getNgrokPublicUrl();
 
 if ($ngrokPublicUrl === null) {
-    die("Error: Could not get ngrok public URL. Please ensure ngrok is running.");
+    //die("Error: Could not get ngrok public URL. Please ensure ngrok is running.");
 }
 
 // Capture the request payload
@@ -42,11 +42,13 @@ $input = json_decode(file_get_contents('php://input'), true);
 $patientId = $input['patient_id'] ?? null;
 $doctorId = $input['doctor_id'] ?? null;
 $serviceId = $input['service_id'] ?? null;
+$availabilityId = $input['availability_id'] ?? null;
 $appointmentDate = $input['date'] ?? null;
-$appointmentTime = $input['time'] ?? null;
+$appointmentStartTime = $input['start_time'] ?? null;
+$appointmentEndTime = $input['end_time'] ?? null;
 $referrer = $input['referrer'] ?? null;
 
-if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointmentTime) {
+if (!$patientId || !$doctorId || !$serviceId || !$availabilityId || !$appointmentDate || !$appointmentStartTime || !$appointmentEndTime) {
     error_log("Invalid input data for creating checkout session");
     echo json_encode(['error' => 'Invalid input data']);
     exit();
@@ -55,25 +57,31 @@ if (!$patientId || !$doctorId || !$serviceId || !$appointmentDate || !$appointme
 // Get the database connection
 $db = include '../../config/database.php';
 
-// Fetch doctor's Stripe account ID from the database
-$query = $db->prepare("SELECT stripe_account_id FROM users WHERE user_id = ?");
+// Fetch doctor's Stripe account ID and consultation rate from the database
+$query = $db->prepare("
+    SELECT u.stripe_account_id, dr.consultation_rate
+    FROM users u
+    LEFT JOIN doctor_rates dr ON u.user_id = dr.doctor_id
+    WHERE u.user_id = ?
+");
 $query->bind_param("i", $doctorId);
 $query->execute();
 $result = $query->get_result();
 $doctor = $result->fetch_assoc();
 
-if (!$doctor || empty($doctor['stripe_account_id'])) {
-    error_log("No Stripe account ID found for this doctor");
-    echo json_encode(['error' => 'No Stripe account ID found for this doctor']);
+if (!$doctor || empty($doctor['stripe_account_id']) || $doctor['consultation_rate'] === null) {
+    error_log("Doctor information incomplete or missing: Stripe account or consultation rate not found");
+    echo json_encode(['error' => 'Doctor information is incomplete']);
     exit();
 }
 
 $stripeAccountId = $doctor['stripe_account_id'];
+$consultationRate = intval($doctor['consultation_rate']); // Ensure the rate is an integer in cents
 
-// Define services (could come from a database)
+// Adjust service price dynamically based on the doctor's consultation rate
 $services = [
-    '1' => ['name' => 'Online Consultation', 'price' => 100000], // Price in cents
-    '2' => ['name' => 'Physical Consultation', 'price' => 100000], // Price in cents
+    '1' => ['name' => 'Online Consultation', 'price' => $consultationRate],
+    '2' => ['name' => 'Physical Consultation', 'price' => $consultationRate],
 ];
 
 // Check if the service ID exists
@@ -93,7 +101,7 @@ try {
                 'product_data' => [
                     'name' => $services[$serviceId]['name'],
                 ],
-                'unit_amount' => $services[$serviceId]['price'],
+                'unit_amount' => $services[$serviceId]['price'], // Use dynamic rate here
             ],
             'quantity' => 1,
         ]],
@@ -107,8 +115,10 @@ try {
             'patient_id' => $patientId,
             'doctor_id' => $doctorId,
             'service_id' => $serviceId,
+            'availability_id' => $availabilityId,
             'date' => $appointmentDate,
-            'time' => $appointmentTime,
+            'start_time' => $appointmentStartTime,
+            'end_time' => $appointmentEndTime,
         ],
         'mode' => 'payment',
         'success_url' => $ngrokPublicUrl . '/dashboard.php?session_id={CHECKOUT_SESSION_ID}',

@@ -30,6 +30,28 @@ if ($user_role === 'doctor') {
         $specializations[] = $row['name'];
     }
 }
+
+// Fetch consultation rate for the doctor
+$consultationRate = null;
+if ($user_role === 'doctor') {
+    $rateQuery = $db->prepare("SELECT consultation_rate FROM doctor_rates WHERE doctor_id = ?");
+    $rateQuery->bind_param("i", $user_id);
+    $rateQuery->execute();
+    $rateResult = $rateQuery->get_result()->fetch_assoc();
+    $consultationRate = $rateResult ? $rateResult['consultation_rate'] / 100 : null; // Convert back to pesos
+}
+
+// Fetch clinic hours for the doctor
+$clinicHours = null;
+if ($user_role === 'doctor') {
+    $hoursQuery = $db->prepare("SELECT clinic_open_time, clinic_close_time FROM doctor_clinic_hours WHERE doctor_id = ?");
+    $hoursQuery->bind_param("i", $user_id);
+    $hoursQuery->execute();
+    $hoursResult = $hoursQuery->get_result()->fetch_assoc();
+    if ($hoursResult) {
+        $clinicHours = date("g:i A", strtotime($hoursResult['clinic_open_time'])) . ' - ' . date("g:i A", strtotime($hoursResult['clinic_close_time']));
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +73,7 @@ if ($user_role === 'doctor') {
         .transparent-bg {
             background-color: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
+
         }
 
         .card {
@@ -63,10 +85,6 @@ if ($user_role === 'doctor') {
             transition: transform 0.2s;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
 
         .card-header {
             border-bottom: 2px solid #3b82f6;
@@ -119,16 +137,48 @@ if ($user_role === 'doctor') {
             color: #4b5563;
             /* Darker gray for labels */
         }
+
+        /* Notification Dropdown Styles */
+        #dropdownMenu {
+            max-width: 300px;
+            /* Set a max-width that fits your design */
+            white-space: normal;
+            /* Allows text to wrap */
+            word-wrap: break-word;
+            /* Ensures long words break and wrap to the next line */
+            padding: 10px;
+            /* Add some padding for a better look */
+        }
+
+        #dropdownMenu a {
+            padding: 8px 12px;
+            /* Adjust padding inside each notification */
+            display: block;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            /* Optional: Add a border between notifications */
+        }
+
+        #dropdownMenu a:last-child {
+            border-bottom: none;
+            /* Remove border from the last notification */
+        }
+
+        #dropdownMenu a:hover {
+            background-color: #f0f0f0;
+            /* Highlight the notification on hover */
+        }
     </style>
 </head>
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 transparent-bg p-4 shadow-lg">
-        <div class="flex justify-between items-center">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-1 fixed top-0 left-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class="text-blue-500 text-2xl font-bold ml-2">WELL WEB SOLUTIONS</span>
+                <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <div class="relative">
                 <button id="profileDropdown" class="text-blue-600 focus:outline-none">
@@ -146,7 +196,7 @@ if ($user_role === 'doctor') {
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto mt-10 px-6 py-8">
+    <div class="container mx-auto mt-24 py-8">
         <h1 class="text-4xl font-bold text-blue-600 mb-8">Profile</h1>
 
         <!-- User Profile Section -->
@@ -164,6 +214,10 @@ if ($user_role === 'doctor') {
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['last_name']); ?></p>
                     <p class="label"><i class="fas fa-envelope icon"></i> Email:</p>
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['email']); ?></p>
+                    <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
+                        <p class="label"><i class="fas fa-stethoscope icon"></i> Specializations:</p>
+                        <p class="text-gray-700 mb-3"><?php echo implode(', ', $specializations); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div>
                     <p class="label"><i class="fas fa-phone icon"></i> Contact Number:</p>
@@ -172,13 +226,19 @@ if ($user_role === 'doctor') {
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($userInfo['address']); ?></p>
                     <p class="label"><i class="fas fa-venus-mars icon"></i> Gender:</p>
                     <p class="text-gray-700 mb-3"><?php echo htmlspecialchars(ucfirst($userInfo['gender'])); ?></p>
+                    <?php if ($user_role === 'doctor') : ?>
+                        <?php if ($consultationRate !== null) : ?>
+                            <p class="label"><i class="fas fa-money-bill-wave icon"></i> Consultation Rate:</p>
+                            <p class="text-gray-700 mb-3">₱<?php echo number_format($consultationRate, 2); ?></p>
+                        <?php endif; ?>
+
+                        <?php if ($clinicHours !== null) : ?>
+                            <p class="label"><i class="fas fa-clock icon"></i> Clinic Hours:</p>
+                            <p class="text-gray-700 mb-3"><?php echo htmlspecialchars($clinicHours); ?></p>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
-
-            <?php if ($user_role === 'doctor' && !empty($specializations)) : ?>
-                <p class="label"><i class="fas fa-stethoscope icon"></i> Specializations:</p>
-                <p class="text-gray-700 mb-3"><?php echo implode(', ', $specializations); ?></p>
-            <?php endif; ?>
 
             <div class="flex space-x-4 mt-4">
                 <a href="edit_profile.php" class="btn">Edit Profile</a>

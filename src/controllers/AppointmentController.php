@@ -14,14 +14,16 @@ class AppointmentController
         $this->appointment = new Appointment($db);
     }
 
-    public function schedule($patient_id, $doctor_id, $service_id, $date, $time, $meeting_id = null)
+    public function schedule($patient_id, $doctor_id, $service_id, $availability_id, $date, $start_time, $end_time, $meeting_id = null)
     {
-        error_log("Scheduling appointment for patient $patient_id with doctor $doctor_id at $date $time");
+        error_log("Scheduling appointment for patient $patient_id with doctor $doctor_id on $date at $start_time and ends at $end_time");
         $this->appointment->patient_id = $patient_id;
         $this->appointment->doctor_id = $doctor_id;
         $this->appointment->service_id = $service_id;
+        $this->appointment->availability_id = $availability_id;
         $this->appointment->date = $date;
-        $this->appointment->time = $time;
+        $this->appointment->start_time = $start_time;
+        $this->appointment->end_time = $end_time;
         $this->appointment->meeting_id = $meeting_id;
 
         if ($this->appointment->create()) {
@@ -33,11 +35,12 @@ class AppointmentController
         return ['status' => false, 'message' => 'Appointment scheduling failed'];
     }
 
-    public function reschedule($appointment_id, $date, $time)
+    public function reschedule($appointment_id, $date, $start_time, $end_time)
     {
         $this->appointment->appointment_id = $appointment_id;
         $this->appointment->date = $date;
-        $this->appointment->time = $time;
+        $this->appointment->start_time = $start_time;
+        $this->appointment->end_time = $end_time;
 
         if ($this->appointment->reschedule()) {
             return ['status' => true, 'message' => 'Appointment rescheduled successfully'];
@@ -46,9 +49,10 @@ class AppointmentController
         return ['status' => false, 'message' => 'Appointment rescheduling failed'];
     }
 
-    public function cancel($appointment_id)
+    public function cancel($appointment_id, $availability_id)
     {
         $this->appointment->appointment_id = $appointment_id;
+        $this->appointment->availability_id = $availability_id;
 
         if ($this->appointment->cancel()) {
             return ['status' => true, 'message' => 'Appointment canceled successfully'];

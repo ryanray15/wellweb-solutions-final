@@ -15,7 +15,18 @@ $data = json_decode(file_get_contents("php://input"));
 
 $stripe = new \Stripe\StripeClient('sk_test_51Q0mWz08GrFUpp2baKJ76Qx92QtXyK8Yd0WCgvmKgONsI81AV0zrbACPouftbwP9uRUyDJZ6qwOViw1yUT1ZpNhq00IoE3Zn2L');
 
-// Process user registration...
+// Validation Functions
+function validateMobileNumber($mobile)
+{
+    return preg_match('/^09\d{9}$/', $mobile); // Philippine format: 11 digits, starts with 09
+}
+
+function validatePassword($password)
+{
+    return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password); // Password strength rules
+}
+
+// Extract inputs
 $first_name = $data->first_name;
 $middle_initial = $data->middle_initial;
 $last_name = $data->last_name;
@@ -27,6 +38,25 @@ $role = $data->role;
 $gender = $data->gender ?? '';
 $specializations = $data->specializations ?? [];
 
+// Validate mobile number
+if (!validateMobileNumber($contact_number)) {
+    echo json_encode([
+        'status' => false,
+        'message' => 'Invalid mobile number. It must be 11 digits long and start with 09.'
+    ]);
+    exit;
+}
+
+// Validate password
+if (!validatePassword($password)) {
+    echo json_encode([
+        'status' => false,
+        'message' => 'Invalid password. It must be at least 8 characters long, include one uppercase letter, one lowercase letter, one digit, and one special character.'
+    ]);
+    exit;
+}
+
+// Register the user
 $response = $auth->register($first_name, $middle_initial, $last_name, $contact_number, $address, $email, $password, $role, $gender, $specializations);
 
 // Assuming the user registration was successful, now create a Stripe account

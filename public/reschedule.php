@@ -42,20 +42,17 @@ $userInfo = $query->get_result()->fetch_assoc();
         .transparent-bg {
             background-color: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
+
         }
 
         .form-label {
             font-weight: 600;
             color: #4A5568;
-            /* Gray-700 */
         }
 
         .form-input {
             border: 1px solid #CBD5E0;
-            /* Gray-300 */
             border-radius: 0.375rem;
-            /* Rounded */
             padding: 0.5rem 0.75rem;
             width: 100%;
             transition: border-color 0.2s;
@@ -63,22 +60,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 
         .form-input:focus {
             border-color: #48BB78;
-            /* Green-500 */
             outline: none;
-        }
-
-        .btn-primary {
-            background-color: #48BB78;
-            /* Green-500 */
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #F56565;
-            /* Red-500 */
         }
 
         .flex-container {
@@ -90,27 +72,71 @@ $userInfo = $query->get_result()->fetch_assoc();
         .form-container {
             flex: 1;
             margin-right: 20px;
-            /* Space between form and calendar */
         }
 
         .calendar-container {
             flex: 1;
+        }
+
+        #appointments-container .appointment-slot {
+            background-color: #4F46E5;
+            color: white;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Notification Dropdown Styles */
+        #dropdownMenu {
+            max-width: 300px;
+            /* Set a max-width that fits your design */
+            white-space: normal;
+            /* Allows text to wrap */
+            word-wrap: break-word;
+            /* Ensures long words break and wrap to the next line */
+            padding: 10px;
+            /* Add some padding for a better look */
+        }
+
+        #dropdownMenu a {
+            padding: 8px 12px;
+            /* Adjust padding inside each notification */
+            display: block;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            /* Optional: Add a border between notifications */
+        }
+
+        #dropdownMenu a:last-child {
+            border-bottom: none;
+            /* Remove border from the last notification */
+        }
+
+        #dropdownMenu a:hover {
+            background-color: #f0f0f0;
+            /* Highlight the notification on hover */
         }
     </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="container mx-auto mt-10 mb-8 transparent-bg p-4 shadow-md">
-        <div class="flex justify-between items-center">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-1 fixed top-0 left-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                <span class="text-blue-500 text-2xl font-bold ml-2">WELL WEB SOLUTIONS</span>
+                <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-blue-600 focus:outline-none">
+                <button id="profileDropdown" class="text-gray-700 py-2 px-4 rounded-full hover:border-2 border-blue-400 hover:text-blue-500 transition duration-300 ">
                     <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
-                    <i class="fas fa-user-circle fa-2x"></i>
+
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                     <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
@@ -121,40 +147,47 @@ $userInfo = $query->get_result()->fetch_assoc();
         </div>
     </nav>
 
-    <div class="container mx-auto mb-8 p-8 bg-white rounded-lg shadow-lg">
+    <div class="container mx-auto mt-28 mb-8 p-8 bg-white rounded-lg shadow-lg">
         <div class="flex-container">
+            <!-- Doctor and Consultation Type Selection -->
             <div class="form-container">
-                <form id="rescheduleForm" class="w-full mb-8">
-                    <div class="mb-6">
-                        <label class="block form-label mb-2" for="appointment_id">Select Appointment</label>
-                        <select class="form-input" id="appointment_id">
-                            <!-- Populate this with options using JavaScript -->
-                        </select>
-                    </div>
-                    <div class="flex justify-between mb-6">
-                        <div class="w-full mr-2">
-                            <label class="block form-label mb-2" for="date">New Date</label>
-                            <input class="form-input" id="date" type="date" />
-                        </div>
-                        <div class="w-full ml-2">
-                            <label class="block form-label mb-2" for="time">New Time</label>
-                            <input class="form-input" id="time" type="time" />
-                        </div>
-                    </div>
-                    <button class="btn-primary w-full" type="submit">Reschedule</button>
-                </form>
-            </div>
-            <div class="calendar-container flex items-center justify-center">
+                <!-- Choose Doctor -->
+                <div id="choose-doctor-container" class="mb-6">
+                    <label class="block form-label mb-2" for="doctor_id">Choose Doctor</label>
+                    <select class="form-input" id="doctor_id">
+                        <!-- Populate with options dynamically -->
+                    </select>
+                </div>
 
-                <div id="calendar" class="mt-8"></div>
+                <!-- Consultation Type -->
+                <div class="mb-6">
+                    <label class="block form-label mb-2" for="consultation_type">Consultation Type</label>
+                    <select class="form-input" id="consultation_type">
+                        <option value="online">Online Consultation</option>
+                        <option value="physical">Physical Consultation</option>
+                    </select>
+                </div>
+
+                <!-- Draggable Events for Appointments -->
+                <div id="external-events" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-700">Appointments</h3>
+                    <div id="appointments-container">
+                        <!-- Populate with draggable appointments dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Display -->
+            <div class="calendar-container flex items-center justify-center">
+                <div id="calendar" class="mt-8 w-full"></div>
             </div>
         </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-        <script src="assets/js/utils.js"></script>
-        <script src="assets/js/common.js"></script>
-        <script src="assets/js/reschedule.js"></script>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/reschedule.js"></script>
 </body>
 
 </html>

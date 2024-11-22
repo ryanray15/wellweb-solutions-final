@@ -29,20 +29,69 @@ $userInfo = $query->get_result()->fetch_assoc();
     <title>Cancelled Appointments</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('img/bg_doctor.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .transparent-bg {
+            background-color: rgba(255, 255, 255, 0.7);
+            /* White with 70% opacity */
+            backdrop-filter: blur(10px);
+            /* Optional: adds a blur effect to the background */
+
+        }
+
+        /* Notification Dropdown Styles */
+        #dropdownMenu {
+            max-width: 300px;
+            /* Set a max-width that fits your design */
+            white-space: normal;
+            /* Allows text to wrap */
+            word-wrap: break-word;
+            /* Ensures long words break and wrap to the next line */
+            padding: 10px;
+            /* Add some padding for a better look */
+        }
+
+        #dropdownMenu a {
+            padding: 8px 12px;
+            /* Adjust padding inside each notification */
+            display: block;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            /* Optional: Add a border between notifications */
+        }
+
+        #dropdownMenu a:last-child {
+            border-bottom: none;
+            /* Remove border from the last notification */
+        }
+
+        #dropdownMenu a:hover {
+            background-color: #f0f0f0;
+            /* Highlight the notification on hover */
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-green-600 p-4">
+    <nav class="w-full mt-0 transparent-bg shadow-md p-1 fixed top-0 left-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="img/icon.ico" alt="Icon" class="h-10 w-10 mr-4">
-                <a href="/index.php" class="text-white text-2xl font-bold">Wellweb</a>
+                <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
+                <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-white focus:outline-none">
+                <button id="profileDropdown" class="text-gray-700 py-2 px-4 rounded-full hover:border-2 border-blue-400 hover:text-blue-500 transition duration-300">
                     <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['middle_initial'] . ' ' . $userInfo['last_name']); ?></span> <!-- Display user's full name -->
-                    <i class="fas fa-user-circle fa-2x"></i>
+
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                     <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
@@ -54,8 +103,8 @@ $userInfo = $query->get_result()->fetch_assoc();
     </nav>
 
     <!-- Canceled Appointments Table -->
-    <div class="container mx-auto mt-10 max-w-4xl p-8 bg-white rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-green-600 mb-8 text-center">
+    <div class="container mx-auto mt-28  p-8 bg-white rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-blue-600 mb-8 text-center">
             Canceled Appointments
         </h1>
         <div class="overflow-x-auto">

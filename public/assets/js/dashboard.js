@@ -187,158 +187,59 @@ function loadAdminDashboard() {
 
 // Function to load doctor dashboard data
 function loadDoctorDashboard(doctorId) {
-  // Initialize and load the calendar for displaying availability
-  loadDoctorCalendar(doctorId);
   fetchDoctorAppointments(doctorId);
 
-  // Ensure button and container elements exist
-  const addTimeRangeBtn = document.getElementById("add_time_range"); // Add Time Range button
-  const setAvailabilityBtn = document.getElementById("set_availability"); // Set Availability button
-  const timeRangesContainer = document.getElementById("time-ranges"); // The container to hold time ranges
-  let timeRanges = []; // Array to store time ranges
+  // Set up draggable event in the external events container
+  const containerEl = document.getElementById("external-events");
+  const saveAvailabilityBtn = document.getElementById("save_availability"); // Button to save manually if needed
 
-  if (!addTimeRangeBtn || !setAvailabilityBtn || !timeRangesContainer) {
-    console.error(
-      "Missing required DOM elements. Ensure the buttons and container exist."
-    );
-    return;
-  }
+  // Update draggable event dynamically based on dropdowns
+  function updateDraggableEvent() {
+    containerEl.innerHTML = ""; // Clear existing events
 
-  // Function to add a time range
-  addTimeRangeBtn.addEventListener("click", function (event) {
-    event.preventDefault();
-    console.log("Add Time Range button clicked");
-
-    const startTime = document.getElementById("start_time").value;
-    const endTime = document.getElementById("end_time").value;
+    const consultationType = document.getElementById("consultation_type").value;
     const consultationDuration = parseInt(
       document.getElementById("consultation_duration").value,
       10
     );
+    const color = consultationType === "online" ? "blue" : "green";
 
-    if (startTime && endTime) {
-      // Check if the time range exceeds the consultation duration
-      const startDate = new Date(`01/01/2020 ${startTime}`);
-      const endDate = new Date(`01/01/2020 ${endTime}`);
-      const timeDifferenceInMinutes = (endDate - startDate) / (1000 * 60); // Convert to minutes
+    const eventEl = document.createElement("div");
+    eventEl.className = `fc-event text-white px-3 py-2 rounded font-semibold`;
+    eventEl.innerText = `${
+      consultationType.charAt(0).toUpperCase() + consultationType.slice(1)
+    } - ${consultationDuration} mins`;
+    eventEl.style.backgroundColor = color;
+    eventEl.setAttribute("data-duration", consultationDuration);
+    eventEl.setAttribute("data-type", consultationType);
 
-      if (timeDifferenceInMinutes > consultationDuration) {
-        alert(
-          `Time range exceeds your set consultation duration of ${consultationDuration} minutes. Please select a shorter time range.`
-        );
-        return;
-      }
+    containerEl.appendChild(eventEl);
 
-      console.log("Time range added:", startTime, endTime);
-
-      // Add time range to the array
-      timeRanges.push({
-        start_time: convertTo24Hour(startTime), // Convert to 24-hour format
-        end_time: convertTo24Hour(endTime), // Convert to 24-hour format
-      });
-
-      // Add the selected time range to the UI container
-      const timeRangeDiv = document.createElement("div");
-      timeRangeDiv.classList.add("time-range");
-      timeRangeDiv.innerHTML = `
-        <span>Start: ${startTime} - End: ${endTime}</span>
-        <button class="remove-time-range text-red-500">Remove</button>
-      `;
-      timeRangesContainer.appendChild(timeRangeDiv);
-
-      // Clear the input fields
-      document.getElementById("start_time").value = "";
-      document.getElementById("end_time").value = "";
-    } else {
-      alert("Please select both start and end time.");
-    }
-  });
-
-  // Function to remove a time range //TODO!!!
-  timeRangesContainer.addEventListener("click", function (event) {
-    if (event.target.classList.contains("remove-time-range")) {
-      console.log("Remove Time Range button clicked");
-
-      const timeRangeDiv = event.target.parentElement;
-      const timeRangeText = timeRangeDiv.querySelector("span").innerText;
-      const [startText, endText] = timeRangeText.split(" - ");
-      const startTime = startText.split("Start: ")[1];
-      const endTime = endText.split("End: ")[1];
-
-      // Remove the time range from the array
-      timeRanges = timeRanges.filter(
-        (range) => range.start_time !== startTime || range.end_time !== endTime
-      );
-
-      // Remove the div from the UI
-      timeRangeDiv.remove();
-    }
-  });
-
-  // Submit availability with all time ranges
-  setAvailabilityBtn.addEventListener("click", function () {
-    console.log("Set Availability button clicked");
-
-    const consultationType = document.getElementById("consultation_type").value;
-    const consultationDuration = document.getElementById(
-      "consultation_duration"
-    ).value;
-    const availabilityDate = document.getElementById("availability_date").value;
-    const status = document.getElementById("status").value;
-
-    console.log("Collected time ranges:", timeRanges);
-
-    // Prepare the data to be sent
-    const availabilityData = {
-      doctor_id: doctorId, // Use the passed doctorId
-      consultation_type: consultationType,
-      consultation_duration: consultationDuration,
-      date: availabilityDate,
-      time_ranges: timeRanges, // Send the array of time ranges
-      status: status,
-    };
-
-    // Send the request
-    fetch("/api/set_doctor_availability.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    // Initialize draggable event
+    new FullCalendar.Draggable(containerEl, {
+      itemSelector: ".fc-event",
+      eventData: function (eventEl) {
+        return {
+          title: eventEl.innerText,
+          duration: { minutes: consultationDuration },
+          backgroundColor: eventEl.style.backgroundColor,
+          extendedProps: { type: consultationType },
+        };
       },
-      body: JSON.stringify(availabilityData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status) {
-          alert("Availability set successfully");
-          loadDoctorCalendar(doctorId); // Refresh the calendar
-        } else {
-          alert("Failed to set availability");
-        }
-
-        // Clear the array and reset UI after setting availability
-        timeRanges = [];
-        timeRangesContainer.innerHTML = ""; // Clear the container UI
-      })
-      .catch((error) => console.error("Error:", error));
-  });
-
-  // Time conversion function (convert to 24-hour format)
-  function convertTo24Hour(time) {
-    const [timePart, modifier] = time.split(" ");
-    let [hours, minutes] = timePart.split(":");
-
-    // Ensure hours is a string before using padStart
-    hours = hours.toString();
-
-    if (hours === "12") {
-      hours = "00";
-    }
-    if (modifier === "PM" && hours !== "12") {
-      hours = (parseInt(hours, 10) + 12).toString(); // Convert back to string after adding 12
-    }
-
-    return `${hours.padStart(2, "0")}:${minutes}`;
+    });
+    loadDoctorCalendar(doctorId);
   }
+
+  // Update draggable event whenever the consultation type or duration changes
+  document
+    .getElementById("consultation_type")
+    .addEventListener("change", updateDraggableEvent);
+  document
+    .getElementById("consultation_duration")
+    .addEventListener("change", updateDraggableEvent);
+
+  // Initialize draggable event initially
+  updateDraggableEvent();
 }
 
 // Function to load admin dashboard data
@@ -470,7 +371,10 @@ function fetchAppointments(patient_id) {
         // Appointment Time Cell
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
-        timeCell.textContent = appointment.time;
+        timeCell.textContent =
+          formatTimeTo12Hour(appointment.start_time) +
+          " - " +
+          formatTimeTo12Hour(appointment.end_time);
 
         // Due In Cell
         const dueInCell = document.createElement("td");
@@ -500,7 +404,7 @@ function fetchAppointments(patient_id) {
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2 mr-2";
           rescheduleButton.addEventListener("click", () => {
-            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+            window.location.href = `/reschedule.php`;
           });
 
           const cancelButton = document.createElement("button");
@@ -521,19 +425,25 @@ function fetchAppointments(patient_id) {
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            const appointmentDate = new Date(appointment.date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            appointmentDate.setHours(0, 0, 0, 0);
+            // Get the scheduled start and end time for the appointment
+            const appointmentStartTime = new Date(
+              `${appointment.date}T${appointment.start_time}`
+            );
+            const appointmentEndTime = new Date(
+              `${appointment.date}T${appointment.end_time}`
+            );
+            const now = new Date();
 
-            if (today.getTime() === appointmentDate.getTime()) {
+            if (now >= appointmentStartTime && now <= appointmentEndTime) {
+              // Enable button only if current time is within the appointment time range
               actionButton.disabled = false;
               actionButton.classList.add("bg-blue-500", "hover:bg-blue-600");
             } else {
+              // Disable button if it's not within the appointment time
               actionButton.disabled = true;
               actionButton.classList.add("bg-gray-400", "cursor-not-allowed");
               actionButton.title =
-                "You can only join on the day of the appointment";
+                "You can only join at the scheduled appointment time";
             }
 
             actionButton.addEventListener("click", () => {
@@ -578,7 +488,7 @@ function fetchAppointments(patient_id) {
           kebabMenu.className =
             "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
           kebabMenu.innerHTML = `
-            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
+            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php'">Reschedule</button>
             <button class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100" onclick="handleCancel(${appointment.appointment_id}, ${patient_id})">Cancel</button>
           `;
           kebabMenuContainer.appendChild(kebabMenu);
@@ -662,7 +572,10 @@ function fetchDoctorAppointments(doctor_id) {
         // Appointment Time Cell
         const timeCell = document.createElement("td");
         timeCell.className = "border px-4 py-2";
-        timeCell.textContent = appointment.time;
+        timeCell.textContent =
+          formatTimeTo12Hour(appointment.start_time) +
+          " - " +
+          formatTimeTo12Hour(appointment.end_time);
 
         // Status Cell
         const statusCell = document.createElement("td");
@@ -699,7 +612,16 @@ function fetchDoctorAppointments(doctor_id) {
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
           rescheduleButton.addEventListener("click", () => {
-            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+            window.location.href = `/doctor_reschedule.php?doctor_id=${doctor_id}&service_id=${appointment.service_id}&appointment_id=${appointment.appointment_id}`;
+          });
+          actionsCell.appendChild(rescheduleButton);
+        } else if (isOverdue && appointment.service_id === 1) {
+          // Directly show Reschedule button if it's an overdue online consultation
+          const rescheduleButton = document.createElement("button");
+          rescheduleButton.textContent = "Reschedule";
+          rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
+          rescheduleButton.addEventListener("click", () => {
+            window.location.href = `/doctor_reschedule.php?doctor_id=${doctor_id}&service_id=${appointment.service_id}&appointment_id=${appointment.appointment_id}`;
           });
           actionsCell.appendChild(rescheduleButton);
         } else if (isOverdue && appointment.service_id === 2) {
@@ -733,30 +655,36 @@ function fetchDoctorAppointments(doctor_id) {
           rescheduleButton.textContent = "Reschedule";
           rescheduleButton.className = "text-blue-600 font-bold py-1 px-2";
           rescheduleButton.addEventListener("click", () => {
-            window.location.href = `/reschedule.php?appointment_id=${appointment.appointment_id}`;
+            window.location.href = `/doctor_reschedule.php?doctor_id=${doctor_id}&service_id=${appointment.service_id}&appointment_id=${appointment.appointment_id}`;
           });
           actionsCell.appendChild(rescheduleButton);
         } else {
-          // Display Join Room or Locate Clinic button with kebab menu if needed
+          // Display Join Room button with kebab menu for non-overdue online consultations
           const actionButton = document.createElement("button");
 
           if (appointment.service_id == 1) {
             actionButton.textContent = "Join Room";
             actionButton.className = "font-bold py-1 px-3 rounded text-white";
 
-            const appointmentDate = new Date(appointment.date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            appointmentDate.setHours(0, 0, 0, 0);
+            // Get the scheduled appointment date and time
+            const appointmentStartTime = new Date(
+              `${appointment.date}T${appointment.start_time}`
+            );
+            const appointmentEndTime = new Date(
+              `${appointment.date}T${appointment.end_time}`
+            );
+            const now = new Date();
 
-            if (today.getTime() === appointmentDate.getTime()) {
+            if (now >= appointmentStartTime && now <= appointmentEndTime) {
+              // Enable button only if the current time is within the scheduled time range
               actionButton.disabled = false;
               actionButton.classList.add("bg-blue-500", "hover:bg-blue-600");
             } else {
+              // Disable button if it's not within the scheduled time
               actionButton.disabled = true;
               actionButton.classList.add("bg-gray-400", "cursor-not-allowed");
               actionButton.title =
-                "You can only join on the day of the appointment";
+                "You can only join during the scheduled appointment time";
             }
 
             actionButton.addEventListener("click", () => {
@@ -775,37 +703,39 @@ function fetchDoctorAppointments(doctor_id) {
                   console.error("Error fetching meeting ID:", error)
                 );
             });
+
+            actionsCell.appendChild(actionButton);
           }
 
-          actionsCell.appendChild(actionButton);
+          // Kebab Menu for non-overdue online appointments only
+          if (!isOverdue) {
+            const kebabMenuContainer = document.createElement("div");
+            kebabMenuContainer.className = "relative inline-block";
 
-          // Kebab Menu for Reschedule option (non-overdue online appointments)
-          const kebabMenuContainer = document.createElement("div");
-          kebabMenuContainer.className = "relative inline-block";
+            const kebabButton = document.createElement("button");
+            kebabButton.className = "text-gray-500 focus:outline-none ml-2";
+            kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+            kebabMenuContainer.appendChild(kebabButton);
 
-          const kebabButton = document.createElement("button");
-          kebabButton.className = "text-gray-500 focus:outline-none ml-2";
-          kebabButton.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
-          kebabMenuContainer.appendChild(kebabButton);
+            const kebabMenu = document.createElement("div");
+            kebabMenu.className =
+              "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
+            kebabMenu.innerHTML = `
+              <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/doctor_reschedule.php?doctor_id=${doctor_id}&service_id=${appointment.service_id}&appointment_id=${appointment.appointment_id}'">Reschedule</button>
+            `;
+            kebabMenuContainer.appendChild(kebabMenu);
 
-          const kebabMenu = document.createElement("div");
-          kebabMenu.className =
-            "absolute right-0 mt-2 w-24 bg-white rounded shadow-lg z-10 hidden";
-          kebabMenu.innerHTML = `
-            <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="window.location.href='/reschedule.php?appointment_id=${appointment.appointment_id}'">Reschedule</button>
-          `;
-          kebabMenuContainer.appendChild(kebabMenu);
+            kebabButton.addEventListener("click", (e) => {
+              e.stopPropagation();
+              kebabMenu.classList.toggle("hidden");
+            });
 
-          kebabButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            kebabMenu.classList.toggle("hidden");
-          });
+            document.addEventListener("click", () => {
+              kebabMenu.classList.add("hidden");
+            });
 
-          document.addEventListener("click", () => {
-            kebabMenu.classList.add("hidden");
-          });
-
-          actionsCell.appendChild(kebabMenuContainer);
+            actionsCell.appendChild(kebabMenuContainer);
+          }
         }
 
         row.appendChild(patientCell);
@@ -872,18 +802,12 @@ function loadDoctorCalendar(doctorId) {
   const calendarEl = document.getElementById("calendar");
 
   if (calendarEl) {
-    // Clear any existing calendar instance
-    if (calendarEl.fullCalendar) {
-      calendarEl.fullCalendar.destroy();
-    }
-
     console.log(`Loading calendar for Doctor ID: ${doctorId}`);
 
     // Fetch availability data and render the calendar
     fetch(`/api/get_doctor_availability.php?doctor_id=${doctorId}`)
       .then((response) => response.json())
       .then((data) => {
-        // Check if the data is an array or an object with events
         const events = Array.isArray(data) ? data : data.events;
 
         if (!events) {
@@ -891,16 +815,11 @@ function loadDoctorCalendar(doctorId) {
           return;
         }
 
-        console.log("Fetched events:", events);
-
-        // Assign event ID for each availability if not already set
-        events.forEach((event) => {
-          if (!event.id) event.id = event.availability_id;
-        });
-
+        // Initialize FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
-          selectable: true,
+          editable: false,
+          droppable: true,
           timeZone: "Asia/Manila",
           headerToolbar: {
             left: "prev,next today",
@@ -908,12 +827,81 @@ function loadDoctorCalendar(doctorId) {
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
           events: events,
+          eventOverlap: false,
+
+          drop: function (info) {
+            const consultationType =
+              info.draggedEl.getAttribute("data-type") || "online";
+            const consultationDuration =
+              parseInt(
+                document.getElementById("consultation_duration").value,
+                10
+              ) || 30;
+
+            const startDate = info.date;
+            const endDate = new Date(
+              startDate.getTime() + consultationDuration * 60000
+            );
+
+            const eventData = {
+              doctor_id: doctorId,
+              time_ranges: [
+                {
+                  date: startDate.toISOString().split("T")[0],
+                  start_time: startDate,
+                  end_time: endDate,
+                  consultation_type: consultationType,
+                  consultation_duration: consultationDuration,
+                  status: "Available",
+                },
+              ],
+            };
+
+            // Save availability to backend
+            fetch("/api/set_doctor_availability.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(eventData),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (!data.status) {
+                  alert("Failed to set availability. Please try again.");
+                } else {
+                  console.log("Availability saved successfully.");
+                  time_ranges = [];
+                  loadDoctorCalendar(doctorId); // Refresh the calendar after saving
+                }
+              })
+              .catch((error) => {
+                console.error("Error saving availability:", error);
+              });
+          },
+
           eventClick: function (info) {
-            const event = info.event;
-            handleEventSelection(event, doctorId, null);
+            if (confirm("Do you want to delete this availability?")) {
+              fetch("/api/delete_doctor_availability.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: info.event.id }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status) {
+                    alert("Availability deleted successfully.");
+                    info.event.remove(); // Remove from calendar
+                  } else {
+                    alert("Failed to delete availability.");
+                  }
+                })
+                .catch((error) =>
+                  console.error("Error deleting availability:", error)
+                );
+            }
           },
         });
 
+        // Render the calendar
         calendar.render();
       })
       .catch((error) => console.error("Error loading calendar:", error));
@@ -922,45 +910,39 @@ function loadDoctorCalendar(doctorId) {
   }
 }
 
-// Handle clicks on existing calendar events (e.g., to delete availability)
-function handleEventClick(info, doctorId, calendar) {
-  if (confirm("Do you want to delete this schedule?")) {
-    fetch("/api/delete_doctor_availability.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: info.event.id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        alert(data.message);
-        if (data.status) {
-          info.event.remove(); // Remove event from calendar view
-        }
-      })
-      .catch((error) => console.error("Error deleting event:", error));
-  }
+// Convert JavaScript Date object to 24-hour time format (HH:MM)
+function convertTo24Hour(date) {
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
 }
 
-function convertTo24Hour(time) {
-  const [timePart, modifier] = time.split(" ");
-  let [hours, minutes] = timePart.split(":");
+// // Enhanced convertTo24Hour function that works with both Date objects and time strings
+// function convertTo24Hour(time) {
+//   if (time instanceof Date) {
+//     // For Date objects, extract hours and minutes directly
+//     const hours = time.getHours().toString().padStart(2, "0");
+//     const minutes = time.getMinutes().toString().padStart(2, "0");
+//     return `${hours}:${minutes}`;
+//   } else if (typeof time === "string") {
+//     // For time strings in the format "hh:mm AM/PM"
+//     const [timePart, modifier] = time.split(" ");
+//     let [hours, minutes] = timePart.split(":");
 
-  // Ensure hours is treated as a string for padStart
-  hours = hours.toString();
+//     // Ensure hours is treated as a string for padStart
+//     hours = hours.toString();
 
-  if (hours === "12") {
-    hours = "00";
-  }
-  if (modifier === "PM" && hours !== "12") {
-    hours = (parseInt(hours, 10) + 12).toString();
-  }
+//     if (hours === "12") {
+//       hours = "00";
+//     }
+//     if (modifier === "PM" && hours !== "12") {
+//       hours = (parseInt(hours, 10) + 12).toString();
+//     }
 
-  return `${hours.padStart(2, "0")}:${minutes}`;
-}
+//     return `${hours.padStart(2, "0")}:${minutes}`;
+//   }
+//   return time; // Return as-is if format is not recognized
+// }
 
 // Function to load specializations and update the UI
 function loadSpecializations() {
@@ -1062,7 +1044,7 @@ function loadUsersTable() {
               <td class="border-b border-gray-200 px-4 py-2">${user.email}</td>
               <td class="border-b border-gray-200 px-4 py-2">${user.role}</td>
               <td class="border-b border-gray-200 px-4 py-2">
-                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="deleteUser(${user.user_id})">Delete</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded" onclick="disableUser(${user.user_id})">Disable</button>
               </td>
             </tr>`
         )
@@ -1095,22 +1077,39 @@ function verifyDoctor(doctorId, action) {
   }
 }
 
-// Function to delete user
-function deleteUser(userId) {
-  if (confirm("Are you sure you want to delete this user?")) {
-    fetch(`/api/admin_delete_user.php?user_id=${userId}`, {
-      method: "DELETE",
+// Function to disable user
+function disableUser(userId) {
+  if (confirm("Are you sure you want to disable this user?")) {
+    fetch(`/api/admin_disable_user.php?user_id=${userId}`, {
+      method: "PATCH", // Use PATCH for updates
     })
       .then((response) => response.json())
       .then((data) => {
         alert(data.message);
         if (data.status) {
-          loadUsersTable(); // Reload table after deletion
+          loadUsersTable(); // Reload table after disabling
         }
       })
-      .catch((error) => console.error("Error deleting user:", error));
+      .catch((error) => console.error("Error disabling user:", error));
   }
 }
+
+// Function to delete user. Deprecated!!!
+// function deleteUser(userId) {
+//   if (confirm("Are you sure you want to delete this user?")) {
+//     fetch(`/api/admin_delete_user.php?user_id=${userId}`, {
+//       method: "DELETE",
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         alert(data.message);
+//         if (data.status) {
+//           loadUsersTable(); // Reload table after deletion
+//         }
+//       })
+//       .catch((error) => console.error("Error deleting user:", error));
+//   }
+// }
 
 // Function to load verification table
 function loadVerificationTable() {
@@ -1150,4 +1149,13 @@ function updateAppointments(userRole, userId) {
     // Fetch and reload appointments for the patient
     fetchAppointments(userId);
   }
+}
+
+// Helper function to convert time from 24-hour format to 12-hour format
+function formatTimeTo12Hour(timeString) {
+  const [hour, minute, second] = timeString.split(":");
+  const hourInt = parseInt(hour, 10);
+  const ampm = hourInt >= 12 ? "PM" : "AM";
+  const formattedHour = hourInt % 12 || 12; // Convert '0' hour to '12' for 12-hour format
+  return `${formattedHour}:${minute} ${ampm}`;
 }

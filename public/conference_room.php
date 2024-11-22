@@ -143,7 +143,7 @@ $userInfo = $query->get_result()->fetch_assoc();
 
             meeting = window.VideoSDK.initMeeting({
                 meetingId: meetingId,
-                name: "Patient", // Customize the name if needed
+                name: "<?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?>", // Dynamically embed the PHP variables
                 micEnabled: true,
                 webcamEnabled: true,
             });

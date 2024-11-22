@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctors Near You</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
+    />
+    <link href="assets/css/tailwind.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <style>
+      #map {
+        width: 100%;
+        height: 500px; /* Set a fixed height for the map */
+      }
+      body {
+        background-image: url("img/bg_doctor.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+      .transparent-bg {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="container mx-auto mt-4 transparent-bg shadow-md p-1">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center">
+          <img
+            src="img/wellwebsolutions-logo.png"
+            alt="Icon"
+            class="h-10 w-auto sm:h-10 md:h-14"
+          />
+          <a href="index.php"
+            ><span class="text-blue-400 text-2xl font-bold"
+              >WELL WEB SOLUTIONS</span
+            ></a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Title and Back Button -->
+    <div class="container mx-auto mt-4 p-2 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-600 mb-3">
+        Doctors Near Your Location
+      </h1>
+      <button
+        onclick="window.history.back()"
+        class="bg-blue-500 text-white hover:bg-white hover:text-black font-bold py-2 px-6 rounded-lg transition duration-300"
+      >
+        Back
+      </button>
+    </div>
+
+    <!-- Map Container -->
+    <div class="container mx-auto mt-4 transparent-bg shadow-md p-2">
+      <div id="map"></div>
+    </div>
+
+    <script src="assets/js/doctors_nearby.js"></script>
+  </body>
+</html>

@@ -43,20 +43,51 @@ if ($doctor_id) {
                     /* White with 70% opacity */
                     backdrop-filter: blur(10px);
                     /* Optional: adds a blur effect to the background */
-                    border-radius: 0.5rem;
-                    /* Optional: adds rounded corners */
+
+                }
+
+                /* Notification Dropdown Styles */
+                #dropdownMenu {
+                    max-width: 300px;
+                    /* Set a max-width that fits your design */
+                    white-space: normal;
+                    /* Allows text to wrap */
+                    word-wrap: break-word;
+                    /* Ensures long words break and wrap to the next line */
+                    padding: 10px;
+                    /* Add some padding for a better look */
+                }
+
+                #dropdownMenu a {
+                    padding: 8px 12px;
+                    /* Adjust padding inside each notification */
+                    display: block;
+                    color: #333;
+                    text-decoration: none;
+                    border-bottom: 1px solid #ddd;
+                    /* Optional: Add a border between notifications */
+                }
+
+                #dropdownMenu a:last-child {
+                    border-bottom: none;
+                    /* Remove border from the last notification */
+                }
+
+                #dropdownMenu a:hover {
+                    background-color: #f0f0f0;
+                    /* Highlight the notification on hover */
                 }
             </style>
         </head>
 
         <body class="bg-gray-100">
+
             <!-- Navigation Bar -->
-            <!-- Navigation Bar -->
-            <nav class="container mx-auto mt-10 transparent-bg p-4 shadow-md">
+            <nav class="w-full mt-0 transparent-bg shadow-md p-1 fixed top-0 left-0 z-50">
                 <div class="container mx-auto flex justify-between items-center">
                     <div class="flex items-center">
                         <img src="img/wellwebsolutions-logo.png" alt="Icon" class="h-10 w-auto sm:h-10 md:h-14">
-                        <span class=" text-blue-500 text-2xl font-bold ">WELL WEB SOLUTIONS</span>
+                        <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
                     </div>
                     <div class="relative">
                         <button id="profileDropdown" class="text-white focus:outline-none">
@@ -71,7 +102,7 @@ if ($doctor_id) {
                 </div>
             </nav>
             <!-- Main Content -->
-            <div class="container mx-auto mt-10 px-6 py-8">
+            <div class="container mx-auto mt-28 px-6 py-8">
                 <h1 class="text-4xl font-bold text-blue-600 mb-8"><?php echo htmlspecialchars($doctor['name']); ?></h1>
 
                 <!-- Doctor Information Section -->
