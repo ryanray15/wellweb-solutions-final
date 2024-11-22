@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Get user ID from session
 $user_id = $_SESSION['user_id'];
+$user_role = $_SESSION['role'];
 ?>
 
 <!DOCTYPE html>
@@ -76,7 +77,11 @@ $user_id = $_SESSION['user_id'];
 
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+                    <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>
                     <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+                    <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
+                        <a href="appointment_history.php" id="appointment_history" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Appointment History</a>
+                    <?php endif; ?>
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
             </div>

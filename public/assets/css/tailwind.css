@@ -839,8 +839,16 @@ video {
   max-width: 28rem;
 }
 
+.max-w-4xl {
+  max-width: 56rem;
+}
+
 .flex-grow {
   flex-grow: 1;
+}
+
+.border-collapse {
+  border-collapse: collapse;
 }
 
 .transform {
@@ -1183,6 +1191,10 @@ video {
 
 .lowercase {
   text-transform: lowercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }
 
 .leading-tight {
