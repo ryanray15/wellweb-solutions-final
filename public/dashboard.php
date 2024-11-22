@@ -276,23 +276,22 @@ if ($user_role === 'doctor') {
             <?php endif; ?>
             <div class="relative">
                 <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
-                    <!-- Wallet Button -->
                     <button id="messageButton" class="text-blue-400 mr-3 focus:outline-none">
                         <i class="fas fa-envelope fa-2x"></i>
                     </button>
 
-                    <button id="openExpressDashboard" class="text-blue-400 mr-3 focus:outline-none">
-                        <i class="fas fa-wallet fa-2x"></i>
-                    </button>
-
-                    <!-- TODO -->
                     <script>
                         document.getElementById('messageButton').addEventListener('click', () => {
                             window.location.href = "/inbox.php";
                         });
                     </script>
                 <?php endif; ?>
-
+                <?php if ($user_role === 'doctor') : ?>
+                    <!-- Wallet Button -->
+                    <button id="openExpressDashboard" class="text-blue-400 mr-3 focus:outline-none">
+                        <i class="fas fa-wallet fa-2x"></i>
+                    </button>
+                <?php endif; ?>
                 <button id="profileDropdown" class="text-blue-400 focus:outline-none">
                     <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
