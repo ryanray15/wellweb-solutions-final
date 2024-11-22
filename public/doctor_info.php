@@ -1,4 +1,5 @@
 <?php
+session_start(); // Start the session
 require_once '../config/database.php';
 
 $db = include '../config/database.php';
