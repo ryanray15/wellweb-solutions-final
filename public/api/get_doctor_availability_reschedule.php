@@ -10,11 +10,17 @@ $consultation_type = $_GET['consultation_type'] ?? null;
 
 if ($doctor_id && $consultation_type) { // Check both doctor_id and consultation_type
     $query = $db->prepare("
-        SELECT da.availability_id AS id, da.date, da.start_time, da.end_time, da.status, da.consultation_type,
-               MIN(start_time) OVER() AS min_start_time,
-               MAX(end_time) OVER() AS max_end_time,
-               MAX(consultation_duration) OVER() AS consultation_duration
+        SELECT 
+            da.availability_id AS id, 
+            da.date, 
+            da.start_time, 
+            da.end_time, 
+            da.status, 
+            da.consultation_type,
+            dch.clinic_open_time AS slot_min_time,
+            dch.clinic_close_time AS slot_max_time
         FROM doctor_availability da
+        JOIN doctor_clinic_hours dch ON da.doctor_id = dch.doctor_id
         WHERE da.doctor_id = ?
         AND da.consultation_type = ?
         AND da.status = 'Available';
@@ -24,6 +30,8 @@ if ($doctor_id && $consultation_type) { // Check both doctor_id and consultation
     $result = $query->get_result();
 
     $events = [];
+    $slotTimes = null;
+
     while ($row = $result->fetch_assoc()) {
         $events[] = [
             'id' => $row['id'],
@@ -33,9 +41,21 @@ if ($doctor_id && $consultation_type) { // Check both doctor_id and consultation
             'color' => $row['consultation_type'] === 'online' ? 'blue' : 'green',
             'textColor' => 'white',
         ];
+
+        // Capture slot times for response (only once, as they are the same for all rows)
+        if ($slotTimes === null) {
+            $slotTimes = [
+                'slotMinTime' => $row['slot_min_time'],
+                'slotMaxTime' => $row['slot_max_time']
+            ];
+        }
     }
 
-    echo json_encode($events); // Directly return the events array
+    // Return events and slot times for calendar rendering
+    echo json_encode([
+        'events' => $events,
+        'slotTimes' => $slotTimes
+    ]);
 } else {
     echo json_encode([]); // Return empty array if doctor ID or consultation type is not provided
 }

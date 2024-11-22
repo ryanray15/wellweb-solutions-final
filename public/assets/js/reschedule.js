@@ -126,15 +126,22 @@ const CalendarModule = (() => {
       return;
     }
 
-    // Fetch slot times from the backend
+    // Fetch slot times and events from the backend
     fetch(
       `/api/get_doctor_full_availability.php?doctor_id=${doctorId}&consultation_type=${consultationType}`
     )
       .then((response) => response.json())
       .then((data) => {
+        // Extract slot times and events
         const slotMinTime = data.slotTimes?.slotMinTime || "00:00:00";
         const slotMaxTime = data.slotTimes?.slotMaxTime || "24:00:00";
+        const events = data.events || [];
 
+        if (events.length === 0) {
+          console.warn("No events to render.");
+        }
+
+        // Initialize FullCalendar with pre-fetched events
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
@@ -147,17 +154,7 @@ const CalendarModule = (() => {
           },
           slotMinTime: slotMinTime, // Set slotMinTime
           slotMaxTime: slotMaxTime, // Set slotMaxTime
-          events: {
-            url: `/api/get_doctor_full_availability.php`,
-            method: "GET",
-            extraParams: {
-              doctor_id: doctorId,
-              consultation_type: consultationType,
-            },
-            failure: function () {
-              alert("There was an error while fetching availability!");
-            },
-          },
+          events: events, // Use pre-fetched events directly
           eventClick: function (info) {
             const clickedEvent = info.event;
 
@@ -235,11 +232,12 @@ const CalendarModule = (() => {
           },
         });
 
+        // Render the calendar after ensuring the data is loaded
         calendar.render();
       })
       .catch((error) => {
-        console.error("Error fetching slot times:", error);
-        alert("Error loading calendar. Please try again.");
+        console.error("Error fetching slot times or events:", error);
+        alert("Failed to load calendar. Please try again.");
       });
   };
 

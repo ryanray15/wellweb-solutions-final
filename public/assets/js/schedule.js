@@ -149,6 +149,12 @@ function loadDoctorCalendar(
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched events:", data);
+
+        // Extract slot times and events
+        const slotMinTime = data.slotTimes?.slotMinTime || "00:00:00";
+        const slotMaxTime = data.slotTimes?.slotMaxTime || "24:00:00";
+        const events = data.events || [];
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
           selectable: true,
@@ -158,7 +164,9 @@ function loadDoctorCalendar(
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           },
-          events: data.events,
+          slotMinTime: slotMinTime, // Set slotMinTime dynamically
+          slotMaxTime: slotMaxTime, // Set slotMaxTime dynamically
+          events: events, // Use fetched events
           eventClick: function (info) {
             const event = info.event;
             handleEventSelection(event, doctorId, patientId);
