@@ -815,6 +815,10 @@ function loadDoctorCalendar(doctorId) {
           return;
         }
 
+        // Extract slot times for the calendar
+        const slotMinTime = data.slotTimes?.slotMinTime || "00:00:00";
+        const slotMaxTime = data.slotTimes?.slotMaxTime || "24:00:00";
+
         // Initialize FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
@@ -828,6 +832,8 @@ function loadDoctorCalendar(doctorId) {
           },
           events: events,
           eventOverlap: false,
+          slotMinTime: slotMinTime, // Set slotMinTime
+          slotMaxTime: slotMaxTime, // Set slotMaxTime
 
           drop: function (info) {
             const consultationType =
