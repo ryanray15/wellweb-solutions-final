@@ -836,6 +836,15 @@ function loadDoctorCalendar(doctorId) {
           slotMaxTime: slotMaxTime, // Set slotMaxTime
 
           drop: function (info) {
+            const now = new Date(); // Current time
+            if (info.date < now) {
+              alert(
+                "You cannot drop events into a time slot that has already passed."
+              );
+              window.location.reload(); // Refresh the page to remove the visual effect of the dropped event
+              return; // Prevent further processing
+            }
+
             const consultationType =
               info.draggedEl.getAttribute("data-type") || "online";
             const consultationDuration =
@@ -873,6 +882,7 @@ function loadDoctorCalendar(doctorId) {
               .then((data) => {
                 if (!data.status) {
                   alert("Failed to set availability. Please try again.");
+                  window.location.reload(); // Refresh the calendar in case of a failure
                 } else {
                   console.log("Availability saved successfully.");
                   time_ranges = [];
