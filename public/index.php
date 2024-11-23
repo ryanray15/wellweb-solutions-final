@@ -187,6 +187,15 @@ if ($loggedIn) {
             </div>
         </div>
     </div>
+    <!-- Footer -->
+    <footer class="footer p-6 flex justify-end">
+        <div class="text-right">
+            <p class="text-gray-600 text-sm">© <?php echo date("Y"); ?> WELL WEB SOLUTIONS. All rights reserved.</p>
+            <p class="text-gray-600 mb-2 text-sm">Contact us:
+                <a href="mailto:support@wellwebsolutions.com" class="text-blue-500 hover:underline">support@wellwebsolutions.com</a>
+            </p>
+        </div>
+    </footer>
 
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/common.js"></script>

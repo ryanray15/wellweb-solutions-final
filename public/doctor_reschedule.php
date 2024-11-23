@@ -39,17 +39,18 @@ $userInfo = $query->get_result()->fetch_assoc();
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         body {
-            background-image: url('img/bg_doctor.jpg');
+            background-image: url('img/doctors.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            background-blend-mode: soft-light;
         }
 
         .transparent-bg {
             background-color: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
+
         }
 
         .form-label {
@@ -126,9 +127,9 @@ $userInfo = $query->get_result()->fetch_assoc();
                 <span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-blue-600 focus:outline-none">
+                <button id="profileDropdown" class="text-gray-700 py-2 px-4 rounded-full hover:border-2 border-blue-400 hover:text-blue-500 transition duration-300 ">
                     <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span>
-                    <i class="fas fa-user-circle fa-2x"></i>
+
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
                     <a href="dashboard.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Dashboard</a>

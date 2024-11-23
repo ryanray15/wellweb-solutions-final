@@ -103,7 +103,7 @@ $userInfo = $query->get_result()->fetch_assoc();
                 <a href="index.php"><span class="text-blue-400 text-2xl font-bold">WELL WEB SOLUTIONS</span></a>
             </div>
             <div class="relative">
-                <button id="profileDropdown" class="text-blue-500 focus:outline-none">
+                <button id="profileDropdown" class="text-blue-400 focus:outline-none">
                     <i class="fas fa-user-circle fa-2x"></i>
                 </button>
                 <div id="dropdownMenu" class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">

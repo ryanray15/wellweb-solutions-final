@@ -32,11 +32,12 @@ $userInfo = $query->get_result()->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <style>
         body {
-            background-image: url('img/bg_doctor.jpg');
+            background-image: url('img/doctor-new.jpeg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            background-blend-mode: soft-light;
         }
 
         .transparent-bg {

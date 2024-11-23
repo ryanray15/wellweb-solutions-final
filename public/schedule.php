@@ -37,12 +37,12 @@ $userInfo = $query->get_result()->fetch_assoc();
         }
 
         body {
-            background-image: url('img/bg_doctor.jpg');
-            /* Update with your image path */
+            background-image: url('img/doctor-new.jpeg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            background-blend-mode: soft-light;
         }
 
         .transparent-bg {

@@ -84,7 +84,7 @@ if ($user_role === 'doctor') {
     .transparent-bg {
       background-color: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
-      border-radius: 0.5rem;
+
     }
   </style>
 </head>
@@ -111,7 +111,7 @@ if ($user_role === 'doctor') {
     </div>
   </nav>
 
-  <div id="onboarding-container">
+  <div id="onboarding-container" class="mt-10">
     <!-- Stripe onboarding component will be embedded here -->
   </div>
 </body>
