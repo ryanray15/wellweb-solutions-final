@@ -624,26 +624,6 @@ Array
 Array
 (
     [patient_id] => 2
-    [doctor_id] => 3
-    [service_id] => 1
-    [availability_id] => 9
-    [date] => 2024-11-22
-    [start_time] => 09:00:00
-    [end_time] => 09:30:00
-)
-Array
-(
-    [patient_id] => 2
-    [doctor_id] => 3
-    [service_id] => 1
-    [availability_id] => 10
-    [date] => 2024-11-22
-    [start_time] => 09:30:00
-    [end_time] => 10:00:00
-)
-Array
-(
-    [patient_id] => 2
     [doctor_id] => 4
     [service_id] => 1
     [availability_id] => 11

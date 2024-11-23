@@ -277,19 +277,22 @@ if ($user_role === 'doctor') {
             <?php endif; ?>
             <div class="relative">
                 <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
-                    <!-- Wallet Button -->
                     <button id="messageButton" class="text-blue-400 mr-3 focus:outline-none">
                         <i class="fas fa-envelope fa-2x"></i>
                     </button>
 
-                    <!-- TODO -->
                     <script>
                         document.getElementById('messageButton').addEventListener('click', () => {
                             window.location.href = "/inbox.php";
                         });
                     </script>
                 <?php endif; ?>
-
+                <?php if ($user_role === 'doctor') : ?>
+                    <!-- Wallet Button -->
+                    <button id="openExpressDashboard" class="text-blue-400 mr-3 focus:outline-none">
+                        <i class="fas fa-wallet fa-2x"></i>
+                    </button>
+                <?php endif; ?>
                 <button id="profileDropdown" class="text-blue-400 focus:outline-none">
                     <!-- <span class="mr-2"><?php echo htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']); ?></span> -->
                     <i class="fas fa-user-circle fa-2x"></i>
@@ -302,7 +305,9 @@ if ($user_role === 'doctor') {
                     <?php if ($user_role === 'doctor' && $documents_submitted && !$is_verified) : ?>
                         <a href="upload_documents.php" id="upload" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Upload Documents</a>
                     <?php endif; ?>
-
+                    <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
+                        <a href="appointment_history.php" id="appointment_history" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Appointment History</a>
+                    <?php endif; ?>
                     <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                 </div>
             </div>
@@ -660,6 +665,7 @@ if ($user_role === 'doctor') {
         <script src="assets/js/utils.js"></script>
         <script src="assets/js/common.js"></script>
         <script src="assets/js/dashboard.js"></script>
+        <script src="assets/js/express_dashboard.js"></script>
         <!-- for tabs -->
         <script src="assets/js/tabswitch.js"></script>
 

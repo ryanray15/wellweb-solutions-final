@@ -8,13 +8,19 @@ header('Content-Type: application/json');
 $doctor_id = $_GET['doctor_id'] ?? null;
 
 if ($doctor_id) {
-    // Fetch all availability for the selected doctor, including consultation types and statuses
+    // Fetch all availability for the selected doctor, including consultation types and statuses, clinic open and close times
     $query = $db->prepare("
-        SELECT da.availability_id AS id, da.date, da.start_time, da.end_time, da.status, da.consultation_type,
-               MIN(start_time) OVER() AS min_start_time,
-               MAX(end_time) OVER() AS max_end_time,
-               MAX(consultation_duration) OVER() AS consultation_duration
+        SELECT 
+            da.availability_id AS id, 
+            da.date, 
+            da.start_time, 
+            da.end_time, 
+            da.status, 
+            da.consultation_type,
+            dch.clinic_open_time AS slot_min_time, 
+            dch.clinic_close_time AS slot_max_time
         FROM doctor_availability da
+        JOIN doctor_clinic_hours dch ON da.doctor_id = dch.doctor_id
         WHERE da.doctor_id = ?
     ");
     $query->bind_param("i", $doctor_id);
@@ -22,9 +28,7 @@ if ($doctor_id) {
     $result = $query->get_result();
 
     $events = [];
-    $minStartTime = null;
-    $maxEndTime = null;
-    $consultationDuration = null;
+    $slotTimes = null;
 
     while ($row = $result->fetch_assoc()) {
         // Set event color based on consultation type and status
@@ -41,13 +45,18 @@ if ($doctor_id) {
         ];
         $events[] = $event;
 
-        // Capture the overall start and end time, and consultation duration
-        $minStartTime = $row['min_start_time'];
-        $maxEndTime = $row['max_end_time'];
-        $consultationDuration = $row['consultation_duration'];
+        // Capture slot min and max times for the calendar
+        $slotTimes = [
+            'slotMinTime' => $row['slot_min_time'],
+            'slotMaxTime' => $row['slot_max_time']
+        ];
     }
 
-    echo json_encode($events); // Output all events (Available, Booked, Not Available)
+    // Return events and slot times for calendar rendering
+    echo json_encode([
+        'events' => $events,
+        'slotTimes' => $slotTimes
+    ]);
 } else {
     echo json_encode([]); // Return empty if doctor ID is not provided
 }

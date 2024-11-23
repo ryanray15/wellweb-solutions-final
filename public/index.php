@@ -110,6 +110,9 @@ if ($loggedIn) {
                             <?php if ($user_role === 'doctor') : ?>
                                 <a href="onboarding.php" id="onboarding" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Stripe Connect</a>
                             <?php endif; ?>
+                            <?php if ($user_role === 'doctor' || $user_role === 'patient') : ?>
+                                <a href="appointment_history.php" id="appointment_history" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Appointment History</a>
+                            <?php endif; ?>
                             <a href="#" id="logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                         </div>
                     </div>
@@ -131,7 +134,9 @@ if ($loggedIn) {
 
             <!-- Call to Action -->
             <div class="flex space-x-4">
-                <a href="schedule.php" class="bg-blue-400 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
+                <?php if ($user_role === 'patient') : ?>
+                    <a href="schedule.php" class="bg-blue-400 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Schedule Appointment</a>
+                <?php endif; ?>
                 <a href="doctors_nearby.html" class="bg-blue-400 text-white hover:bg-white hover:text-black font-bold py-2 px-6 rounded-lg transition duration-300">Doctors Nearby You</a>
                 <a href="learn-more.html" class="bg-white text-blue-400 font-bold py-2 px-6 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300 border-2 border-blue-300 hover:border-blue-600">Learn More</a>
             </div>

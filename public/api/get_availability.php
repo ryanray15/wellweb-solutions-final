@@ -17,11 +17,20 @@ if ($doctor_id && $specialization_id) {
         $consultation_type = 'physical';
     }
 
-    // Fetch only the available slots for the specific consultation type
+    // Fetch available slots and clinic open/close times
     $query = $db->prepare("
-        SELECT da.availability_id AS id, da.date, da.start_time, da.end_time, da.status, da.consultation_type
+        SELECT 
+            da.availability_id AS id, 
+            da.date, 
+            da.start_time, 
+            da.end_time, 
+            da.status, 
+            da.consultation_type,
+            dch.clinic_open_time AS slot_min_time,
+            dch.clinic_close_time AS slot_max_time
         FROM doctor_availability da
         JOIN doctor_specializations ds ON da.doctor_id = ds.doctor_id
+        JOIN doctor_clinic_hours dch ON da.doctor_id = dch.doctor_id
         WHERE da.doctor_id = ? 
         AND da.consultation_type = ? 
         AND ds.specialization_id = ? 
@@ -32,6 +41,8 @@ if ($doctor_id && $specialization_id) {
     $result = $query->get_result();
 
     $events = [];
+    $slotTimes = null;
+
     while ($row = $result->fetch_assoc()) {
         // Set event color based on consultation type
         $color = ($row['consultation_type'] == 'online') ? 'blue' : 'green';
@@ -42,13 +53,22 @@ if ($doctor_id && $specialization_id) {
             'end' => $row['end_time'] ? $row['date'] . 'T' . $row['end_time'] : $row['date'],
             'allDay' => !$row['start_time'],
             'title' => ucfirst($row['consultation_type']) . ' Consultation',
-            'color' => $color,  // Use consultation type to determine color
+            'color' => $color,
             'textColor' => 'white'
         ];
         $events[] = $event;
+
+        // Capture slot times (only once)
+        if ($slotTimes === null) {
+            $slotTimes = [
+                'slotMinTime' => $row['slot_min_time'],
+                'slotMaxTime' => $row['slot_max_time']
+            ];
+        }
     }
 
-    echo json_encode(['events' => $events]); // Output only available slots
+    // Return events and slot times
+    echo json_encode(['events' => $events, 'slotTimes' => $slotTimes]);
 } else {
     echo json_encode(['error' => 'Missing required parameters']);
 }

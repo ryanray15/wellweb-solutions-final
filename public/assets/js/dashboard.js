@@ -815,6 +815,10 @@ function loadDoctorCalendar(doctorId) {
           return;
         }
 
+        // Extract slot times for the calendar
+        const slotMinTime = data.slotTimes?.slotMinTime || "00:00:00";
+        const slotMaxTime = data.slotTimes?.slotMaxTime || "24:00:00";
+
         // Initialize FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "timeGridWeek",
@@ -828,8 +832,19 @@ function loadDoctorCalendar(doctorId) {
           },
           events: events,
           eventOverlap: false,
+          slotMinTime: slotMinTime, // Set slotMinTime
+          slotMaxTime: slotMaxTime, // Set slotMaxTime
 
           drop: function (info) {
+            const now = new Date(); // Current time
+            if (info.date < now) {
+              alert(
+                "You cannot drop events into a time slot that has already passed."
+              );
+              window.location.reload(); // Refresh the page to remove the visual effect of the dropped event
+              return; // Prevent further processing
+            }
+
             const consultationType =
               info.draggedEl.getAttribute("data-type") || "online";
             const consultationDuration =
@@ -867,6 +882,7 @@ function loadDoctorCalendar(doctorId) {
               .then((data) => {
                 if (!data.status) {
                   alert("Failed to set availability. Please try again.");
+                  window.location.reload(); // Refresh the calendar in case of a failure
                 } else {
                   console.log("Availability saved successfully.");
                   time_ranges = [];
